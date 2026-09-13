@@ -34,3 +34,36 @@
     </form>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    const flockSelect = document.getElementById('id_flock');
+    const productTypeSelect = document.getElementById('id_product_type');
+
+    function updateProductType() {
+        if (!flockSelect || !productTypeSelect) {
+            return;
+        }
+
+        const selectedFlock = flockSelect.options[flockSelect.selectedIndex];
+        const breed = selectedFlock ? selectedFlock.textContent.toLowerCase() : '';
+        const productType = breed.includes('layers') ? 'eggs' : breed.includes('broilers') ? 'meat_ready' : '';
+
+        productTypeSelect.value = productType;
+        productTypeSelect.disabled = !productType;
+
+        let submittedProductType = document.getElementById('submittedProductType');
+        if (!submittedProductType) {
+            submittedProductType = document.createElement('input');
+            submittedProductType.type = 'hidden';
+            submittedProductType.name = 'product_type';
+            submittedProductType.id = 'submittedProductType';
+            productTypeSelect.form.appendChild(submittedProductType);
+        }
+        submittedProductType.value = productType;
+    }
+
+    flockSelect?.addEventListener('change', updateProductType);
+    updateProductType();
+</script>
+{% endblock %}

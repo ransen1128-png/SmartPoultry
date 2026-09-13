@@ -3,25 +3,55 @@ from .models import ProductionRecord, MortalityRecord, BreedInformation, HealthR
 
 
 class ProductionRecordSerializer(serializers.ModelSerializer):
+    branch_name = serializers.CharField(source='branch.name', read_only=True)
+
     def validate_flock(self, flock):
         request = self.context.get('request')
         if request and flock.user_id != request.user.id:
             raise serializers.ValidationError('Select one of your own flocks.')
         return flock
 
+    def validate_branch(self, branch):
+        request = self.context.get('request')
+        if request and branch and branch.farm.owner_id != request.user.id:
+            raise serializers.ValidationError('Select a branch from your farm.')
+        return branch
+
+    def validate(self, attrs):
+        flock = attrs.get('flock', getattr(self.instance, 'flock', None))
+        product_type = attrs.get('product_type', getattr(self.instance, 'product_type', None))
+        expected_product = {
+            'layers': 'eggs',
+            'broilers': 'meat_ready',
+        }.get(flock.breed if flock else None)
+        if expected_product and product_type != expected_product:
+            raise serializers.ValidationError({
+                'product_type': 'Layers can only use Eggs; broilers can only use Meat Ready.'
+            })
+        return attrs
+
     class Meta:
         model = ProductionRecord
-        fields = ['id', 'flock', 'product_type', 'quantity', 'unit', 'date', 'notes', 'created_at']
+        fields = ['id', 'branch', 'branch_name', 'flock', 'product_type', 'quantity', 'unit', 'date', 'notes', 'created_at']
         read_only_fields = ['id', 'created_at']
 
 
 class MortalityRecordSerializer(serializers.ModelSerializer):
     flock_id_display = serializers.CharField(source='flock.flock_id', read_only=True)
+    branch_name = serializers.CharField(source='branch.name', read_only=True)
+
+    def validate_branch(self, branch):
+        request = self.context.get('request')
+        if request and branch and branch.farm.owner_id != request.user.id:
+            raise serializers.ValidationError('Select a branch from your farm.')
+        return branch
 
     class Meta:
         model = MortalityRecord
         fields = [
             'id',
+            'branch',
+            'branch_name',
             'flock',
             'flock_id_display',
             'quantity',

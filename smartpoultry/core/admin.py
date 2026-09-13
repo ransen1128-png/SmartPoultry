@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Farm, Feedback, RoosterAgeEstimate, TransactionRecord
+from .models import Farm, Feedback, RoosterAgeEstimate, TransactionRecord, Branch
 
 
 @admin.register(Farm)
@@ -49,3 +49,10 @@ class RoosterAgeEstimateAdmin(admin.ModelAdmin):
     list_filter = ('spur_visibility', 'spur_length', 'spur_thickness', 'confidence', 'created_at')
     search_fields = ('user__username', 'user__email', 'photo_name', 'estimated_age_range', 'reasoning')
     readonly_fields = ('created_at',)
+
+
+@admin.register(Branch)
+class BranchAdmin(admin.ModelAdmin):
+    list_display = ('name', 'farm', 'location', 'contact_number', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('name', 'farm__name', 'location', 'contact_number')

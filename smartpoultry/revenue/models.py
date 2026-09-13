@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from flocks.models import Flock
+from core.models import Branch
 
 
 class Revenue(models.Model):
@@ -14,6 +15,7 @@ class Revenue(models.Model):
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='revenue_records', null=True, blank=True)
+    branch = models.ForeignKey('core.Branch', on_delete=models.SET_NULL, related_name='revenue_records', null=True, blank=True)
     revenue_type = models.CharField(max_length=50, choices=REVENUE_TYPES)
     flock = models.ForeignKey(Flock, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
@@ -33,4 +35,4 @@ class Revenue(models.Model):
         return f"{self.revenue_type.upper()} - {self.total_amount} ({self.date})"
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['branch__name', '-date', '-created_at']

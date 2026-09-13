@@ -54,6 +54,7 @@ urlpatterns = [
     path('forecasting/', views.forecasting_view, name='forecasting'),
     path('scenario-analysis/', views.scenario_analysis_view, name='scenario_analysis'),
     path('notifications/', views.notifications_page, name='notifications_page'),
+    path('farm/branches/', views.farm_branches, name='farm_branches'),
 ]
 
 if settings.DEBUG:

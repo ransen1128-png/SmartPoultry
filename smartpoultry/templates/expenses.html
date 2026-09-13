@@ -40,6 +40,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th>Branch</th>
                     <th>Date</th>
                     <th>Type</th>
                     <th>Description</th>
@@ -63,6 +64,15 @@
             </div>
             <div class="modal-body">
                 <form id="addExpenseForm">
+                    <div class="mb-3">
+                        <label class="form-label">Branch</label>
+                        <select class="form-select" name="branch" required>
+                            <option value="">Choose branch...</option>
+                            {% for branch in branches %}
+                                <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Expense Type</label>
                         <select class="form-select" name="expense_type" required>
@@ -150,25 +160,29 @@
                 const tbody = document.getElementById('expensesBody');
                 tbody.innerHTML = '';
                 let total = 0;
-                const results = (data.results || []).sort((a, b) => {
-                    return parseExpenseDate(b.date) - parseExpenseDate(a.date);
+
+                const records = (data.results || []).slice().sort((a, b) => {
+                    const branchA = (a.branch_name || 'Unassigned').toLowerCase();
+                    const branchB = (b.branch_name || 'Unassigned').toLowerCase();
+                    if (branchA !== branchB) return branchA.localeCompare(branchB);
+                    return new Date(b.date) - new Date(a.date);
                 });
-                let currentMonth = '';
 
-                results.forEach(expense => {
-                    const expenseMonth = formatExpenseMonth(expense.date);
-                    if (expenseMonth !== currentMonth) {
-                        currentMonth = expenseMonth;
-                        const monthRow = tbody.insertRow();
-                        monthRow.className = 'table-light';
-
-                        const monthCell = monthRow.insertCell();
-                        monthCell.colSpan = 5;
-                        monthCell.className = 'fw-bold text-uppercase small text-muted';
-                        monthCell.textContent = currentMonth;
+                let currentBranch = null;
+                records.forEach(expense => {
+                    const branchName = expense.branch_name || 'Unassigned';
+                    if (currentBranch !== branchName) {
+                        currentBranch = branchName;
+                        const branchRow = tbody.insertRow();
+                        branchRow.className = 'table-light';
+                        const branchCell = branchRow.insertCell();
+                        branchCell.colSpan = 6;
+                        branchCell.className = 'fw-bold text-uppercase small text-muted';
+                        branchCell.textContent = branchName;
                     }
 
                     const row = document.createElement('tr');
+                    addExpenseCell(row, branchName);
                     addExpenseCell(row, formatExpenseDate(expense.date));
                     addExpenseCell(row, expense.expense_type);
                     addExpenseCell(row, expense.description);
@@ -189,7 +203,7 @@
                 });
 
                 document.getElementById('totalExpenses').textContent = '\u20b1' + total.toFixed(2);
-                document.getElementById('avgExpense').textContent = '\u20b1' + (results.length > 0 ? (total / results.length).toFixed(2) : 0);
+                document.getElementById('avgExpense').textContent = '\u20b1' + (records.length > 0 ? (total / records.length).toFixed(2) : 0);
             });
     }
 
@@ -209,6 +223,7 @@
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
+                branch: formData.get('branch') ? parseInt(formData.get('branch')) : null,
                 expense_type: formData.get('expense_type'),
                 description: formData.get('description'),
                 amount: parseFloat(formData.get('amount')),

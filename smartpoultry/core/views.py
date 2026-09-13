@@ -1,5 +1,5 @@
 import os
-from datetime import timedelta
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
@@ -15,9 +15,10 @@ from django.db.models.functions import TruncMonth
 from django.http import HttpResponseForbidden, JsonResponse
 from django.utils import timezone
 from django.utils.text import capfirst
+from PIL import Image, ImageFilter, ImageStat, UnidentifiedImageError
 from notifications.utils import create_activity_notification
 from .forms import MortalityRecordForm, ProductionRecordForm
-from .models import Feedback, RoosterAgeEstimate
+from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 
 User = get_user_model()
 DEPLOY_MARKER = 'smartpoultry-health-2026-07-04-01'
@@ -404,6 +405,66 @@ def feedback_view(request):
     return render(request, 'feedback.html', {'feedback_items': feedback_items})
 
 
+@login_required(login_url='login')
+def farm_branches(request):
+    """List and create branches for the user's farm."""
+    farm = None
+    try:
+        farm = request.user.owned_farm
+    except Farm.DoesNotExist:
+        messages.info(request, 'You need a farm profile before managing branches.')
+
+    if request.method == 'POST':
+        if farm is None:
+            farm_name = request.POST.get('farm_name', '').strip()
+            farm_location = request.POST.get('farm_location', '').strip()
+            established_date = request.POST.get('established_date', '').strip()
+            contact_email = request.POST.get('contact_email', '').strip()
+            contact_phone = request.POST.get('contact_phone', '').strip()
+
+            if not farm_name or not farm_location or not established_date or not contact_email or not contact_phone:
+                messages.error(request, 'All farm profile fields are required.')
+            else:
+                try:
+                    farm = Farm.objects.create(
+                        owner=request.user,
+                        name=farm_name,
+                        location=farm_location,
+                        established_date=established_date,
+                        contact_email=contact_email,
+                        contact_phone=contact_phone,
+                    )
+                    messages.success(request, 'Farm profile created successfully. You can now add branches.')
+                    return redirect('farm_branches')
+                except Exception:
+                    messages.error(request, 'Unable to create farm profile. Please check your input.')
+        else:
+            name = request.POST.get('branch_name', '').strip()
+            location = request.POST.get('location', '').strip()
+            address = request.POST.get('address', '').strip()
+            contact_number = request.POST.get('contact_number', '').strip()
+            description = request.POST.get('description', '').strip()
+            status = request.POST.get('status', 'active')
+
+            if not name:
+                messages.error(request, 'Branch name is required.')
+            else:
+                Branch.objects.create(
+                    farm=farm,
+                    name=name,
+                    location=location,
+                    address=address,
+                    contact_number=contact_number,
+                    description=description,
+                    status=status,
+                )
+                messages.success(request, 'Branch added successfully.')
+                return redirect('farm_branches')
+
+    branches = farm.branches.all() if farm is not None else []
+    return render(request, 'farm_branches.html', {'farm': farm, 'branches': branches})
+
+
 @admin_required
 def admin_dashboard(request):
     """Admin dashboard for user accounts and feedback management."""
@@ -555,7 +616,12 @@ def admin_delete_feedback(request, feedback_id):
 @login_required(login_url='login')
 def flocks(request):
     """Flocks management view."""
-    return render(request, 'flocks.html')
+    branches = []
+    try:
+        branches = list(request.user.owned_farm.branches.all())
+    except Farm.DoesNotExist:
+        pass
+    return render(request, 'flocks.html', {'branches': branches})
 
 
 @login_required(login_url='login')
@@ -567,13 +633,23 @@ def inventory_view(request):
 @login_required(login_url='login')
 def revenue_view(request):
     """Revenue tracking view."""
-    return render(request, 'revenue.html')
+    branches = []
+    try:
+        branches = list(request.user.owned_farm.branches.all())
+    except Farm.DoesNotExist:
+        pass
+    return render(request, 'revenue.html', {'branches': branches})
 
 
 @login_required(login_url='login')
 def expenses_view(request):
     """Expenses tracking view."""
-    return render(request, 'expenses.html')
+    branches = []
+    try:
+        branches = list(request.user.owned_farm.branches.all())
+    except Farm.DoesNotExist:
+        pass
+    return render(request, 'expenses.html', {'branches': branches})
 
 
 @login_required(login_url='login')
@@ -600,7 +676,7 @@ def analytics_view(request):
         return value.date() if hasattr(value, 'date') else value
 
     def trend_forecast(values, periods):
-        numeric_values = [float(value or 0) for value in values]
+        numeric_values = [float(value) for value in values if value is not None]
         if not numeric_values:
             return [0 for _ in range(periods)]
         if len(numeric_values) == 1:
@@ -630,14 +706,22 @@ def analytics_view(request):
         .annotate(total=Sum('amount'))
     }
 
-    actual_revenue = [float(revenue_by_month.get(month, 0)) for month in history_months]
+    actual_revenue = [
+        float(revenue_by_month[month]) if month in revenue_by_month else None
+        for month in history_months
+    ]
     actual_expenses = [float(expense_by_month.get(month, 0)) for month in history_months]
+    revenue_forecast_source = [
+        float(revenue_by_month[month])
+        for month in history_months
+        if month in revenue_by_month
+    ]
     actual_profit = [
-        round(actual_revenue[index] - actual_expenses[index], 2)
+        round((actual_revenue[index] or 0) - actual_expenses[index], 2)
         for index in range(len(history_months))
     ]
 
-    predicted_revenue = trend_forecast(actual_revenue, 6)
+    predicted_revenue = trend_forecast(revenue_forecast_source, 6)
     predicted_expenses = trend_forecast(actual_expenses, 6)
     predicted_profit = [
         round(predicted_revenue[index] - predicted_expenses[index], 2)
@@ -714,8 +798,94 @@ def analytics_view(request):
     })
 
 
-def estimate_rooster_age_from_spurs(visibility, length, thickness, point_shape, curvature, secondary_clues):
+def analyze_rooster_photo(photo):
+    try:
+        photo.seek(0)
+        with Image.open(photo) as image:
+            image = image.convert('L')
+            width, height = image.size
+            resized = image.resize((min(width, 512), max(1, int(height * min(width, 512) / width))))
+            stat = ImageStat.Stat(resized)
+            brightness = stat.mean[0]
+            contrast = stat.stddev[0]
+            edge_stat = ImageStat.Stat(resized.filter(ImageFilter.FIND_EDGES))
+            sharpness = edge_stat.stddev[0]
+    except (UnidentifiedImageError, OSError, ValueError, ZeroDivisionError):
+        photo.seek(0)
+        return {
+            'quality': 'unreadable',
+            'summary': 'The uploaded file could not be analyzed as a readable image.',
+            'penalty': 2,
+        }
+    finally:
+        photo.seek(0)
+
+    quality_flags = []
+    if width < 600 or height < 450:
+        quality_flags.append('low resolution')
+    if brightness < 45:
+        quality_flags.append('too dark')
+    elif brightness > 220:
+        quality_flags.append('too bright')
+    if contrast < 22:
+        quality_flags.append('low contrast')
+    if sharpness < 8:
+        quality_flags.append('soft or blurry')
+
+    if not quality_flags:
+        return {
+            'quality': 'good',
+            'summary': f'Photo quality supports visual assessment ({width}x{height}, adequate brightness and detail).',
+            'penalty': 0,
+        }
+
+    penalty = 2 if len(quality_flags) >= 3 else 1
+    return {
+        'quality': 'limited',
+        'summary': f'Photo may limit accuracy ({width}x{height}; {", ".join(quality_flags)}).',
+        'penalty': penalty,
+    }
+
+
+def adjust_confidence(confidence, photo_analysis):
+    levels = ['Low', 'Medium', 'Medium-High', 'High']
+    if not photo_analysis:
+        return confidence
+    penalty = photo_analysis.get('penalty', 0)
+    if penalty <= 0:
+        return confidence
+    try:
+        index = levels.index(confidence)
+    except ValueError:
+        return 'Low'
+    return levels[max(0, index - penalty)]
+
+
+def score_secondary_clues(secondary_clues):
+    clues = secondary_clues.lower()
+    younger_terms = ['small comb', 'pale comb', 'juvenile', 'young', 'small body', 'soft legs', 'smooth legs']
+    mature_terms = ['large comb', 'red comb', 'bright comb', 'full body', 'large body', 'adult feathers', 'sickle feathers']
+    older_terms = ['rough legs', 'coarse legs', 'thick legs', 'worn scales', 'heavy body']
+
+    adjustment = 0
+    matched = []
+    if any(term in clues for term in younger_terms):
+        adjustment -= 1
+        matched.append('younger secondary features')
+    if any(term in clues for term in mature_terms):
+        adjustment += 1
+        matched.append('mature secondary features')
+    if any(term in clues for term in older_terms):
+        adjustment += 1
+        matched.append('older leg/body features')
+    return adjustment, matched
+
+
+def estimate_rooster_age_from_spurs(visibility, length, thickness, point_shape, curvature, secondary_clues, photo_analysis=None):
     if visibility != 'clear':
+        limitation = 'Spurs are hidden, cropped, blurry, or too small in the photo.'
+        if photo_analysis:
+            limitation = f"{limitation} {photo_analysis['summary']}"
         return {
             'age_range': 'insufficient spur visibility for reliable age estimate',
             'reasoning': (
@@ -723,7 +893,7 @@ def estimate_rooster_age_from_spurs(visibility, length, thickness, point_shape, 
                 'with confidence, so a spur-based age range would be unreliable.'
             ),
             'confidence': 'Low',
-            'limitations': 'Spurs are hidden, cropped, blurry, or too small in the photo.',
+            'limitations': limitation,
         }
 
     score = 0
@@ -731,6 +901,8 @@ def estimate_rooster_age_from_spurs(visibility, length, thickness, point_shape, 
     score += {'thin': 0, 'moderate': 1, 'thick': 2}.get(thickness, 0)
     score += {'rounded': 0, 'pointed': 1, 'worn': 2}.get(point_shape, 0)
     score += {'straight': 0, 'slight': 1, 'curved': 2}.get(curvature, 0)
+    secondary_adjustment, secondary_matches = score_secondary_clues(secondary_clues)
+    score = max(0, score + secondary_adjustment)
 
     if score <= 1:
         age_range = 'under 6 months'
@@ -755,14 +927,22 @@ def estimate_rooster_age_from_spurs(visibility, length, thickness, point_shape, 
 
     if secondary_clues:
         reasoning = f'{reasoning} Secondary clues noted: {secondary_clues}'
+        if secondary_matches:
+            reasoning = f"{reasoning} These adjusted the estimate for {', '.join(secondary_matches)}."
+
+    if photo_analysis:
+        if photo_analysis.get('quality') == 'good' and confidence == 'Medium':
+            confidence = 'Medium-High'
+        confidence = adjust_confidence(confidence, photo_analysis)
+        reasoning = f"{reasoning} Image check: {photo_analysis['summary']}"
 
     return {
         'age_range': age_range,
         'reasoning': reasoning,
         'confidence': confidence,
         'limitations': (
-            'This estimate is based mainly on spur observations entered from the photo. Breed, trimming, injury, '
-            'image angle, and husbandry conditions can change spur appearance.'
+            'This estimate combines spur observations from the uploaded photo with basic image quality checks. '
+            'Breed, trimming, injury, image angle, and husbandry conditions can change spur appearance.'
         ),
     }
 
@@ -814,6 +994,8 @@ def rooster_age_estimator_view(request):
             point_shape = value_from_list('spur_point_shape', 'rounded')
             curvature = value_from_list('spur_curvature', 'straight')
             secondary_clues = value_from_list('secondary_clues', '').strip()
+            photo = photos[index]
+            photo_analysis = analyze_rooster_photo(photo)
             estimate = estimate_rooster_age_from_spurs(
                 visibility,
                 length,
@@ -821,15 +1003,16 @@ def rooster_age_estimator_view(request):
                 point_shape,
                 curvature,
                 secondary_clues,
+                photo_analysis,
             )
-            photo = photos[index]
             photo_name = photo.name
             spur_observations = (
                 f"Visibility: {visibility_labels.get(visibility, visibility)}. "
                 f"Length: {length_labels.get(length, length)}. "
                 f"Thickness: {thickness_labels.get(thickness, thickness)}. "
                 f"Point shape: {point_labels.get(point_shape, point_shape)}. "
-                f"Curvature: {curvature_labels.get(curvature, curvature)}."
+                f"Curvature: {curvature_labels.get(curvature, curvature)}. "
+                f"Image quality: {photo_analysis['summary']}"
             )
 
             record_data = {
@@ -859,6 +1042,7 @@ def rooster_age_estimator_view(request):
                 'photo_name': photo_name,
                 'estimated_age_range': estimate['age_range'],
                 'spur_observations': spur_observations,
+                'image_assessment': photo_analysis['summary'],
                 'reasoning': estimate['reasoning'],
                 'confidence': estimate['confidence'],
                 'limitations': estimate['limitations'],
@@ -1006,9 +1190,125 @@ def mortality_record_delete(request, record_id):
 
 @login_required(login_url='login')
 def forecasting_view(request):
-    """Forecasting page."""
+    """Forecasting page based on the logged-in user's encoded records."""
+    from expenses.models import Expense
+    from flocks.models import Flock
+    from inventory.models import Inventory
+    from production.models import ProductionRecord
+    from revenue.models import Revenue
+
     ensure_month_end_forecast_notification(request.user)
-    return render(request, 'forecasting.html')
+
+    today = timezone.localdate()
+    current_month_start = today.replace(day=1)
+
+    def add_months(value, months):
+        month_index = value.month - 1 + months
+        year = value.year + month_index // 12
+        month = month_index % 12 + 1
+        return value.replace(year=year, month=month, day=1)
+
+    def month_key(value):
+        return value.date() if hasattr(value, 'date') else value
+
+    def decimal_sum(queryset, field):
+        return queryset.aggregate(total=Sum(field))['total'] or 0
+
+    def trend_forecast(values, periods=1):
+        numeric_values = [float(value) for value in values if value is not None]
+        if not numeric_values:
+            return [0 for _ in range(periods)]
+        if len(numeric_values) == 1:
+            return [round(numeric_values[0], 2) for _ in range(periods)]
+
+        recent_window = numeric_values[-3:] if len(numeric_values) >= 3 else numeric_values
+        baseline = sum(recent_window) / len(recent_window)
+        slope = (numeric_values[-1] - numeric_values[0]) / max(len(numeric_values) - 1, 1)
+        return [round(max(0, baseline + slope * step), 2) for step in range(1, periods + 1)]
+
+    history_start = add_months(current_month_start, -5)
+    history_months = [add_months(history_start, offset) for offset in range(6)]
+    forecast_months = [add_months(current_month_start, offset) for offset in range(1, 4)]
+
+    revenue_by_month = {
+        month_key(item['month']): item['total'] or 0
+        for item in Revenue.objects.filter(user=request.user, date__gte=history_start)
+        .annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(total=Sum('total_amount'))
+    }
+    expense_by_month = {
+        month_key(item['month']): item['total'] or 0
+        for item in Expense.objects.filter(user=request.user, date__gte=history_start)
+        .annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(total=Sum('amount'))
+    }
+    production_by_month = {
+        month_key(item['month']): item['total'] or 0
+        for item in ProductionRecord.objects.filter(
+            user=request.user,
+            product_type='eggs',
+            date__gte=history_start,
+        )
+        .annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(total=Sum('quantity'))
+    }
+
+    revenue_history = [
+        float(revenue_by_month[month])
+        for month in history_months
+        if month in revenue_by_month
+    ]
+    expense_history = [
+        float(expense_by_month[month])
+        for month in history_months
+        if month in expense_by_month
+    ]
+    production_history = [
+        float(production_by_month[month])
+        for month in history_months
+        if month in production_by_month
+    ]
+
+    revenue_forecast = trend_forecast(revenue_history, 3)
+    expense_forecast = trend_forecast(expense_history, 3)
+    production_forecast = trend_forecast(production_history, 1)[0]
+    expected_profit = round(revenue_forecast[0] - expense_forecast[0], 2)
+
+    active_birds = decimal_sum(
+        Flock.objects.filter(user=request.user, status='active'),
+        'quantity',
+    )
+    feed_demand = round(float(active_birds) * 0.12 * 30, 2)
+    feed_stock = decimal_sum(
+        Inventory.objects.filter(user=request.user, item_type='feed'),
+        'quantity',
+    )
+
+    encoded_months = len(set(revenue_by_month) | set(expense_by_month) | set(production_by_month))
+    confidence = min(95, 45 + encoded_months * 8)
+
+    chart_data = {
+        'labels': [capfirst(month.strftime('%b %Y')) for month in history_months + forecast_months],
+        'actualRevenue': [
+            float(revenue_by_month[month]) if month in revenue_by_month else None
+            for month in history_months
+        ] + [None for _ in forecast_months],
+        'forecastRevenue': [None for _ in history_months] + revenue_forecast,
+    }
+
+    return render(request, 'forecasting.html', {
+        'revenue_forecast': revenue_forecast[0],
+        'expected_profit': expected_profit,
+        'feed_demand': feed_demand,
+        'feed_stock': feed_stock,
+        'production_forecast': production_forecast,
+        'forecast_confidence': confidence,
+        'chart_data': chart_data,
+        'has_encoded_data': any([revenue_history, expense_history, production_history, active_birds]),
+    })
 
 
 def ensure_month_end_forecast_notification(user):
@@ -1038,8 +1338,86 @@ def ensure_month_end_forecast_notification(user):
 
 @login_required(login_url='login')
 def scenario_analysis_view(request):
-    """Scenario analysis page."""
-    return render(request, 'scenario_analysis.html')
+    """Scenario analysis page based on the logged-in user's encoded records."""
+    from expenses.models import Expense
+    from revenue.models import Revenue
+
+    today = timezone.localdate()
+    current_month_start = today.replace(day=1)
+
+    def add_months(value, months):
+        month_index = value.month - 1 + months
+        year = value.year + month_index // 12
+        month = month_index % 12 + 1
+        return value.replace(year=year, month=month, day=1)
+
+    def decimal_sum(queryset, field):
+        return queryset.aggregate(total=Sum(field))['total'] or 0
+
+    revenue = decimal_sum(
+        Revenue.objects.filter(user=request.user, date__gte=current_month_start),
+        'total_amount',
+    )
+    expenses = decimal_sum(
+        Expense.objects.filter(user=request.user, date__gte=current_month_start),
+        'amount',
+    )
+    feed_cost = decimal_sum(
+        Expense.objects.filter(
+            user=request.user,
+            date__gte=current_month_start,
+        ).filter(Q(expense_type='feed') | Q(category='inventory') | Q(description__icontains='feed')),
+        'amount',
+    )
+    profit = revenue - expenses
+
+    month_starts = [add_months(current_month_start, offset) for offset in range(-5, 1)]
+    monthly_profit = []
+    for month_start in month_starts:
+        next_month_start = add_months(month_start, 1)
+        month_revenue = decimal_sum(
+            Revenue.objects.filter(
+                user=request.user,
+                date__gte=month_start,
+                date__lt=next_month_start,
+            ),
+            'total_amount',
+        )
+        month_expenses = decimal_sum(
+            Expense.objects.filter(
+                user=request.user,
+                date__gte=month_start,
+                date__lt=next_month_start,
+            ),
+            'amount',
+        )
+        monthly_profit.append({
+            'label': month_start.strftime('%b %Y'),
+            'revenue': float(month_revenue),
+            'expenses': float(month_expenses),
+            'profit': float(month_revenue - month_expenses),
+        })
+
+    recent_months = monthly_profit[-3:]
+    predicted_revenue = sum(month['revenue'] for month in recent_months) / len(recent_months)
+    predicted_expenses = sum(month['expenses'] for month in recent_months) / len(recent_months)
+    predicted_profit = predicted_revenue - predicted_expenses
+    next_month = add_months(current_month_start, 1)
+
+    return render(request, 'scenario_analysis.html', {
+        'scenario_metrics': {
+            'revenue': revenue,
+            'expenses': expenses,
+            'profit': profit,
+            'feed_cost': feed_cost,
+            'predicted_revenue': predicted_revenue,
+            'predicted_expenses': predicted_expenses,
+            'predicted_profit': predicted_profit,
+            'prediction_month': next_month.strftime('%B %Y'),
+        },
+        'monthly_profit': monthly_profit,
+        'has_encoded_data': any([revenue, expenses]),
+    })
 
 
 @login_required(login_url='login')

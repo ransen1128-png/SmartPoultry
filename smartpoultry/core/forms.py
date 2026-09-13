@@ -21,12 +21,29 @@ class StyledModelForm(forms.ModelForm):
 class ProductionRecordForm(StyledModelForm):
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['product_type'].choices = [
+            ('eggs', 'Eggs'),
+            ('meat_ready', 'Meat Ready'),
+        ]
         if user is not None:
             self.fields['flock'].queryset = self.fields['flock'].queryset.filter(user=user)
+            self.fields['branch'].queryset = self.fields['branch'].queryset.filter(farm__owner=user)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        flock = cleaned_data.get('flock')
+        product_type = cleaned_data.get('product_type')
+        expected_product = {
+            'layers': 'eggs',
+            'broilers': 'meat_ready',
+        }.get(flock.breed if flock else None)
+        if expected_product and product_type != expected_product:
+            self.add_error('product_type', 'The product type must match the selected flock breed.')
+        return cleaned_data
 
     class Meta:
         model = ProductionRecord
-        fields = ['flock', 'product_type', 'quantity', 'unit', 'date', 'notes']
+        fields = ['branch', 'flock', 'product_type', 'quantity', 'unit', 'date', 'notes']
         widgets = {
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
@@ -37,10 +54,11 @@ class MortalityRecordForm(StyledModelForm):
         super().__init__(*args, **kwargs)
         if user is not None:
             self.fields['flock'].queryset = self.fields['flock'].queryset.filter(user=user)
+            self.fields['branch'].queryset = self.fields['branch'].queryset.filter(farm__owner=user)
 
     class Meta:
         model = MortalityRecord
-        fields = ['flock', 'quantity', 'reason', 'date', 'description', 'notes']
+        fields = ['branch', 'flock', 'quantity', 'reason', 'date', 'description', 'notes']
         labels = {
             'flock': 'Flock ID to reduce',
         }

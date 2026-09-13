@@ -9,10 +9,11 @@
 </div>
 
 <div class="panel-card scenario-panel"
-     data-base-profit="38000"
-     data-base-revenue="120000"
-     data-base-expenses="82000"
-     data-base-feed-cost="45000">
+     data-base-profit="{{ scenario_metrics.profit|floatformat:2 }}"
+     data-base-revenue="{{ scenario_metrics.revenue|floatformat:2 }}"
+     data-base-expenses="{{ scenario_metrics.expenses|floatformat:2 }}"
+    data-base-feed-cost="{{ scenario_metrics.feed_cost|floatformat:2 }}"
+    data-predicted-profit="{{ scenario_metrics.predicted_profit|floatformat:2 }}">
     <div class="panel-title">What-if Scenario Analysis</div>
     <div class="scenario-controls">
         <select class="form-select form-select-sm" data-scenario-type>
@@ -24,9 +25,46 @@
         <button class="btn btn-primary btn-sm" type="button" data-apply-scenario>Apply</button>
     </div>
     <div class="scenario-results">
-        <div><span data-scenario-label>Current Profit</span><strong data-result="profit">&#8369;38,000.00</strong></div>
-        <div><span data-scenario-label>Current Revenue</span><strong data-result="revenue">&#8369;120,000.00</strong></div>
-        <div><span data-scenario-label>Current Expenses</span><strong data-result="expenses">&#8369;82,000.00</strong></div>
+        <div><span data-scenario-label>Current Profit</span><strong data-result="profit" class="{% if scenario_metrics.profit < 0 %}text-danger{% else %}text-success{% endif %}">&#8369;{{ scenario_metrics.profit|floatformat:2 }}</strong></div>
+        <div><span data-scenario-label>Current Revenue</span><strong data-result="revenue">&#8369;{{ scenario_metrics.revenue|floatformat:2 }}</strong></div>
+        <div><span data-scenario-label>Current Expenses</span><strong data-result="expenses">&#8369;{{ scenario_metrics.expenses|floatformat:2 }}</strong></div>
     </div>
 </div>
+
+<div class="panel-card mt-3">
+    <div class="panel-title">Monthly Profit Prediction</div>
+    <p class="text-muted">Profit is calculated as monthly revenue minus monthly expenses. The prediction uses the average of the last three months.</p>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Revenue</th>
+                    <th>Expenses</th>
+                    <th>Profit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for month in monthly_profit %}
+                    <tr>
+                        <td>{{ month.label }}</td>
+                        <td>&#8369;{{ month.revenue|floatformat:2 }}</td>
+                        <td>&#8369;{{ month.expenses|floatformat:2 }}</td>
+                        <td class="{% if month.profit < 0 %}text-danger{% else %}text-success{% endif %}">&#8369;{{ month.profit|floatformat:2 }}</td>
+                    </tr>
+                {% endfor %}
+                <tr class="table-light fw-bold">
+                    <td>Predicted {{ scenario_metrics.prediction_month }}</td>
+                    <td>&#8369;{{ scenario_metrics.predicted_revenue|floatformat:2 }}</td>
+                    <td>&#8369;{{ scenario_metrics.predicted_expenses|floatformat:2 }}</td>
+                    <td class="{% if scenario_metrics.predicted_profit < 0 %}text-danger{% else %}text-success{% endif %}">&#8369;{{ scenario_metrics.predicted_profit|floatformat:2 }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if not has_encoded_data %}
+    <div class="alert alert-info mt-3">No revenue or expense records are encoded for this month yet, so the scenario starts from zero.</div>
+{% endif %}
 {% endblock %}

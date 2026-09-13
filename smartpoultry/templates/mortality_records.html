@@ -17,6 +17,7 @@
         <table class="table table-hover align-middle mb-0">
             <thead>
                 <tr>
+                    <th>Branch</th>
                     <th>Date</th>
                     <th>Flock ID Reduced</th>
                     <th>Quantity</th>
@@ -26,30 +27,37 @@
                 </tr>
             </thead>
             <tbody>
-                {% for record in records %}
-                    <tr>
-                        <td>{{ record.date|date:"M d, Y" }}</td>
-                        <td>{{ record.flock.flock_id }}</td>
-                        <td>{{ record.quantity }}</td>
-                        <td>{{ record.get_reason_display }}</td>
-                        <td>{{ record.description|default:"-" }}</td>
-                        <td class="text-end">
-                            <div class="btn-group btn-group-sm">
-                                <a href="{% url 'mortality_record_update' record.id %}" class="btn btn-outline-primary">
-                                    <i class="bi bi-pencil-square"></i> Edit
-                                </a>
-                                <form method="post" action="{% url 'mortality_record_delete' record.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-danger" data-confirm="Delete this mortality record?">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+                {% regroup records by branch.name|default:"Unassigned" as branch_records %}
+                {% for branch in branch_records %}
+                    <tr class="table-light">
+                        <td colspan="7"><strong>{{ branch.grouper }}</strong></td>
                     </tr>
+                    {% for record in branch.list|dictsortreversed:"date" %}
+                        <tr>
+                            <td>{{ record.branch.name|default:"Unassigned" }}</td>
+                            <td>{{ record.date|date:"M d, Y" }}</td>
+                            <td>{{ record.flock.flock_id }}</td>
+                            <td>{{ record.quantity }}</td>
+                            <td>{{ record.get_reason_display }}</td>
+                            <td>{{ record.description|default:"-" }}</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'mortality_record_update' record.id %}" class="btn btn-outline-primary">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <form method="post" action="{% url 'mortality_record_delete' record.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger" data-confirm="Delete this mortality record?">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
                 {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">No mortality records yet.</td>
+                        <td colspan="7" class="text-center text-muted py-4">No mortality records yet.</td>
                     </tr>
                 {% endfor %}
             </tbody>

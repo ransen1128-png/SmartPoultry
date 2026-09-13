@@ -94,3 +94,11 @@ def create_expense_for_inventory_create(sender, instance, created, using, **kwar
         ),
     )
 
+
+@receiver(pre_delete, sender=Inventory, dispatch_uid='delete_expense_for_inventory_delete')
+def delete_expense_for_inventory_delete(sender, instance, using, **kwargs):
+    Expense.objects.using(using).filter(
+        user=instance.user,
+        category='inventory',
+        notes__startswith=f"Auto-created from inventory item #{instance.pk}:",
+    ).delete()

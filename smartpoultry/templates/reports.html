@@ -61,20 +61,20 @@
 
     function generateReport(type) {
         const today = new Date();
-        let startDate, endDate = today;
+        const endDate = new Date(today);
+        let startDate = new Date(today);
         
         switch(type) {
             case 'daily':
-                startDate = today;
                 break;
             case 'weekly':
-                startDate = new Date(today.setDate(today.getDate() - 7));
+                startDate.setDate(startDate.getDate() - 6);
                 break;
             case 'monthly':
-                startDate = new Date(today.setMonth(today.getMonth() - 1));
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
                 break;
             case 'annual':
-                startDate = new Date(today.setFullYear(today.getFullYear() - 1));
+                startDate = new Date(today.getFullYear(), 0, 1);
                 break;
         }
 
@@ -103,6 +103,10 @@
             console.error('Error:', err);
             showAppDialog('Error generating report', 'Unable to Generate Report');
         });
+    }
+
+    function downloadReport(reportId) {
+        window.location.href = `/api/reports/${reportId}/download/`;
     }
 
     function getCookie(name) {

@@ -9,11 +9,15 @@
 </div>
 
 <section class="metric-grid">
-    <div class="metric-card"><span>Revenue Forecast</span><strong>&#8369;130,200</strong><small class="text-success">next month</small></div>
-    <div class="metric-card"><span>Expected Profit</span><strong>&#8369;58,450</strong><small class="text-success">92% confidence</small></div>
-    <div class="metric-card"><span>Feed Demand</span><strong>3,120 kg</strong><small>next 30 days</small></div>
-    <div class="metric-card"><span>Production Forecast</span><strong>5,120</strong><small>eggs next month</small></div>
+    <div class="metric-card"><span>Revenue Forecast</span><strong>&#8369;{{ revenue_forecast|floatformat:2 }}</strong><small class="text-success">next month</small></div>
+    <div class="metric-card"><span>Expected Profit</span><strong>&#8369;{{ expected_profit|floatformat:2 }}</strong><small class="text-success">{{ forecast_confidence }}% confidence</small></div>
+    <div class="metric-card"><span>Feed Demand</span><strong>{{ feed_demand|floatformat:2 }} kg</strong><small>{{ feed_stock|floatformat:2 }} kg feed encoded</small></div>
+    <div class="metric-card"><span>Production Forecast</span><strong>{{ production_forecast|floatformat:2 }}</strong><small>eggs next month</small></div>
 </section>
+
+{% if not has_encoded_data %}
+    <div class="alert alert-info">No user records are encoded yet, so forecasts are showing zero. Add revenue, expenses, flocks, feed inventory, and production records to generate projections.</div>
+{% endif %}
 
 <div class="panel-card">
     <div class="panel-title">Revenue Forecast</div>
@@ -22,21 +26,34 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ chart_data|json_script:"forecast-chart-data" }}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const chartData = JSON.parse(document.getElementById('forecast-chart-data').textContent);
         const ctx = document.getElementById('forecastChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-                datasets: [{
-                    label: 'Forecast',
-                    data: [65, 78, 82, 90, 102, 115, 130, 140],
-                    borderColor: '#0b6ee8',
-                    backgroundColor: 'rgba(11, 110, 232, 0.12)',
-                    fill: true,
-                    tension: 0.35
-                }]
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'Actual Revenue',
+                        data: chartData.actualRevenue,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.12)',
+                        fill: true,
+                        tension: 0.25
+                    },
+                    {
+                        label: 'Forecast Revenue',
+                        data: chartData.forecastRevenue,
+                        borderColor: '#0b6ee8',
+                        borderDash: [5, 5],
+                        backgroundColor: 'rgba(11, 110, 232, 0.12)',
+                        fill: true,
+                        tension: 0.25
+                    }
+                ]
             },
             options: { responsive: true, maintainAspectRatio: false }
         });

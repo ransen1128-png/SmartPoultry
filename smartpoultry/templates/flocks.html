@@ -22,6 +22,7 @@
         <table class="table table-hover" id="flocksTable">
             <thead>
                 <tr>
+                    <th>Branch</th>
                     <th>Flock ID</th>
                     <th>Breed</th>
                     <th>Quantity</th>
@@ -48,6 +49,15 @@
             <div class="modal-body">
                 <form id="addFlockForm">
                     {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Branch</label>
+                        <select class="form-select" name="branch" required>
+                            <option value="">Choose branch...</option>
+                            {% for branch in branches %}
+                                <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Flock ID</label>
                         <input type="text" class="form-control" name="flock_id" required>
@@ -130,10 +140,28 @@
             .then(data => {
                 const tbody = document.getElementById('flocksBody');
                 tbody.innerHTML = '';
-                
-                (data.results || []).forEach(flock => {
+
+                const records = (data.results || []).slice().sort((a, b) => {
+                    const branchA = (a.branch_name || 'Unassigned').toLowerCase();
+                    const branchB = (b.branch_name || 'Unassigned').toLowerCase();
+                    if (branchA !== branchB) return branchA.localeCompare(branchB);
+                    return new Date(b.date_added) - new Date(a.date_added);
+                });
+
+                let currentBranch = null;
+                records.forEach(flock => {
+                    const branchName = flock.branch_name || 'Unassigned';
+                    if (currentBranch !== branchName) {
+                        currentBranch = branchName;
+                        const header = document.createElement('tr');
+                        header.className = 'table-light';
+                        header.innerHTML = `<td colspan="7"><strong>${branchName}</strong></td>`;
+                        tbody.appendChild(header);
+                    }
+
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td>${branchName}</td>
                         <td>${flock.flock_id}</td>
                         <td>${flock.breed}</td>
                         <td>${flock.quantity}</td>
@@ -170,6 +198,7 @@
         const url = editingFlockId ? `/api/flocks/${editingFlockId}/` : '/api/flocks/';
         const method = editingFlockId ? 'PATCH' : 'POST';
         const payload = {
+            branch: formData.get('branch') ? parseInt(formData.get('branch')) : null,
             flock_id: formData.get('flock_id'),
             breed: formData.get('breed'),
             quantity: parseInt(formData.get('quantity'))
@@ -216,6 +245,7 @@
             .then(flock => {
                 editingFlockId = id;
                 const form = document.getElementById('addFlockForm');
+                form.elements.branch.value = flock.branch || '';
                 form.elements.flock_id.value = flock.flock_id;
                 form.elements.breed.value = flock.breed;
                 form.elements.quantity.value = flock.quantity;

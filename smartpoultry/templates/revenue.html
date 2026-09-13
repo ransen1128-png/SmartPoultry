@@ -40,6 +40,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th>Branch</th>
                     <th>Date</th>
                     <th>Type</th>
                     <th>Quantity</th>
@@ -64,6 +65,15 @@
             </div>
             <div class="modal-body">
                 <form id="addRevenueForm">
+                    <div class="mb-3">
+                        <label class="form-label">Branch</label>
+                        <select class="form-select" name="branch" required>
+                            <option value="">Choose branch...</option>
+                            {% for branch in branches %}
+                                <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Revenue Type</label>
                         <select class="form-select" name="revenue_type" required>
@@ -112,9 +122,27 @@
                 let total = 0;
                 const results = data.results || [];
                 
-                results.forEach(revenue => {
+                const records = (results || []).slice().sort((a, b) => {
+                    const branchA = (a.branch_name || 'Unassigned').toLowerCase();
+                    const branchB = (b.branch_name || 'Unassigned').toLowerCase();
+                    if (branchA !== branchB) return branchA.localeCompare(branchB);
+                    return new Date(b.date) - new Date(a.date);
+                });
+
+                let currentBranch = null;
+                records.forEach(revenue => {
+                    const branchName = revenue.branch_name || 'Unassigned';
+                    if (currentBranch !== branchName) {
+                        currentBranch = branchName;
+                        const header = document.createElement('tr');
+                        header.className = 'table-light';
+                        header.innerHTML = `<td colspan="7"><strong>${branchName}</strong></td>`;
+                        tbody.appendChild(header);
+                    }
+
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td>${branchName}</td>
                         <td>${new Date(revenue.date).toLocaleDateString()}</td>
                         <td>${revenue.revenue_type}</td>
                         <td>${revenue.quantity}</td>
@@ -142,6 +170,7 @@
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
+                branch: formData.get('branch') ? parseInt(formData.get('branch')) : null,
                 revenue_type: formData.get('revenue_type'),
                 quantity: parseFloat(formData.get('quantity')),
                 unit: formData.get('unit'),

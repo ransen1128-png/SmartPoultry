@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from flocks.models import Flock
+from core.models import Branch
 
 
 class ProductionRecord(models.Model):
@@ -10,11 +11,10 @@ class ProductionRecord(models.Model):
     PRODUCT_TYPES = [
         ('eggs', 'Eggs'),
         ('meat_ready', 'Meat Ready'),
-        ('feathers', 'Feathers'),
-        ('other', 'Other'),
     ]
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='production_records', null=True, blank=True)
+    branch = models.ForeignKey('core.Branch', on_delete=models.SET_NULL, related_name='production_records', null=True, blank=True)
     flock = models.ForeignKey(Flock, on_delete=models.CASCADE, related_name='production_records')
     product_type = models.CharField(max_length=50, choices=PRODUCT_TYPES)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
@@ -28,7 +28,7 @@ class ProductionRecord(models.Model):
         return f"{self.flock} - {self.product_type} ({self.date})"
     
     class Meta:
-        ordering = ['-date']
+        ordering = ['branch__name', '-date', '-created_at']
         unique_together = ('flock', 'product_type', 'date')
 
 
@@ -44,6 +44,7 @@ class MortalityRecord(models.Model):
     ]
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mortality_records', null=True, blank=True)
+    branch = models.ForeignKey('core.Branch', on_delete=models.SET_NULL, related_name='mortality_records', null=True, blank=True)
     flock = models.ForeignKey(Flock, on_delete=models.CASCADE, related_name='mortality_records')
     quantity = models.IntegerField()
     reason = models.CharField(max_length=50, choices=MORTALITY_REASONS, default='unknown')
@@ -106,7 +107,7 @@ class MortalityRecord(models.Model):
             return super().delete(*args, **kwargs)
     
     class Meta:
-        ordering = ['-date']
+        ordering = ['branch__name', '-date', '-created_at']
 
 
 class BreedInformation(models.Model):

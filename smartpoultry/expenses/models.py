@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from core.models import Branch
 
 
 class Expense(models.Model):
@@ -15,6 +16,7 @@ class Expense(models.Model):
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='expense_records', null=True, blank=True)
+    branch = models.ForeignKey('core.Branch', on_delete=models.SET_NULL, related_name='expense_records', null=True, blank=True)
     expense_type = models.CharField(max_length=50, choices=EXPENSE_TYPES)
     description = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
@@ -28,4 +30,4 @@ class Expense(models.Model):
         return f"{self.expense_type.upper()} - {self.amount} ({self.date})"
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['branch__name', '-date', '-created_at']

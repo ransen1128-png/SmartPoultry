@@ -81,6 +81,9 @@
                     </a>
 
                     <div class="sidebar-section">Poultry</div>
+                    <a class="sidebar-link {% if request.path == '/farm/branches/' %}active{% endif %}" href="{% url 'farm_branches' %}">
+                        <i class="bi bi-geo-alt-fill"></i> Farms
+                    </a>
                     <a class="sidebar-link {% if request.path == '/flocks/' %}active{% endif %}" href="{% url 'flocks' %}">
                         <i class="bi bi-grid-3x3-gap-fill"></i> Flocks
                     </a>

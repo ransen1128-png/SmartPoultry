@@ -26,4 +26,4 @@ if not errorlevel 1 (
 )
 
 echo [%date% %time%] Starting SMARTPOULTRY at http://127.0.0.1:8000/ >> "%LOG%"
-"%PYTHON%" manage.py runserver 127.0.0.1:8000 --noreload >> "%LOG%" 2>&1
+"%PYTHON%" manage.py runserver 127.0.0.1:8000 >> "%LOG%" 2>&1
