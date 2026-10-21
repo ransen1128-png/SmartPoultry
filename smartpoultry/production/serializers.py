@@ -19,7 +19,12 @@ class ProductionRecordSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         flock = attrs.get('flock', getattr(self.instance, 'flock', None))
+        branch = attrs.get('branch', getattr(self.instance, 'branch', None))
         product_type = attrs.get('product_type', getattr(self.instance, 'product_type', None))
+        if flock and flock.branch_id != (branch.pk if branch else None):
+            raise serializers.ValidationError({
+                'flock': 'Select a flock from the selected branch.'
+            })
         expected_product = {
             'layers': 'eggs',
             'broilers': 'meat_ready',

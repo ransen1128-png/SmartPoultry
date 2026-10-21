@@ -20,9 +20,9 @@
                     <th>Branch</th>
                     <th>Date</th>
                     <th>Flock</th>
+                    <th>Current Birds Remaining</th>
                     <th>Product</th>
                     <th>Quantity</th>
-                    <th>Notes</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -37,9 +37,9 @@
                             <td>{{ record.branch.name|default:"Unassigned" }}</td>
                             <td>{{ record.date|date:"M d, Y" }}</td>
                             <td>{{ record.flock.flock_id }}</td>
+                            <td>{{ record.flock.quantity }}</td>
                             <td>{{ record.get_product_type_display }}</td>
-                            <td>{{ record.quantity|floatformat:0 }} {{ record.unit }}</td>
-                            <td>{{ record.notes|default:"-" }}</td>
+                            <td>{{ record.quantity|floatformat:0 }}</td>
                             <td class="text-end">
                                 <div class="btn-group btn-group-sm">
                                     <a href="{% url 'production_record_update' record.id %}" class="btn btn-outline-primary">

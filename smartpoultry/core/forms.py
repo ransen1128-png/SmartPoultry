@@ -18,6 +18,15 @@ class StyledModelForm(forms.ModelForm):
                 )
 
 
+class BranchFlockSelect(forms.Select):
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+        flock = getattr(value, 'instance', None)
+        if flock:
+            option['attrs']['data-branch-id'] = str(flock.branch_id or '')
+        return option
+
+
 class ProductionRecordForm(StyledModelForm):
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,13 +48,16 @@ class ProductionRecordForm(StyledModelForm):
         }.get(flock.breed if flock else None)
         if expected_product and product_type != expected_product:
             self.add_error('product_type', 'The product type must match the selected flock breed.')
+        branch = cleaned_data.get('branch')
+        if flock and flock.branch_id != (branch.pk if branch else None):
+            self.add_error('flock', 'Select a flock from the selected branch.')
         return cleaned_data
 
     class Meta:
         model = ProductionRecord
-        fields = ['branch', 'flock', 'product_type', 'quantity', 'unit', 'date', 'notes']
+        fields = ['branch', 'flock', 'product_type', 'quantity', 'date']
         widgets = {
-            'notes': forms.Textarea(attrs={'rows': 3}),
+            'flock': BranchFlockSelect(),
         }
 
 

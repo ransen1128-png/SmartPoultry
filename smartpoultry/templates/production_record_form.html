@@ -4,7 +4,7 @@
 <div class="page-heading">
     <div>
         <h1>{{ title }}</h1>
-        <p>Record flock output, quantity, date, and notes</p>
+        <p>Record flock output, quantity, and date</p>
     </div>
     <a href="{% url 'production_records' %}" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left me-1"></i> Back
@@ -37,8 +37,15 @@
 
 {% block extra_js %}
 <script>
+    const branchSelect = document.getElementById('id_branch');
     const flockSelect = document.getElementById('id_flock');
     const productTypeSelect = document.getElementById('id_product_type');
+    const allFlockOptions = flockSelect
+        ? Array.from(flockSelect.options).filter(option => option.value).map(option => option.cloneNode(true))
+        : [];
+    const emptyFlockOption = flockSelect
+        ? Array.from(flockSelect.options).find(option => !option.value)?.cloneNode(true)
+        : null;
 
     function updateProductType() {
         if (!flockSelect || !productTypeSelect) {
@@ -63,7 +70,26 @@
         submittedProductType.value = productType;
     }
 
+    function updateFlockOptions() {
+        if (!branchSelect || !flockSelect) {
+            return;
+        }
+
+        const currentFlockId = flockSelect.value;
+        const matchingOptions = allFlockOptions.filter(
+            option => option.dataset.branchId === branchSelect.value
+        );
+        flockSelect.replaceChildren();
+        if (emptyFlockOption) {
+            flockSelect.appendChild(emptyFlockOption.cloneNode(true));
+        }
+        matchingOptions.forEach(option => flockSelect.appendChild(option.cloneNode(true)));
+        flockSelect.value = matchingOptions.some(option => option.value === currentFlockId) ? currentFlockId : '';
+        updateProductType();
+    }
+
+    branchSelect?.addEventListener('change', updateFlockOptions);
     flockSelect?.addEventListener('change', updateProductType);
-    updateProductType();
+    updateFlockOptions();
 </script>
 {% endblock %}

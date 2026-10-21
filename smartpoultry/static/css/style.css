@@ -761,9 +761,22 @@ body {
 }
 
 .date-filter {
-    width: 170px;
+    width: auto;
+    min-width: 125px;
     border-color: var(--border);
     font-size: 0.76rem;
+}
+
+.dashboard-filters {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dashboard-filters select:first-child {
+    min-width: 155px;
 }
 
 .metric-grid {

@@ -36,5 +36,14 @@ class Flock(models.Model):
     class Meta:
         ordering = ['branch__name', '-date_added', '-created_at']
         constraints = [
-            models.UniqueConstraint(fields=['user', 'flock_id'], name='unique_flock_id_per_user'),
+            models.UniqueConstraint(
+                fields=['user', 'branch', 'flock_id'],
+                condition=models.Q(branch__isnull=False),
+                name='flock_branch_id_uniq',
+            ),
+            models.UniqueConstraint(
+                fields=['user', 'flock_id'],
+                condition=models.Q(branch__isnull=True),
+                name='flock_unassigned_id_uniq',
+            ),
         ]

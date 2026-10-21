@@ -1,3 +1,4 @@
+import calendar
 import os
 from datetime import date, timedelta
 
@@ -10,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Min, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.http import HttpResponseForbidden, JsonResponse
 from django.utils import timezone
@@ -176,11 +177,35 @@ def dashboard(request):
     from revenue.models import Revenue
 
     today = timezone.localdate()
-    current_month_start = today.replace(day=1)
-    if current_month_start.month == 1:
-        previous_month_start = current_month_start.replace(year=current_month_start.year - 1, month=12)
+    try:
+        selected_year = int(request.GET.get('year', today.year))
+        selected_month = int(request.GET.get('month', today.month))
+        if not 1 <= selected_year <= 9999 or not 1 <= selected_month <= 12:
+            raise ValueError
+    except (TypeError, ValueError):
+        selected_year, selected_month = today.year, today.month
+
+    current_month_start = date(selected_year, selected_month, 1)
+    if selected_month == 12:
+        next_month_start = date(selected_year + 1, 1, 1) if selected_year < 9999 else date.max
     else:
-        previous_month_start = current_month_start.replace(month=current_month_start.month - 1)
+        next_month_start = date(selected_year, selected_month + 1, 1)
+    previous_month_start = (current_month_start - timedelta(days=1)).replace(day=1)
+
+    branches = Branch.objects.filter(farm__owner=request.user)
+    selected_branch_id = request.GET.get('branch', '')
+    selected_branch = branches.filter(pk=selected_branch_id).first() if selected_branch_id.isdigit() else None
+
+    def records_for_period(model, start, end, **filters):
+        queryset = model.objects.filter(
+            user=request.user,
+            date__gte=start,
+            date__lt=end,
+            **filters,
+        )
+        if selected_branch:
+            queryset = queryset.filter(branch=selected_branch)
+        return queryset
 
     def decimal_sum(queryset, field):
         return queryset.aggregate(total=Sum(field))['total'] or 0
@@ -190,75 +215,68 @@ def dashboard(request):
             return None
         return round(((current - previous) / previous) * 100, 1)
 
-    current_revenue = decimal_sum(Revenue.objects.filter(user=request.user, date__gte=current_month_start), 'total_amount')
+    current_revenue = decimal_sum(records_for_period(Revenue, current_month_start, next_month_start), 'total_amount')
     previous_revenue = decimal_sum(
-        Revenue.objects.filter(user=request.user, date__gte=previous_month_start, date__lt=current_month_start),
+        records_for_period(Revenue, previous_month_start, current_month_start),
         'total_amount',
     )
-    current_expenses = decimal_sum(Expense.objects.filter(user=request.user, date__gte=current_month_start), 'amount')
+    current_expenses = decimal_sum(records_for_period(Expense, current_month_start, next_month_start), 'amount')
     previous_expenses = decimal_sum(
-        Expense.objects.filter(user=request.user, date__gte=previous_month_start, date__lt=current_month_start),
+        records_for_period(Expense, previous_month_start, current_month_start),
         'amount',
     )
     current_profit = current_revenue - current_expenses
     previous_profit = previous_revenue - previous_expenses
     feed_cost = decimal_sum(
-        Expense.objects.filter(user=request.user, date__gte=current_month_start, expense_type='feed'),
+        records_for_period(Expense, current_month_start, next_month_start, expense_type='feed'),
         'amount',
     )
     production_total = decimal_sum(
-        ProductionRecord.objects.filter(user=request.user, date__gte=current_month_start, product_type='eggs'),
+        records_for_period(ProductionRecord, current_month_start, next_month_start, product_type='eggs'),
         'quantity',
     )
-    mortality_total = MortalityRecord.objects.filter(user=request.user, date__gte=current_month_start).aggregate(
+    mortality_total = records_for_period(MortalityRecord, current_month_start, next_month_start).aggregate(
         total=Sum('quantity')
     )['total'] or 0
-    total_birds = Flock.objects.filter(user=request.user, status='active').aggregate(total=Sum('quantity'))['total'] or 0
-    active_flocks = Flock.objects.filter(user=request.user, status='active').count()
+    active_flocks_query = Flock.objects.filter(user=request.user, status='active')
+    if selected_branch:
+        active_flocks_query = active_flocks_query.filter(branch=selected_branch)
+    total_birds = active_flocks_query.aggregate(total=Sum('quantity'))['total'] or 0
+    active_flocks = active_flocks_query.count()
     mortality_rate = round((mortality_total / total_birds) * 100, 2) if total_birds else 0
     feed_stock = decimal_sum(Inventory.objects.filter(user=request.user, item_type='feed'), 'quantity')
     feed_expense_share = round((feed_cost / current_expenses) * 100, 1) if current_expenses else 0
 
-    trend_start = current_month_start
-    for _ in range(5):
-        if trend_start.month == 1:
-            trend_start = trend_start.replace(year=trend_start.year - 1, month=12)
-        else:
-            trend_start = trend_start.replace(month=trend_start.month - 1)
+    chart_months = []
+    for offset in range(5, -1, -1):
+        month_index = selected_month - 1 - offset
+        chart_months.append(date(selected_year + month_index // 12, month_index % 12 + 1, 1))
+    trend_start = chart_months[0]
 
     def month_key(value):
         return value.date() if hasattr(value, 'date') else value
 
     revenue_by_month = {
         month_key(item['month']): item['total'] or 0
-        for item in Revenue.objects.filter(user=request.user, date__gte=trend_start)
+        for item in records_for_period(Revenue, trend_start, next_month_start)
         .annotate(month=TruncMonth('date'))
         .values('month')
         .annotate(total=Sum('total_amount'))
     }
     expenses_by_month = {
         month_key(item['month']): item['total'] or 0
-        for item in Expense.objects.filter(user=request.user, date__gte=trend_start)
+        for item in records_for_period(Expense, trend_start, next_month_start)
         .annotate(month=TruncMonth('date'))
         .values('month')
         .annotate(total=Sum('amount'))
     }
     feed_by_month = {
         month_key(item['month']): item['total'] or 0
-        for item in Expense.objects.filter(user=request.user, date__gte=trend_start, expense_type='feed')
+        for item in records_for_period(Expense, trend_start, next_month_start, expense_type='feed')
         .annotate(month=TruncMonth('date'))
         .values('month')
         .annotate(total=Sum('amount'))
     }
-
-    chart_months = []
-    month_cursor = trend_start
-    for _ in range(6):
-        chart_months.append(month_cursor)
-        if month_cursor.month == 12:
-            month_cursor = month_cursor.replace(year=month_cursor.year + 1, month=1)
-        else:
-            month_cursor = month_cursor.replace(month=month_cursor.month + 1)
 
     revenue_values = [float(revenue_by_month.get(month, 0)) for month in chart_months]
     expense_values = [float(expenses_by_month.get(month, 0)) for month in chart_months]
@@ -274,8 +292,20 @@ def dashboard(request):
     except Exception:
         pass
 
+    earliest_dates = [
+        model.objects.filter(user=request.user).aggregate(first_date=Min('date'))['first_date']
+        for model in (Revenue, Expense, ProductionRecord, MortalityRecord)
+    ]
+    earliest_year = min((value.year for value in earliest_dates if value), default=today.year)
     context = {
-        'date_range_label': f'{current_month_start:%b} 1 - {today:%b} {today.day}, {today.year}',
+        'date_range_label': current_month_start.strftime('%B %Y'),
+        'selected_period_label': current_month_start.strftime('%B %Y'),
+        'branches': branches,
+        'selected_branch': selected_branch,
+        'selected_month': selected_month,
+        'selected_year': selected_year,
+        'month_options': [(month, calendar.month_name[month]) for month in range(1, 13)],
+        'year_options': reversed(range(max(earliest_year, 1), min(today.year, 9998) + 1)),
         'metrics': {
             'revenue': current_revenue,
             'revenue_change': percent_change(current_revenue, previous_revenue),
@@ -627,7 +657,15 @@ def flocks(request):
 @login_required(login_url='login')
 def inventory_view(request):
     """Inventory management view."""
-    return render(request, 'inventory.html')
+    branches = []
+    try:
+        branches = list(request.user.owned_farm.branches.all())
+    except Farm.DoesNotExist:
+        pass
+    return render(request, 'inventory.html', {
+        'branches': branches,
+        'today': timezone.localdate(),
+    })
 
 
 @login_required(login_url='login')

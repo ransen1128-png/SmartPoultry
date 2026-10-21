@@ -3,12 +3,13 @@
 {% block content %}
 <h1 class="mb-4">Inventory Management</h1>
 
-<div class="row mb-4">
-    <div class="col-md-12">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInventoryModal">
-            <i class="bi bi-plus-circle"></i> Add Item
-        </button>
-    </div>
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInventoryModal">
+        <i class="bi bi-plus-circle"></i> Add Item
+    </button>
+    <button class="btn btn-outline-primary" type="button" id="allDistributionHistoryBtn">
+        <i class="bi bi-clock-history"></i> History
+    </button>
 </div>
 
 <div class="card">
@@ -22,10 +23,9 @@
                     <th>Item Type</th>
                     <th>Name</th>
                     <th>Quantity</th>
-                    <th>Unit</th>
                     <th>Cost/Unit</th>
                     <th>Total Value</th>
-                    <th>Actions</th>
+                    <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody id="inventoryBody">
@@ -79,10 +79,65 @@
     </div>
 </div>
 
-{% endblock %}
+<div class="modal fade" id="distributionModal" tabindex="-1" aria-labelledby="distributionModalTitle" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div>
+                                <h5 class="modal-title" id="distributionModalTitle">Distribute inventory</h5>
+                                <small class="text-muted" id="distributionAvailable"></small>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="distributionEntrySection">
+                            <form id="distributionForm" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="distributionBranch">Branch</label>
+                                    <select class="form-select" id="distributionBranch" name="branch" required>
+                                        <option value="">Choose branch...</option>
+                                        {% for branch in branches %}
+                                            <option value="{{ branch.pk }}">{{ branch.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="distributionQuantity">Quantity</label>
+                                    <input class="form-control" id="distributionQuantity" name="quantity" type="number" min="0.01" step="0.01" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="distributionDate">Date distributed</label>
+                                    <input class="form-control" id="distributionDate" name="date" type="date" value="{{ today|date:'Y-m-d' }}" required>
+                                </div>
+                            </form>
+                            <hr>
+                            </div>
+                            <h6 class="mb-3">Distribution history</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr><th>Item</th><th>Date</th><th>Branch</th><th>Quantity</th></tr>
+                                    </thead>
+                                    <tbody id="distributionHistoryBody">
+                                        <tr><td colspan="4" class="text-center text-muted">No distributions recorded.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="saveDistributionBtn" {% if not branches %}disabled{% endif %}>Distribute</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+{% endblock %}
 {% block extra_js %}
 <script>
+    const inventoryItems = new Map();
+    let selectedInventoryId = null;
+
     function formatWholeQuantity(value) {
         const number = Number(value);
         if (Number.isNaN(number)) {
@@ -91,22 +146,31 @@
         return number.toString();
     }
 
-    function loadInventory() {
-        fetch('/api/inventory/items/')
-            .then(response => response.json())
+    function formatQuantity(value, unit) {
+        const quantity = Number(value);
+        const normalizedUnit = String(unit || '').trim();
+        const pieceLabel = quantity === 1 ? 'pc' : 'pcs';
+        return `${formatWholeQuantity(value)} ${pieceLabel} ${normalizedUnit}`.trim();
+    }
+
+        function loadInventory() {
+            return fetch('/api/inventory/items/')
+                .then(response => response.json())
             .then(data => {
                 const tbody = document.getElementById('inventoryBody');
                 tbody.innerHTML = '';
+                    inventoryItems.clear();
                 (data.results || []).forEach(item => {
+                        inventoryItems.set(Number(item.id), item);
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${item.item_type}</td>
                         <td>${item.name}</td>
-                        <td>${formatWholeQuantity(item.quantity)}</td>
-                        <td>${item.unit}</td>
+                        <td>${formatQuantity(item.quantity, item.unit)}</td>
                         <td>₱${parseFloat(item.cost_per_unit).toFixed(2)}</td>
                         <td>₱${parseFloat(item.total_value).toFixed(2)}</td>
-                        <td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary me-1" type="button" data-distribute-id="${item.id}">Distribute</button>
                             <button class="btn btn-sm btn-danger" onclick="deleteItem(${item.id})">Delete</button>
                         </td>
                     `;
@@ -114,6 +178,129 @@
                 });
             });
     }
+
+    function openDistribution(inventoryId) {
+        showDistributionModal(inventoryId, true);
+    }
+
+    function showDistributionModal(inventoryId, allowDistribution) {
+        const item = inventoryId ? inventoryItems.get(Number(inventoryId)) : null;
+        if (allowDistribution && !item) {
+            return;
+        }
+        selectedInventoryId = item ? Number(inventoryId) : null;
+        document.getElementById('distributionModalTitle').textContent = allowDistribution
+            ? `Distribute: ${item.name}`
+            : 'Inventory distribution history';
+        document.getElementById('distributionAvailable').hidden = !item;
+        if (item) {
+            updateDistributionAvailable(item);
+        }
+        document.getElementById('distributionEntrySection').hidden = !allowDistribution;
+        document.getElementById('saveDistributionBtn').hidden = !allowDistribution;
+        document.getElementById('distributionForm').reset();
+        document.getElementById('distributionDate').value = '{{ today|date:"Y-m-d" }}';
+        loadDistributionHistory(selectedInventoryId);
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('distributionModal')).show();
+    }
+
+    function updateDistributionAvailable(item) {
+        document.getElementById('distributionAvailable').textContent =
+            `Available: ${formatQuantity(item.quantity, item.unit)}`;
+    }
+
+    async function loadDistributionHistory(inventoryId = null) {
+        const body = document.getElementById('distributionHistoryBody');
+        body.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Loading history...</td></tr>';
+        let url = '/api/inventory/distributions/';
+        if (inventoryId) {
+            url += `?inventory=${inventoryId}`;
+        }
+
+        try {
+            const distributions = [];
+            while (url) {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Unable to load distribution history.');
+                }
+                const data = await response.json();
+                distributions.push(...(data.results || []));
+                url = data.next;
+            }
+
+            body.innerHTML = '';
+            if (!distributions.length) {
+                body.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No distributions recorded.</td></tr>';
+                return;
+            }
+            distributions.forEach(distribution => {
+                const row = document.createElement('tr');
+                const itemCell = document.createElement('td');
+                const dateCell = document.createElement('td');
+                const branchCell = document.createElement('td');
+                const quantityCell = document.createElement('td');
+                itemCell.textContent = distribution.item_name;
+                dateCell.textContent = new Date(`${distribution.date}T00:00:00`).toLocaleDateString();
+                branchCell.textContent = distribution.branch_name;
+                quantityCell.textContent = formatQuantity(distribution.quantity, distribution.unit);
+                row.append(itemCell, dateCell, branchCell, quantityCell);
+                body.appendChild(row);
+            });
+        } catch (error) {
+            body.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Unable to load history.</td></tr>';
+            console.error(error);
+        }
+    }
+
+    document.getElementById('inventoryBody').addEventListener('click', event => {
+        const distributeButton = event.target.closest('[data-distribute-id]');
+        if (distributeButton) {
+            openDistribution(distributeButton.dataset.distributeId);
+        }
+    });
+
+    document.getElementById('allDistributionHistoryBtn').addEventListener('click', () => {
+        showDistributionModal(null, false);
+    });
+
+    document.getElementById('saveDistributionBtn').addEventListener('click', async () => {
+        const form = document.getElementById('distributionForm');
+        if (!form.reportValidity() || !selectedInventoryId) {
+            return;
+        }
+
+        const formData = new FormData(form);
+        const response = await fetch('/api/inventory/distributions/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                inventory: selectedInventoryId,
+                branch: Number(formData.get('branch')),
+                quantity: Number(formData.get('quantity')),
+                date: formData.get('date')
+            })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            const message = Object.entries(data)
+                .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`)
+                .join('\n') || 'Unable to save distribution.';
+            showAppDialog(message, 'Unable to Distribute Inventory');
+            return;
+        }
+
+        await loadInventory();
+        const item = inventoryItems.get(selectedInventoryId);
+        if (item) {
+            updateDistributionAvailable(item);
+        }
+        document.getElementById('distributionQuantity').value = '';
+        loadDistributionHistory(selectedInventoryId);
+    });
 
     document.getElementById('saveInventoryBtn').addEventListener('click', function() {
         const form = document.getElementById('addInventoryForm');

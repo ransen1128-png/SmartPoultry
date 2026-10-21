@@ -11,6 +11,19 @@ class FlockSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Select a branch from your farm.')
         return branch
 
+    def validate_flock_id(self, flock_id):
+        request = self.context.get('request')
+        if not request:
+            return flock_id
+
+        branch = self.initial_data.get('branch', getattr(self.instance, 'branch_id', None))
+        queryset = Flock.objects.filter(user=request.user, flock_id=flock_id, branch_id=branch)
+        if self.instance:
+            queryset = queryset.exclude(pk=self.instance.pk)
+        if queryset.exists():
+            raise serializers.ValidationError('This flock ID is already used in this branch.')
+        return flock_id
+
     class Meta:
         model = Flock
         fields = ['id', 'branch', 'branch_name', 'flock_id', 'breed', 'quantity', 'status', 'date_added',

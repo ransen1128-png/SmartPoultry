@@ -7,9 +7,7 @@ set "PYTHON=%ROOT%venv\Scripts\python.exe"
 set "LOG=%ROOT%server.cmd.log"
 
 if not exist "%PYTHON%" (
-    echo Python virtual environment was not found: %PYTHON%
-    echo Recreate the virtual environment or reinstall dependencies.
-    exit /b 1
+    set "PYTHON=py"
 )
 
 if not exist "%PROJECT%\manage.py" (
@@ -21,7 +19,7 @@ cd /d "%PROJECT%" || exit /b 1
 
 netstat -ano | findstr /R /C:":8000 .*LISTENING" >nul
 if not errorlevel 1 (
-    echo [%date% %time%] SMARTPOULTRY is already running at http://127.0.0.1:8000/ >> "%LOG%"
+    echo SMARTPOULTRY is already running at http://127.0.0.1:8000/
     exit /b 0
 )
 

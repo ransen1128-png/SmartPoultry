@@ -7,9 +7,25 @@
         <h1>Dashboard</h1>
         <p>Overview of your poultry farm performance</p>
     </div>
-    <select class="form-select form-select-sm date-filter" aria-label="Date range">
-        <option>{{ date_range_label }}</option>
-    </select>
+    <form method="get" class="dashboard-filters">
+        <select class="form-select form-select-sm date-filter" name="branch" aria-label="Farm branch">
+            <option value="">All branches</option>
+            {% for branch in branches %}
+                <option value="{{ branch.pk }}" {% if selected_branch.pk == branch.pk %}selected{% endif %}>{{ branch.name }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-select form-select-sm date-filter" name="month" aria-label="Month">
+            {% for month_value, month_name in month_options %}
+                <option value="{{ month_value }}" {% if selected_month == month_value %}selected{% endif %}>{{ month_name }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-select form-select-sm date-filter" name="year" aria-label="Year">
+            {% for year in year_options %}
+                <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-primary btn-sm" type="submit">Apply</button>
+    </form>
 </div>
 
 <section class="metric-grid">
@@ -49,7 +65,7 @@
     <div class="metric-card">
         <span>Cash Flow</span>
         <strong>&#8369;{{ metrics.cash_flow|floatformat:2 }}</strong>
-        <small>This month</small>
+        <small>{{ selected_period_label }}</small>
     </div>
     <div class="metric-card">
         <span>Feed Cost</span>
@@ -59,7 +75,7 @@
     <div class="metric-card">
         <span>Mortality Rate</span>
         <strong>{{ metrics.mortality_rate }}%</strong>
-        <small>This month</small>
+        <small>{{ selected_period_label }}</small>
     </div>
     <div class="metric-card">
         <span>Total Birds</span>
@@ -69,7 +85,7 @@
     <div class="metric-card">
         <span>Production</span>
         <strong>{{ metrics.production_total|floatformat:0 }}</strong>
-        <small>eggs this month</small>
+        <small>eggs in {{ selected_period_label }}</small>
     </div>
 </section>
 
@@ -97,7 +113,7 @@
                 <span>Feed Stock</span>
                 <strong>{{ metrics.feed_stock|floatformat:2 }}</strong>
             </div>
-            <small>current inventory</small>
+            <small>{% if selected_branch %}Farm-wide current inventory{% else %}Current inventory{% endif %}</small>
         </div>
         <div class="prediction-row">
             <div>

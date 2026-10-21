@@ -14,7 +14,7 @@ from analytics.models import Prediction
 from core.models import RoosterAgeEstimate, TransactionRecord, Farm, Branch
 from expenses.models import Expense
 from flocks.models import Flock
-from inventory.models import Inventory
+from inventory.models import Inventory, InventoryDistribution
 from PIL import Image
 from production.models import ProductionRecord, MortalityRecord
 from core.forms import ProductionRecordForm
@@ -92,6 +92,225 @@ class BranchTrackingTests(TestCase):
         self.assertEqual(revenue.branch, branch)
         self.assertEqual(expense.branch, branch)
 
+    def test_dashboard_filters_metrics_and_trends_by_branch_and_month(self):
+        user = get_user_model().objects.create_user(username='dashboard-owner', password='password123')
+        farm = Farm.objects.create(
+            owner=user,
+            name='Dashboard Farm',
+            location='Main City',
+            established_date=date(2024, 1, 1),
+            contact_email='dashboard@example.com',
+            contact_phone='09123456789',
+        )
+        north = Branch.objects.create(farm=farm, name='North Branch')
+        south = Branch.objects.create(farm=farm, name='South Branch')
+        north_flock = Flock.objects.create(
+            user=user, branch=north, flock_id='NORTH-001', breed='layers', quantity=40, status='active',
+        )
+        Flock.objects.create(
+            user=user, branch=south, flock_id='SOUTH-001', breed='layers', quantity=60, status='active',
+        )
+        Revenue.objects.create(
+            user=user, branch=north, revenue_type='eggs', quantity=10, unit='tray',
+            price_per_unit=20, date=date(2026, 6, 10),
+        )
+        Revenue.objects.create(
+            user=user, branch=south, revenue_type='eggs', quantity=30, unit='tray',
+            price_per_unit=30, date=date(2026, 6, 10),
+        )
+        Expense.objects.create(
+            user=user, branch=north, expense_type='feed', description='North feed',
+            amount=25, date=date(2026, 6, 11),
+        )
+        Expense.objects.create(
+            user=user, branch=south, expense_type='feed', description='South feed',
+            amount=100, date=date(2026, 6, 11),
+        )
+        ProductionRecord.objects.create(
+            user=user, branch=north, flock=north_flock, product_type='eggs',
+            quantity=11, unit='eggs', date=date(2026, 6, 12),
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse('dashboard'), {'branch': north.pk, 'month': 6, 'year': 2026})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['selected_branch'], north)
+        self.assertEqual(response.context['metrics']['revenue'], Decimal('200'))
+        self.assertEqual(response.context['metrics']['expenses'], Decimal('25'))
+        self.assertEqual(response.context['metrics']['feed_cost'], Decimal('25'))
+        self.assertEqual(response.context['metrics']['total_birds'], 40)
+        self.assertEqual(response.context['metrics']['production_total'], Decimal('11'))
+        self.assertEqual(response.context['chart_data']['labels'][-1], 'Jun')
+        self.assertEqual(response.context['chart_data']['revenue'][-1], 200.0)
+
+
+class BranchScopedFlockIdTests(TestCase):
+    def test_flock_ids_can_repeat_across_branches_but_not_within_one(self):
+        user = get_user_model().objects.create_user(username='flock-branch-owner', password='password123')
+        farm = Farm.objects.create(
+            owner=user,
+            name='Flock ID Farm',
+            location='Main City',
+            established_date=date(2024, 1, 1),
+            contact_email='flocks@example.com',
+            contact_phone='09123456789',
+        )
+        labogon = Branch.objects.create(farm=farm, name='Labogon')
+        mandaue = Branch.objects.create(farm=farm, name='Mandaue')
+        self.client.force_login(user)
+        endpoint = reverse('flock-list')
+
+        for branch in (labogon, mandaue):
+            response = self.client.post(
+                endpoint,
+                {
+                    'branch': branch.pk,
+                    'flock_id': '01',
+                    'breed': 'layers',
+                    'quantity': 20,
+                    'status': 'active',
+                },
+                content_type='application/json',
+            )
+            self.assertEqual(response.status_code, 201, response.content)
+
+        duplicate_response = self.client.post(
+            endpoint,
+            {
+                'branch': labogon.pk,
+                'flock_id': '01',
+                'breed': 'layers',
+                'quantity': 15,
+                'status': 'active',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(duplicate_response.status_code, 400)
+        self.assertIn('flock_id', duplicate_response.json())
+
+
+class MortalityProductionDisplayTests(TestCase):
+    def test_production_page_shows_flock_balance_after_mortality(self):
+        user = get_user_model().objects.create_user(username='mortality-production', password='password123')
+        flock = Flock.objects.create(
+            user=user,
+            flock_id='LAYERS-01',
+            breed='layers',
+            quantity=20,
+            status='active',
+        )
+        ProductionRecord.objects.create(
+            user=user,
+            flock=flock,
+            product_type='eggs',
+            quantity=10,
+            unit='eggs',
+            date=date(2026, 10, 20),
+        )
+        MortalityRecord.objects.create(
+            user=user,
+            flock=flock,
+            quantity=3,
+            reason='disease',
+            date=date(2026, 10, 21),
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse('production_records'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Current Birds Remaining')
+        self.assertContains(response, '<td>17</td>', html=True)
+        self.assertContains(response, '<td>10</td>', html=True)
+        self.assertNotContains(response, '<th>Notes</th>', html=True)
+
+
+class InventoryDistributionTests(TestCase):
+    def test_distribution_records_branch_and_date_and_reduces_stock(self):
+        user = get_user_model().objects.create_user(username='inventory-distributor', password='password123')
+        farm = Farm.objects.create(
+            owner=user,
+            name='Distribution Farm',
+            location='Main City',
+            established_date=date(2024, 1, 1),
+            contact_email='distribution@example.com',
+            contact_phone='09123456789',
+        )
+        branch = Branch.objects.create(farm=farm, name='North Branch')
+        inventory = Inventory.objects.create(
+            user=user,
+            item_type='feed',
+            name='Layer feed',
+            quantity=Decimal('10.00'),
+            unit='kg',
+            cost_per_unit=Decimal('25.00'),
+        )
+        self.client.force_login(user)
+        endpoint = reverse('inventory-distribution-list')
+        response = self.client.post(
+            endpoint,
+            {
+                'inventory': inventory.pk,
+                'branch': branch.pk,
+                'quantity': '3.50',
+                'date': '2026-10-20',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 201, response.content)
+        inventory.refresh_from_db()
+        distribution = InventoryDistribution.objects.get(inventory=inventory)
+        self.assertEqual(inventory.quantity, Decimal('6.50'))
+        self.assertEqual(inventory.total_value, Decimal('162.50'))
+        self.assertEqual(distribution.branch, branch)
+        self.assertEqual(distribution.date, date(2026, 10, 20))
+
+        history_response = self.client.get(endpoint, {'inventory': inventory.pk})
+
+        self.assertEqual(history_response.status_code, 200)
+        self.assertEqual(history_response.data['results'][0]['branch_name'], 'North Branch')
+        self.assertEqual(history_response.data['results'][0]['quantity'], '3.50')
+
+    def test_distribution_cannot_exceed_available_stock(self):
+        user = get_user_model().objects.create_user(username='inventory-limited', password='password123')
+        farm = Farm.objects.create(
+            owner=user,
+            name='Limited Farm',
+            location='Main City',
+            established_date=date(2024, 1, 1),
+            contact_email='limited@example.com',
+            contact_phone='09123456789',
+        )
+        branch = Branch.objects.create(farm=farm, name='South Branch')
+        inventory = Inventory.objects.create(
+            user=user,
+            item_type='feed',
+            name='Starter feed',
+            quantity=Decimal('2.00'),
+            unit='kg',
+            cost_per_unit=Decimal('20.00'),
+        )
+        self.client.force_login(user)
+
+        response = self.client.post(
+            reverse('inventory-distribution-list'),
+            {
+                'inventory': inventory.pk,
+                'branch': branch.pk,
+                'quantity': '3.00',
+                'date': '2026-10-21',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 400)
+        inventory.refresh_from_db()
+        self.assertEqual(inventory.quantity, Decimal('2.00'))
+        self.assertFalse(InventoryDistribution.objects.exists())
+
 
 class ProductionProductTypeTests(TestCase):
     def test_product_type_matches_flock_breed(self):
@@ -129,6 +348,41 @@ class ProductionProductTypeTests(TestCase):
         self.assertTrue(layers_form.is_valid(), layers_form.errors)
         self.assertTrue(broilers_form.is_valid(), broilers_form.errors)
         self.assertEqual([value for value, _ in layers_form.fields['product_type'].choices], ['eggs', 'meat_ready'])
+
+    def test_production_form_only_accepts_flock_from_selected_branch(self):
+        user = get_user_model().objects.create_user(username='production-branch-owner', password='password123')
+        farm = Farm.objects.create(
+            owner=user,
+            name='Production Farm',
+            location='Main City',
+            established_date=date(2024, 1, 1),
+            contact_email='production@example.com',
+            contact_phone='09123456789',
+        )
+        north = Branch.objects.create(farm=farm, name='North Branch')
+        south = Branch.objects.create(farm=farm, name='South Branch')
+        north_flock = Flock.objects.create(
+            user=user, branch=north, flock_id='01', breed='layers', quantity=50,
+        )
+        south_flock = Flock.objects.create(
+            user=user, branch=south, flock_id='01', breed='layers', quantity=40,
+        )
+        form_data = {
+            'branch': north.pk,
+            'flock': south_flock.pk,
+            'product_type': 'eggs',
+            'quantity': 10,
+            'unit': 'eggs',
+            'date': '2026-10-21',
+            'notes': '',
+        }
+
+        form = ProductionRecordForm(form_data, user=user)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('flock', form.errors)
+        self.assertIn(f'data-branch-id="{north.pk}"', str(form['flock']))
+        self.assertIn(f'data-branch-id="{south.pk}"', str(form['flock']))
 
 
 class TransactionRecordTests(TestCase):
