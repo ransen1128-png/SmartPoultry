@@ -873,228 +873,111 @@ def analyze_rooster_photo(photo):
     if not quality_flags:
         return {
             'quality': 'good',
-            'summary': f'Photo quality supports visual assessment ({width}x{height}, adequate brightness and detail).',
+            'summary': f'Technical image quality is adequate ({width}x{height}, brightness and detail checks passed).',
             'penalty': 0,
         }
 
     penalty = 2 if len(quality_flags) >= 3 else 1
     return {
         'quality': 'limited',
-        'summary': f'Photo may limit accuracy ({width}x{height}; {", ".join(quality_flags)}).',
+        'summary': f'Technical image quality may limit visual assessment ({width}x{height}; {", ".join(quality_flags)}).',
         'penalty': penalty,
-    }
-
-
-def adjust_confidence(confidence, photo_analysis):
-    levels = ['Low', 'Medium', 'Medium-High', 'High']
-    if not photo_analysis:
-        return confidence
-    penalty = photo_analysis.get('penalty', 0)
-    if penalty <= 0:
-        return confidence
-    try:
-        index = levels.index(confidence)
-    except ValueError:
-        return 'Low'
-    return levels[max(0, index - penalty)]
-
-
-def score_secondary_clues(secondary_clues):
-    clues = secondary_clues.lower()
-    younger_terms = ['small comb', 'pale comb', 'juvenile', 'young', 'small body', 'soft legs', 'smooth legs']
-    mature_terms = ['large comb', 'red comb', 'bright comb', 'full body', 'large body', 'adult feathers', 'sickle feathers']
-    older_terms = ['rough legs', 'coarse legs', 'thick legs', 'worn scales', 'heavy body']
-
-    adjustment = 0
-    matched = []
-    if any(term in clues for term in younger_terms):
-        adjustment -= 1
-        matched.append('younger secondary features')
-    if any(term in clues for term in mature_terms):
-        adjustment += 1
-        matched.append('mature secondary features')
-    if any(term in clues for term in older_terms):
-        adjustment += 1
-        matched.append('older leg/body features')
-    return adjustment, matched
-
-
-def estimate_rooster_age_from_spurs(visibility, length, thickness, point_shape, curvature, secondary_clues, photo_analysis=None):
-    if visibility != 'clear':
-        limitation = 'Spurs are hidden, cropped, blurry, or too small in the photo.'
-        if photo_analysis:
-            limitation = f"{limitation} {photo_analysis['summary']}"
-        return {
-            'age_range': 'insufficient spur visibility for reliable age estimate',
-            'reasoning': (
-                'The spurs are not visible enough to evaluate length, thickness, point shape, and curvature '
-                'with confidence, so a spur-based age range would be unreliable.'
-            ),
-            'confidence': 'Low',
-            'limitations': limitation,
-        }
-
-    score = 0
-    score += {'none': 0, 'buds': 1, 'short': 2, 'medium': 3, 'long': 4}.get(length, 0)
-    score += {'thin': 0, 'moderate': 1, 'thick': 2}.get(thickness, 0)
-    score += {'rounded': 0, 'pointed': 1, 'worn': 2}.get(point_shape, 0)
-    score += {'straight': 0, 'slight': 1, 'curved': 2}.get(curvature, 0)
-    secondary_adjustment, secondary_matches = score_secondary_clues(secondary_clues)
-    score = max(0, score + secondary_adjustment)
-
-    if score <= 1:
-        age_range = 'under 6 months'
-        confidence = 'Medium'
-        reasoning = 'Spurs are absent or only beginning as small buds, which is most consistent with a juvenile rooster.'
-    elif score <= 3:
-        age_range = '6 to 10 months'
-        confidence = 'Medium'
-        reasoning = 'Spurs appear short and lightly developed, suggesting a young rooster approaching maturity.'
-    elif score <= 5:
-        age_range = '10 to 18 months'
-        confidence = 'Medium-High'
-        reasoning = 'Spurs show clear extension with moderate thickness or a pointed tip, which commonly fits a young adult.'
-    elif score <= 7:
-        age_range = '18 months to 3 years'
-        confidence = 'Medium-High'
-        reasoning = 'Spurs are developed in length and thickness, with noticeable point or curvature, matching a mature adult.'
-    else:
-        age_range = '3 years or older'
-        confidence = 'Medium'
-        reasoning = 'Spurs are long, thick, curved, or worn, which is more typical of an older mature rooster.'
-
-    if secondary_clues:
-        reasoning = f'{reasoning} Secondary clues noted: {secondary_clues}'
-        if secondary_matches:
-            reasoning = f"{reasoning} These adjusted the estimate for {', '.join(secondary_matches)}."
-
-    if photo_analysis:
-        if photo_analysis.get('quality') == 'good' and confidence == 'Medium':
-            confidence = 'Medium-High'
-        confidence = adjust_confidence(confidence, photo_analysis)
-        reasoning = f"{reasoning} Image check: {photo_analysis['summary']}"
-
-    return {
-        'age_range': age_range,
-        'reasoning': reasoning,
-        'confidence': confidence,
-        'limitations': (
-            'This estimate combines spur observations from the uploaded photo with basic image quality checks. '
-            'Breed, trimming, injury, image angle, and husbandry conditions can change spur appearance.'
-        ),
     }
 
 
 @login_required(login_url='login')
 def rooster_age_estimator_view(request):
-    """Estimate rooster age ranges using user-entered spur observations from uploaded photos."""
+    """Save rooster photos without claiming analysis until a trained vision model is configured."""
+    from core.rooster_age_classifier import model_is_ready, predict_rooster_age
+
     results = []
-    visibility_labels = {
-        'clear': 'Spurs clearly visible',
-        'partial': 'Partially visible',
-        'hidden': 'Hidden or not visible',
-    }
-    length_labels = {
-        'none': 'none visible',
-        'buds': 'small spur buds',
-        'short': 'short spurs',
-        'medium': 'medium spurs',
-        'long': 'long spurs',
-    }
-    thickness_labels = {
-        'thin': 'thin',
-        'moderate': 'moderate',
-        'thick': 'thick',
-    }
-    point_labels = {
-        'rounded': 'rounded or blunt point',
-        'pointed': 'sharp pointed tip',
-        'worn': 'worn or irregular point',
-    }
-    curvature_labels = {
-        'straight': 'straight',
-        'slight': 'slightly curved',
-        'curved': 'strongly curved',
-    }
 
     if request.method == 'POST':
         photos = request.FILES.getlist('photos')
-        rooster_count = len(photos)
+        if not photos:
+            messages.error(request, 'Upload at least one image to continue.')
 
-        for index in range(rooster_count):
-            def value_from_list(name, default=''):
-                values = request.POST.getlist(name)
-                return values[index] if index < len(values) else default
-
-            visibility = value_from_list('spur_visibility', 'hidden')
-            length = value_from_list('spur_length', 'none')
-            thickness = value_from_list('spur_thickness', 'thin')
-            point_shape = value_from_list('spur_point_shape', 'rounded')
-            curvature = value_from_list('spur_curvature', 'straight')
-            secondary_clues = value_from_list('secondary_clues', '').strip()
-            photo = photos[index]
+        for index, photo in enumerate(photos):
             photo_analysis = analyze_rooster_photo(photo)
-            estimate = estimate_rooster_age_from_spurs(
-                visibility,
-                length,
-                thickness,
-                point_shape,
-                curvature,
-                secondary_clues,
-                photo_analysis,
-            )
             photo_name = photo.name
-            spur_observations = (
-                f"Visibility: {visibility_labels.get(visibility, visibility)}. "
-                f"Length: {length_labels.get(length, length)}. "
-                f"Thickness: {thickness_labels.get(thickness, thickness)}. "
-                f"Point shape: {point_labels.get(point_shape, point_shape)}. "
-                f"Curvature: {curvature_labels.get(curvature, curvature)}. "
-                f"Image quality: {photo_analysis['summary']}"
-            )
+            prediction = None
+            if photo_analysis['quality'] == 'good':
+                try:
+                    prediction = predict_rooster_age(photo)
+                except (OSError, ValueError):
+                    prediction = None
+
+            if prediction:
+                age_range = prediction['age_range']
+                confidence = prediction['confidence']
+                evidence = (
+                    f"Validated spur-image classifier assigned this image to {age_range}. "
+                    f"Bird-separated holdout balanced accuracy: {prediction['balanced_accuracy']:.0%}."
+                )
+                reasoning = 'The validated classifier compares spur close-up image features with the labeled age ranges.'
+                limitations = (
+                    'The classifier does not independently confirm a chicken or spur is present, does not measure spur '
+                    'length, and does not determine exact age. Breed, trimming, injury, and image angle may affect results.'
+                )
+            else:
+                age_range = 'Insufficient evidence'
+                confidence = 'Low'
+                reasoning = 'No supported age estimate can be made from this upload.'
+                if photo_analysis['quality'] != 'good':
+                    evidence = 'Image quality is limited; upload a clear, well-lit close-up of the spur.'
+                    limitations = f"{photo_analysis['summary']} No age estimate is provided."
+                else:
+                    evidence = 'Spur characteristics were not assessed because no validated age model is available.'
+                    limitations = (
+                        'No validated chicken/spur age model is configured. Technical image-quality checks do not '
+                        'detect chickens, measure spurs, or validate age. No age estimate is provided.'
+                    )
 
             record_data = {
                 'user': request.user,
                 'photo_name': photo_name,
-                'spur_visibility': visibility,
-                'spur_length': length,
-                'spur_thickness': thickness,
-                'spur_point_shape': point_shape,
-                'spur_curvature': curvature,
-                'secondary_clues': secondary_clues,
-                'estimated_age_range': estimate['age_range'],
-                'spur_observations': spur_observations,
-                'reasoning': estimate['reasoning'],
-                'confidence': estimate['confidence'],
-                'limitations': estimate['limitations'],
+                'chicken_detected': 'unassessed',
+                'spur_visibility': 'unassessed',
+                'spur_length': 'unassessed',
+                'spur_thickness': 'unassessed',
+                'spur_point_shape': 'unassessed',
+                'spur_curvature': 'unassessed',
+                'secondary_clues': '',
+                'estimated_age_range': age_range,
+                'spur_observations': evidence,
+                'reasoning': reasoning,
+                'confidence': confidence,
+                'limitations': limitations,
             }
             record_data['photo'] = photo
-
-            record = RoosterAgeEstimate.objects.create(
-                **record_data
-            )
+            record = RoosterAgeEstimate.objects.create(**record_data)
 
             results.append({
                 'number': index + 1,
                 'id': record.id,
                 'photo_name': photo_name,
-                'estimated_age_range': estimate['age_range'],
-                'spur_observations': spur_observations,
+                'chicken_detected': record.get_chicken_detected_display(),
+                'spur_visibility': record.get_spur_visibility_display(),
+                'spur_length_assessment': 'Not measured; the classifier predicts age range only and no scale reference is configured.',
+                'estimated_age_range': record.estimated_age_range,
+                'spur_observations': evidence,
                 'image_assessment': photo_analysis['summary'],
-                'reasoning': estimate['reasoning'],
-                'confidence': estimate['confidence'],
-                'limitations': estimate['limitations'],
+                'reasoning': record.reasoning,
+                'confidence': record.confidence,
+                'limitations': record.limitations,
             })
 
         if results:
-            messages.success(request, f"Saved {len(results)} rooster age estimate{'s' if len(results) != 1 else ''} to the database.")
-        else:
-            messages.error(request, 'Upload at least one rooster photo before estimating age.')
+            if model_is_ready():
+                messages.success(request, f"Analyzed {len(results)} uploaded image{'s' if len(results) != 1 else ''}.")
+            else:
+                messages.info(request, f"Saved {len(results)} photo{'s' if len(results) != 1 else ''}. Age estimates remain unavailable until a model passes validation.")
 
     saved_estimates = RoosterAgeEstimate.objects.filter(user=request.user).exclude(photo='')[:20]
     return render(request, 'rooster_age_estimator.html', {
         'results': results,
         'saved_estimates': saved_estimates,
+        'model_ready': model_is_ready(),
     })
 
 

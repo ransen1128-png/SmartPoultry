@@ -499,10 +499,12 @@ class RoosterAgeEstimatorTests(TestCase):
         self.assertEqual(estimates.count(), 1)
         self.assertEqual(estimates.first().photo_name, 'rooster.jpg')
         self.assertTrue(estimates.first().photo)
+        self.assertEqual(estimates.first().estimated_age_range, 'Insufficient evidence')
+        self.assertEqual(estimates.first().spur_visibility, 'unassessed')
 
-    def test_uploaded_photo_quality_is_used_in_age_result(self):
+    def test_image_result_does_not_claim_unvalidated_visual_analysis(self):
         image_bytes = BytesIO()
-        Image.new('RGB', (900, 700), color=(160, 150, 120)).save(image_bytes, format='JPEG')
+        Image.effect_noise((900, 700), 100).convert('RGB').save(image_bytes, format='JPEG')
         image_bytes.seek(0)
         photo = SimpleUploadedFile(
             'clear-rooster.jpg',
@@ -522,9 +524,22 @@ class RoosterAgeEstimatorTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         result = response.context['results'][0]
-        self.assertIn('Photo', result['image_assessment'])
-        self.assertIn('Image quality:', result['spur_observations'])
-        self.assertIn('Image check:', result['reasoning'])
+        self.assertEqual(result['chicken_detected'], 'Unable to determine')
+        self.assertEqual(result['spur_visibility'], 'Not assessed')
+        self.assertEqual(result['estimated_age_range'], 'Insufficient evidence')
+        self.assertEqual(result['confidence'], 'Low')
+        self.assertIn('no validated age model is available', result['spur_observations'])
+        self.assertIn('Technical image quality', result['image_assessment'])
+        self.assertIn('No validated chicken/spur age model is configured', result['limitations'])
+
+    def test_page_no_longer_requests_manual_spur_observations(self):
+        response = self.client.get(reverse('rooster_age_estimator'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'No validated chicken/spur image model is available.')
+        self.assertNotContains(response, 'name="spur_visibility"')
+        self.assertNotContains(response, 'name="spur_length"')
+        self.assertNotContains(response, 'name="secondary_clues"')
 
 
 class AnalyticsForecastTests(TestCase):

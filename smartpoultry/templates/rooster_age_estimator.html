@@ -4,83 +4,31 @@
 <div class="page-heading">
     <div>
         <h1>Rooster Age Estimator</h1>
-        <p>Estimate age ranges from spur development in uploaded rooster photos</p>
+        <p>Upload chicken images for spur assessment</p>
     </div>
 </div>
 
 <form class="panel-card rooster-estimator" method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    {% if model_ready %}
+        <div class="alert alert-success" role="status">
+            A validated spur-image age classifier is active. It estimates age ranges only; chicken detection, spur visibility, and millimeter measurement are not included.
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="status">
+            No validated chicken/spur image model is available. Images can be saved, but age ranges remain unavailable until training data passes validation.
+        </div>
+    {% endif %}
     <div class="rooster-upload">
-        <label for="photos">Rooster photos</label>
-        <input class="form-control" id="photos" name="photos" type="file" accept="image/*" multiple>
+        <label for="photos">Chicken images</label>
+        <input class="form-control" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required>
     </div>
 
-    <div id="roosterCards" class="rooster-card-list">
-        <section class="rooster-input-card">
-            <div class="rooster-card-header">
-                <strong>Rooster 1</strong>
-                <span>Spur-based assessment</span>
-            </div>
-            <div class="rooster-preview" data-preview>
-                <i class="bi bi-image"></i>
-            </div>
-            <div class="rooster-fields">
-                <label>
-                    Spur visibility
-                    <select class="form-select" name="spur_visibility">
-                        <option value="clear">Spurs clearly visible</option>
-                        <option value="partial">Partially visible</option>
-                        <option value="hidden">Hidden or not visible</option>
-                    </select>
-                </label>
-                <label>
-                    Spur length
-                    <select class="form-select" name="spur_length">
-                        <option value="none">None visible</option>
-                        <option value="buds">Small buds</option>
-                        <option value="short">Short</option>
-                        <option value="medium">Medium</option>
-                        <option value="long">Long</option>
-                    </select>
-                </label>
-                <label>
-                    Spur thickness
-                    <select class="form-select" name="spur_thickness">
-                        <option value="thin">Thin</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="thick">Thick</option>
-                    </select>
-                </label>
-                <label>
-                    Point shape
-                    <select class="form-select" name="spur_point_shape">
-                        <option value="rounded">Rounded or blunt</option>
-                        <option value="pointed">Sharp pointed</option>
-                        <option value="worn">Worn or irregular</option>
-                    </select>
-                </label>
-                <label>
-                    Curvature
-                    <select class="form-select" name="spur_curvature">
-                        <option value="straight">Straight</option>
-                        <option value="slight">Slightly curved</option>
-                        <option value="curved">Strongly curved</option>
-                    </select>
-                </label>
-                <label class="rooster-notes">
-                    Secondary clues
-                    <textarea class="form-control" name="secondary_clues" rows="3" placeholder="Comb, body build, feather condition, leg texture..."></textarea>
-                </label>
-            </div>
-        </section>
-    </div>
+    <div id="roosterCards" class="rooster-card-list"></div>
 
     <div class="rooster-actions">
-        <button class="btn btn-outline-primary" type="button" id="addRooster">
-            <i class="bi bi-plus-lg"></i> Add Rooster
-        </button>
         <button class="btn btn-primary" type="submit">
-            <i class="bi bi-clipboard-data"></i> Estimate Age
+            <i class="bi bi-upload"></i> Upload Images
         </button>
     </div>
 </form>
@@ -91,22 +39,26 @@
     {% for result in results %}
         <article class="panel-card rooster-result-card">
             <div class="rooster-result-title">
-                <strong>Rooster {{ result.number }}</strong>
+                <strong>Image {{ result.number }}</strong>
                 <span>{{ result.photo_name }}</span>
             </div>
             <dl>
-                <dt>Estimated age range:</dt>
+                <dt>Chicken detected:</dt>
+                <dd>{{ result.chicken_detected }}</dd>
+                <dt>Spur visibility:</dt>
+                <dd>{{ result.spur_visibility }}</dd>
+                <dt>Estimated spur length:</dt>
+                <dd>{{ result.spur_length_assessment }}</dd>
+                <dt>Estimated age:</dt>
                 <dd>{{ result.estimated_age_range }}</dd>
-                <dt>Spur observations:</dt>
+                <dt>Evidence:</dt>
                 <dd>{{ result.spur_observations }}</dd>
-                <dt>Image assessment:</dt>
-                <dd>{{ result.image_assessment }}</dd>
-                <dt>Reasoning:</dt>
-                <dd>{{ result.reasoning }}</dd>
                 <dt>Confidence:</dt>
                 <dd>{{ result.confidence }}</dd>
-                <dt>Limitations / uncertainty:</dt>
+                <dt>Limitations:</dt>
                 <dd>{{ result.limitations }}</dd>
+                <dt>Image quality:</dt>
+                <dd>{{ result.image_assessment }}</dd>
             </dl>
         </article>
     {% endfor %}
@@ -146,53 +98,32 @@
 
 {% block extra_js %}
 <script>
-    function refreshRoosterTitles() {
-        document.querySelectorAll('.rooster-input-card').forEach((card, index) => {
-            card.querySelector('strong').textContent = `Rooster ${index + 1}`;
-        });
-    }
-
-    function syncImagePreviews(files) {
-        const cards = document.querySelectorAll('.rooster-input-card');
-        cards.forEach((card, index) => {
-            const preview = card.querySelector('[data-preview]');
-            preview.innerHTML = '<i class="bi bi-image"></i>';
-            if (!files[index]) {
-                return;
-            }
-            const image = document.createElement('img');
-            image.alt = `Rooster ${index + 1} preview`;
-            image.src = URL.createObjectURL(files[index]);
-            image.onload = () => URL.revokeObjectURL(image.src);
-            preview.innerHTML = '';
-            preview.appendChild(image);
-        });
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
-        const addButton = document.getElementById('addRooster');
         const cardList = document.getElementById('roosterCards');
         const photoInput = document.getElementById('photos');
 
-        addButton.addEventListener('click', function () {
-            const clone = cardList.querySelector('.rooster-input-card').cloneNode(true);
-            clone.querySelectorAll('select').forEach((select) => {
-                select.selectedIndex = 0;
-            });
-            clone.querySelectorAll('textarea').forEach((textarea) => {
-                textarea.value = '';
-            });
-            clone.querySelector('[data-preview]').innerHTML = '<i class="bi bi-image"></i>';
-            cardList.appendChild(clone);
-            refreshRoosterTitles();
-            syncImagePreviews(photoInput.files);
-        });
-
         photoInput.addEventListener('change', function () {
-            while (cardList.children.length < photoInput.files.length) {
-                addButton.click();
-            }
-            syncImagePreviews(photoInput.files);
+            cardList.replaceChildren();
+            Array.from(photoInput.files).forEach((file, index) => {
+                const card = document.createElement('section');
+                card.className = 'rooster-input-card';
+                const header = document.createElement('div');
+                header.className = 'rooster-card-header';
+                const title = document.createElement('strong');
+                const fileName = document.createElement('span');
+                title.textContent = `Image ${index + 1}`;
+                fileName.textContent = file.name;
+                header.append(title, fileName);
+                const preview = document.createElement('div');
+                preview.className = 'rooster-preview';
+            const image = document.createElement('img');
+                image.alt = `Uploaded chicken image ${index + 1}`;
+                image.src = URL.createObjectURL(file);
+            image.onload = () => URL.revokeObjectURL(image.src);
+            preview.appendChild(image);
+                card.append(header, preview);
+                cardList.appendChild(card);
+            });
         });
     });
 </script>

@@ -52,6 +52,7 @@ class RoosterAgeEstimate(models.Model):
         ('clear', 'Spurs clearly visible'),
         ('partial', 'Partially visible'),
         ('hidden', 'Hidden or not visible'),
+        ('unassessed', 'Not assessed'),
     ]
     SPUR_LENGTH_CHOICES = [
         ('none', 'None visible'),
@@ -59,31 +60,40 @@ class RoosterAgeEstimate(models.Model):
         ('short', 'Short'),
         ('medium', 'Medium'),
         ('long', 'Long'),
+        ('unassessed', 'Not assessed'),
     ]
     SPUR_THICKNESS_CHOICES = [
         ('thin', 'Thin'),
         ('moderate', 'Moderate'),
         ('thick', 'Thick'),
+        ('unassessed', 'Not assessed'),
     ]
     POINT_SHAPE_CHOICES = [
         ('rounded', 'Rounded or blunt'),
         ('pointed', 'Sharp pointed'),
         ('worn', 'Worn or irregular'),
+        ('unassessed', 'Not assessed'),
     ]
     CURVATURE_CHOICES = [
         ('straight', 'Straight'),
         ('slight', 'Slightly curved'),
         ('curved', 'Strongly curved'),
+        ('unassessed', 'Not assessed'),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rooster_age_estimates')
     photo = models.FileField(upload_to='rooster_age_estimates/%Y/%m/', blank=True)
     photo_name = models.CharField(max_length=255, blank=True)
-    spur_visibility = models.CharField(max_length=20, choices=SPUR_VISIBILITY_CHOICES)
-    spur_length = models.CharField(max_length=20, choices=SPUR_LENGTH_CHOICES)
-    spur_thickness = models.CharField(max_length=20, choices=SPUR_THICKNESS_CHOICES)
-    spur_point_shape = models.CharField(max_length=20, choices=POINT_SHAPE_CHOICES)
-    spur_curvature = models.CharField(max_length=20, choices=CURVATURE_CHOICES)
+    chicken_detected = models.CharField(
+        max_length=20,
+        choices=[('yes', 'Yes'), ('no', 'No'), ('unassessed', 'Unable to determine')],
+        default='unassessed',
+    )
+    spur_visibility = models.CharField(max_length=20, choices=SPUR_VISIBILITY_CHOICES, default='unassessed')
+    spur_length = models.CharField(max_length=20, choices=SPUR_LENGTH_CHOICES, default='unassessed')
+    spur_thickness = models.CharField(max_length=20, choices=SPUR_THICKNESS_CHOICES, default='unassessed')
+    spur_point_shape = models.CharField(max_length=20, choices=POINT_SHAPE_CHOICES, default='unassessed')
+    spur_curvature = models.CharField(max_length=20, choices=CURVATURE_CHOICES, default='unassessed')
     secondary_clues = models.TextField(blank=True)
     estimated_age_range = models.CharField(max_length=120)
     spur_observations = models.TextField()
