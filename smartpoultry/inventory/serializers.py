@@ -14,7 +14,7 @@ class InventorySerializer(serializers.ModelSerializer):
         model = Inventory
         fields = ['id', 'item_type', 'name', 'quantity', 'unit', 'cost_per_unit', 
                   'total_value', 'date_added', 'last_updated', 'notes']
-        read_only_fields = ['id', 'total_value', 'date_added', 'last_updated']
+        read_only_fields = ['id', 'total_value', 'last_updated']
 
 
 class InventoryDistributionSerializer(serializers.ModelSerializer):

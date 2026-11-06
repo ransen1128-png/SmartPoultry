@@ -312,6 +312,41 @@ class InventoryDistributionTests(TestCase):
         self.assertFalse(InventoryDistribution.objects.exists())
 
 
+class InventoryPurchaseDateTests(TestCase):
+    def test_inventory_page_displays_purchase_record_date(self):
+        user = get_user_model().objects.create_user(username='inventory-date-viewer', password='password123')
+        self.client.force_login(user)
+
+        response = self.client.get(reverse('inventory'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Date Purchased/Recorded')
+        self.assertContains(response, 'name="date_added"')
+
+    def test_inventory_purchase_date_is_saved_and_used_for_purchase_expense(self):
+        user = get_user_model().objects.create_user(username='inventory-date-owner', password='password123')
+        self.client.force_login(user)
+
+        response = self.client.post(
+            reverse('inventory-list'),
+            {
+                'item_type': 'feed',
+                'name': 'Dated feed',
+                'date_added': '2026-10-12',
+                'quantity': '4',
+                'unit': 'bags',
+                'cost_per_unit': '50.00',
+            },
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 201, response.content)
+        item = Inventory.objects.get(user=user, name='Dated feed')
+        expense = Expense.objects.get(description='Inventory purchase: Dated feed')
+        self.assertEqual(item.date_added, date(2026, 10, 12))
+        self.assertEqual(expense.date, date(2026, 10, 12))
+
+
 class ProductionProductTypeTests(TestCase):
     def test_product_type_matches_flock_breed(self):
         user = get_user_model().objects.create_user(username='production-owner', password='password123')

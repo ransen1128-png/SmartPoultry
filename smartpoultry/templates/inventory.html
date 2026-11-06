@@ -22,6 +22,7 @@
                 <tr>
                     <th>Item Type</th>
                     <th>Name</th>
+                    <th>Date Purchased/Recorded</th>
                     <th>Quantity</th>
                     <th>Cost/Unit</th>
                     <th>Total Value</th>
@@ -56,6 +57,10 @@
                     <div class="mb-3">
                         <label class="form-label">Name</label>
                         <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date Purchased/Recorded</label>
+                        <input type="date" class="form-control" name="date_added" value="{{ today|date:'Y-m-d' }}" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Quantity</label>
@@ -166,6 +171,7 @@
                     row.innerHTML = `
                         <td>${item.item_type}</td>
                         <td>${item.name}</td>
+                        <td>${new Date(`${item.date_added}T00:00:00`).toLocaleDateString()}</td>
                         <td>${formatQuantity(item.quantity, item.unit)}</td>
                         <td>₱${parseFloat(item.cost_per_unit).toFixed(2)}</td>
                         <td>₱${parseFloat(item.total_value).toFixed(2)}</td>
@@ -315,6 +321,7 @@
             body: JSON.stringify({
                 item_type: formData.get('item_type'),
                 name: formData.get('name'),
+                date_added: formData.get('date_added'),
                 quantity: parseFloat(formData.get('quantity')),
                 unit: formData.get('unit'),
                 cost_per_unit: parseFloat(formData.get('cost_per_unit'))

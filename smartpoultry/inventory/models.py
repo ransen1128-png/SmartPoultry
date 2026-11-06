@@ -31,7 +31,7 @@ class Inventory(models.Model):
     unit = models.CharField(max_length=50)
     cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
     total_value = models.DecimalField(max_digits=15, decimal_places=2, editable=False)
-    date_added = models.DateField(auto_now_add=True)
+    date_added = models.DateField(default=timezone.localdate)
     last_updated = models.DateField(auto_now=True)
     notes = models.TextField(blank=True)
 
