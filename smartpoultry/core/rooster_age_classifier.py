@@ -1,73 +1,121 @@
-"""Image features and validated rooster spur age predictions."""
+
+"""ResNet-18 chicken spur age prediction."""
 
 from functools import lru_cache
+import hashlib
+import math
 from pathlib import Path
 
-import joblib
-import numpy as np
-from PIL import Image, ImageOps
-from skimage.feature import hog
+import torch
+from PIL import Image
+from torch import nn
+from torchvision import models, transforms
 
 
-AGE_LABELS = ('1-3 months', '4-6 months', '7-12 months', '13-24 months')
-MODEL_PATH = Path(__file__).resolve().parents[2] / 'ml_models' / 'rooster_spur_age.joblib'
-MIN_BALANCED_ACCURACY = 0.75
-MIN_MACRO_F1 = 0.70
+MODEL_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "spur_age"
+    / "models"
+    / "spur_age_model.pth"
+)
 
-
-def image_features(image_source):
-    with Image.open(image_source) as image:
-        image = ImageOps.fit(image.convert('RGB'), (128, 128))
-        pixels = np.asarray(image)
-    return hog(
-        pixels,
-        orientations=9,
-        pixels_per_cell=(8, 8),
-        cells_per_block=(2, 2),
-        channel_axis=-1,
-    )
+DEVICE = torch.device("cpu")
 
 
 @lru_cache(maxsize=1)
 def _load_ready_model():
     if not MODEL_PATH.is_file():
         return None
+
     try:
-        artifact = joblib.load(MODEL_PATH)
-    except (OSError, ValueError, EOFError):
+        checkpoint = torch.load(
+            MODEL_PATH,
+            map_location=DEVICE,
+            weights_only=True,
+        )
+
+        if checkpoint.get("architecture") != "resnet18":
+            return None
+
+        image_size = int(checkpoint["image_size"])
+        age_min = float(checkpoint["age_min"])
+        age_max = float(checkpoint["age_max"])
+
+        model = models.resnet18(weights=None)
+        model.fc = nn.Linear(model.fc.in_features, 1)
+
+        model.load_state_dict(checkpoint["model_state_dict"])
+        model.to(DEVICE)
+        model.eval()
+
+        image_transform = transforms.Compose([
+            transforms.Resize((image_size, image_size)),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=checkpoint["normalization_mean"],
+                std=checkpoint["normalization_std"],
+            ),
+        ])
+
+        return {
+            "model": model,
+            "transform": image_transform,
+            "age_min": age_min,
+            "age_max": age_max,
+            "test_mae": float(
+                checkpoint.get("test_mae_months", 0)
+            ),
+            "sha256": hashlib.sha256(MODEL_PATH.read_bytes()).hexdigest(),
+            "evaluation_status": checkpoint.get(
+                "evaluation_status",
+                "Independent validation pending; reconstructed historical split contains duplicate leakage.",
+            ),
+        }
+
+    except (OSError, RuntimeError, ValueError, KeyError, TypeError):
         return None
-    metrics = artifact.get('metrics', {})
-    if not artifact.get('validated'):
-        return None
-    if metrics.get('balanced_accuracy', 0) < MIN_BALANCED_ACCURACY:
-        return None
-    if metrics.get('macro_f1', 0) < MIN_MACRO_F1:
-        return None
-    return artifact
 
 
 def model_is_ready():
     return _load_ready_model() is not None
 
 
+def model_test_mae():
+    artifact = _load_ready_model()
+    return artifact['test_mae'] if artifact else None
+
+
 def predict_rooster_age(image_source):
     artifact = _load_ready_model()
+
     if artifact is None:
         return None
 
-    features = image_features(image_source)
-    predicted_label = artifact['classifier'].predict([features])[0]
-    balanced_accuracy = artifact['metrics']['balanced_accuracy']
-    if balanced_accuracy >= 0.90:
-        confidence = 'High'
-    elif balanced_accuracy >= 0.80:
-        confidence = 'Moderate'
-    else:
-        confidence = 'Low'
+    try:
+        with Image.open(image_source) as image:
+            image = image.convert("RGB")
+            image_tensor = artifact["transform"](image).unsqueeze(0)
 
-    return {
-        'age_range': predicted_label,
-        'confidence': confidence,
-        'balanced_accuracy': balanced_accuracy,
-        'macro_f1': artifact['metrics']['macro_f1'],
-    }
+        with torch.no_grad():
+            prediction = artifact["model"](
+                image_tensor.to(DEVICE)
+            ).item()
+
+        if not math.isfinite(prediction):
+            return None
+
+        prediction = max(
+            artifact["age_min"],
+            min(artifact["age_max"], prediction),
+        )
+
+        return {
+            "age_months": round(prediction, 1),
+            "age_range": f"{round(prediction, 1)} months",
+            "test_mae_months": artifact["test_mae"],
+            "model_sha256": artifact["sha256"],
+            "evaluation_status": artifact["evaluation_status"],
+        }
+
+    except (OSError, ValueError, RuntimeError):
+        return None

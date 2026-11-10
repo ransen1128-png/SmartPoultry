@@ -3,6 +3,7 @@ from decimal import Decimal
 from io import BytesIO
 import shutil
 import tempfile
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -143,6 +144,24 @@ class BranchTrackingTests(TestCase):
         self.assertEqual(response.context['metrics']['production_total'], Decimal('11'))
         self.assertEqual(response.context['chart_data']['labels'][-1], 'Jun')
         self.assertEqual(response.context['chart_data']['revenue'][-1], 200.0)
+        self.assertEqual(len(response.context['branch_summaries']), 1)
+        self.assertEqual(response.context['branch_summaries'][0]['branch'], north)
+        self.assertContains(response, 'Overview of North Branch performance')
+
+        south_response = self.client.get(reverse('dashboard'), {'branch': south.pk, 'month': 6, 'year': 2026})
+        self.assertEqual(south_response.context['metrics']['total_birds'], 60)
+        self.assertEqual(south_response.context['metrics']['active_flocks'], 1)
+        self.assertEqual(south_response.context['chart_data']['revenue'][-1], 900.0)
+        self.assertEqual([row['branch'] for row in south_response.context['branch_summaries']], [south])
+
+        all_response = self.client.get(reverse('dashboard'), {'branch': '', 'month': 6, 'year': 2026})
+        self.assertIsNone(all_response.context['selected_branch'])
+        self.assertEqual(all_response.context['metrics']['total_birds'], 100)
+        self.assertEqual(all_response.context['metrics']['active_flocks'], 2)
+        self.assertEqual(all_response.context['metrics']['revenue'], Decimal('1100'))
+        self.assertEqual(all_response.context['metrics']['expenses'], Decimal('125'))
+        self.assertEqual(all_response.context['chart_data']['revenue'][-1], 1100.0)
+        self.assertEqual({row['branch'] for row in all_response.context['branch_summaries']}, {north, south})
 
 
 class BranchScopedFlockIdTests(TestCase):
@@ -499,6 +518,12 @@ class TransactionRecordTests(TestCase):
 
 class RoosterAgeEstimatorTests(TestCase):
     def setUp(self):
+        self.detector_patch = patch('core.chicken_detection.load_detector', return_value=None)
+        self.detector_patch.start()
+        self.addCleanup(self.detector_patch.stop)
+        self.anatomy_patch = patch('core.poultry_vision.load_vision_models', return_value=None)
+        self.anatomy_patch.start()
+        self.addCleanup(self.anatomy_patch.stop)
         self.media_root = tempfile.mkdtemp()
         self.override = override_settings(MEDIA_ROOT=self.media_root)
         self.override.enable()
@@ -560,21 +585,219 @@ class RoosterAgeEstimatorTests(TestCase):
         self.assertEqual(response.status_code, 200)
         result = response.context['results'][0]
         self.assertEqual(result['chicken_detected'], 'Unable to determine')
+        self.assertIn('no chicken detector is configured', result['chicken_location_assessment'])
+        self.assertIn('unavailable', result['leg_detection_status'])
+        self.assertIn('unavailable', result['spur_detection_status'])
         self.assertEqual(result['spur_visibility'], 'Not assessed')
-        self.assertEqual(result['estimated_age_range'], 'Insufficient evidence')
-        self.assertEqual(result['confidence'], 'Low')
-        self.assertIn('no validated age model is available', result['spur_observations'])
+        self.assertTrue(result['estimated_age_range'].startswith('Experimental estimate:'))
+        self.assertEqual(result['confidence'], 'Uncalibrated experimental estimate')
+        self.assertIn('separate experimental predictions', result['spur_observations'])
         self.assertIn('Technical image quality', result['image_assessment'])
-        self.assertIn('No validated chicken/spur age model is configured', result['limitations'])
+        self.assertIn('does not detect chickens or spurs', result['limitations'])
 
     def test_page_no_longer_requests_manual_spur_observations(self):
         response = self.client.get(reverse('rooster_age_estimator'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'No validated chicken/spur image model is available.')
+        self.assertContains(response, 'accuracy on unseen chickens is not established.')
+        self.assertNotContains(response, 'name="experimental_closeup"')
+        self.assertContains(response, 'Estimate Age')
         self.assertNotContains(response, 'name="spur_visibility"')
         self.assertNotContains(response, 'name="spur_length"')
         self.assertNotContains(response, 'name="secondary_clues"')
+
+    def test_chicken_detection_is_saved_separately_from_experimental_age(self):
+        from core.rooster_age_classifier import predict_rooster_age
+        stream = BytesIO()
+        Image.effect_noise((900, 700), 100).convert('RGB').save(stream, format='JPEG')
+        output = {'status': 'detected', 'boxes': [{'xyxy': [10, 20, 300, 400], 'score': 0.8}],
+                  'message': 'Box [10, 20, 300, 400] pixels; detector score 0.800'}
+        with patch('core.chicken_detection.detect_chicken', return_value=output), \
+             patch('core.rooster_age_classifier.predict_rooster_age', wraps=predict_rooster_age) as predict:
+            response = self.client.post(reverse('rooster_age_estimator'), {
+                'photos': [SimpleUploadedFile('chicken.jpg', stream.getvalue(), content_type='image/jpeg')],
+            })
+        result = response.context['results'][0]
+        self.assertEqual(result['chicken_detected'], 'Yes')
+        self.assertEqual(result['chicken_boxes'], output['boxes'])
+        self.assertIn(output['message'], RoosterAgeEstimate.objects.get().spur_observations)
+        self.assertTrue(result['estimated_age_range'].startswith('Experimental estimate:'))
+        self.assertEqual(result['spur_visibility'], 'Not assessed')
+        predict.assert_called_once()
+
+    def test_real_age_model_upload_ignores_filenames_and_keeps_detection_unassessed(self):
+        from pathlib import Path
+        photo_path = Path(__file__).resolve().parents[2] / 'spur_age/dataset/images/10months (1).jpg'
+        self.assertTrue(photo_path.is_file(), 'The audited real photograph must be available for this integration check.')
+        content = photo_path.read_bytes()
+        predictions = []
+        for filename in ('1months.jpg', '24months.jpg'):
+            response = self.client.post(reverse('rooster_age_estimator'), {
+                'photos': [SimpleUploadedFile(filename, content, content_type='image/jpeg')],
+            })
+            self.assertEqual(response.status_code, 200)
+            result = response.context['results'][0]
+            record = RoosterAgeEstimate.objects.get(pk=result['id'])
+            prediction = record.analysis['age_prediction']
+            self.assertIsNotNone(prediction)
+            self.assertGreaterEqual(prediction['age_months'], 1)
+            self.assertLessEqual(prediction['age_months'], 24)
+            predictions.append(prediction['age_months'])
+            self.assertEqual(record.analysis['age_prediction_status'], 'experimental')
+            self.assertEqual(record.analysis['spur_detection']['status'], 'unavailable')
+            self.assertEqual(record.spur_visibility, 'unassessed')
+            self.assertEqual(record.chicken_detected, 'unassessed')
+            self.assertEqual(len(prediction['model_sha256']), 64)
+            self.assertIn('not independent validation', result['model_evaluation'])
+        self.assertEqual(predictions[0], predictions[1])
+
+    def test_does_not_predict_unreadable_upload(self):
+        with patch('core.rooster_age_classifier.predict_rooster_age') as predict:
+            response = self.client.post(reverse('rooster_age_estimator'), {
+                'photos': [SimpleUploadedFile('bad.jpg', b'not an image', content_type='image/jpeg')],
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['results'][0]['estimated_age_range'], 'Insufficient evidence')
+        predict.assert_not_called()
+
+    @override_settings(DEBUG=False)
+    def test_bright_photo_predicts_by_default_and_preview_works_without_debug(self):
+        from pathlib import Path
+        source = Path(__file__).resolve().parents[2] / 'spurs images/3monthsss.jpg'
+        content = source.read_bytes()
+        response = self.client.post(reverse('rooster_age_estimator'), {
+            'photos': [SimpleUploadedFile('bright-spur.jpg', content, content_type='image/jpeg')],
+        })
+        self.assertEqual(response.status_code, 200)
+        result = response.context['results'][0]
+        record = RoosterAgeEstimate.objects.get(pk=result['id'])
+        self.assertEqual(record.analysis['image_quality']['quality'], 'limited')
+        self.assertIn('too bright', record.analysis['image_quality']['summary'])
+        self.assertTrue(result['estimated_age_range'].startswith('Experimental estimate:'))
+        self.assertIn('Image quality warning:', result['limitations'])
+        self.assertIsNotNone(record.analysis['age_prediction'])
+        self.assertEqual(record.analysis['input_mode'], 'experimental_image_estimate')
+        self.assertEqual(record.spur_visibility, 'unassessed')
+        self.assertEqual(result['photo_url'], reverse('rooster_estimate_photo', args=[record.pk]))
+        preview = self.client.get(result['photo_url'])
+        self.assertEqual(preview.status_code, 200)
+        self.assertEqual(preview['Content-Type'], 'image/jpeg')
+        self.assertEqual(b''.join(preview.streaming_content), content)
+        preview.close()
+
+    def test_photo_preview_is_private_and_requires_a_readable_file(self):
+        response = self.client.post(reverse('rooster_age_estimator'), {
+            'photos': [SimpleUploadedFile('bad.jpg', b'broken image bytes', content_type='image/jpeg')],
+        })
+        record = RoosterAgeEstimate.objects.get()
+        url = reverse('rooster_estimate_photo', args=[record.pk])
+        self.assertEqual(self.client.get(url).status_code, 404)
+        self.assertEqual(response.context['results'][0]['photo_url'], '')
+
+        # Use a valid image so a 404 for another user proves authorization,
+        # rather than merely rejecting the corrupt file above.
+        from pathlib import Path
+        content = (Path(__file__).resolve().parents[2] / 'spurs images/3monthsss.jpg').read_bytes()
+        record.photo.save('private.jpg', SimpleUploadedFile('private.jpg', content, content_type='image/jpeg'))
+        owner_preview = self.client.get(url)
+        self.assertEqual(owner_preview.status_code, 200)
+        owner_preview.close()
+        other_user = get_user_model().objects.create_user(username='other-photo-owner', password='password123')
+        self.client.force_login(other_user)
+        self.assertEqual(self.client.get(url).status_code, 404)
+        self.client.logout()
+        self.assertRedirects(self.client.get(url), f'{reverse("login")}?next={url}', fetch_redirect_response=False)
+
+    def test_missing_photo_and_model_failures_have_specific_reasons(self):
+        from pathlib import Path
+        content = (Path(__file__).resolve().parents[2] / 'spurs images/3monthsss.jpg').read_bytes()
+        with patch('core.rooster_age_classifier.model_is_ready', return_value=False):
+            response = self.client.post(reverse('rooster_age_estimator'), {
+                'photos': [SimpleUploadedFile('readable.jpg', content, content_type='image/jpeg')],
+            })
+        result = response.context['results'][0]
+        self.assertIn('age model could not be loaded', result['spur_observations'])
+        self.assertNotIn('quality checks did not pass', result['spur_observations'])
+        record = RoosterAgeEstimate.objects.get(pk=result['id'])
+        record.photo.storage.delete(record.photo.name)
+        self.assertEqual(self.client.get(result['photo_url']).status_code, 404)
+
+        with patch('core.rooster_age_classifier.predict_rooster_age', return_value=None):
+            failed = self.client.post(reverse('rooster_age_estimator'), {
+                'photos': [SimpleUploadedFile('readable-again.jpg', content, content_type='image/jpeg')],
+            })
+        self.assertIn('could not generate a prediction', failed.context['results'][0]['spur_observations'])
+
+    def test_reanalysis_preserves_original_and_checks_ownership(self):
+        content = BytesIO()
+        Image.new('RGB', (320, 320), 'white').save(content, format='JPEG')
+        self.client.post(reverse('rooster_age_estimator'), {
+            'photos': [SimpleUploadedFile('saved.jpg', content.getvalue(), content_type='image/jpeg')],
+        })
+        original = RoosterAgeEstimate.objects.get()
+        original_analysis = original.analysis
+        response = self.client.post(reverse('rooster_age_estimator'), {'reanalyze_estimate_id': str(original.pk)})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(RoosterAgeEstimate.objects.count(), 2)
+        latest = RoosterAgeEstimate.objects.exclude(pk=original.pk).get()
+        self.assertEqual(latest.analysis['reanalysis_of'], original.pk)
+        self.assertIn(f'estimate={latest.pk}', response.url)
+        original.refresh_from_db()
+        self.assertEqual(original.analysis, original_analysis)
+        saved = self.client.get(response.url)
+        self.assertContains(saved, 'You are viewing a saved analysis')
+        self.assertContains(saved, 'Analyze again with current models')
+        other = get_user_model().objects.create_user(username='other-reanalysis', password='password123')
+        self.client.force_login(other)
+        self.assertEqual(self.client.post(reverse('rooster_age_estimator'), {'reanalyze_estimate_id': str(original.pk)}).status_code, 404)
+        self.assertEqual(RoosterAgeEstimate.objects.count(), 2)
+
+    def test_saved_anatomy_analysis_is_viewable_without_rerunning_models(self):
+        from pathlib import Path
+        content = (Path(__file__).resolve().parents[2] / 'spurs images/3monthsss.jpg').read_bytes()
+        anatomy = {
+            'status': 'completed', 'image_width': 598, 'image_height': 513,
+            'legs': [{'xyxy': [10, 20, 120, 450], 'score': .8}],
+            'spurs': [{'xyxy': [100, 150, 200, 250], 'score': .7}],
+            'masks': [{'xyxy': [100, 150, 200, 250], 'polygon': [[100, 150], [200, 150], [150, 250]], 'score': .75}],
+            'measurements': [{'length_px': 80., 'physical_length_cm': 8., 'truncated_at_frame': False,
+                              'centerline': [[120, 160], [150, 230]], 'mask_index': 0}],
+            'message': 'Experimental anatomy outputs.',
+        }
+        with patch('core.poultry_vision.analyze_poultry', return_value=anatomy) as predict:
+            response = self.client.post(reverse('rooster_age_estimator'), {
+                'pixels_per_cm': '10',
+                'photos': [SimpleUploadedFile('spur.jpg', content, content_type='image/jpeg')],
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(predict.call_args.args[1], 10.)
+        record = RoosterAgeEstimate.objects.get()
+        self.assertEqual(record.analysis['anatomy'], anatomy)
+        self.assertEqual(record.chicken_detected, 'unassessed')
+        self.assertEqual(record.spur_visibility, 'clear')
+        with patch('core.poultry_vision.analyze_poultry') as rerun, patch('core.rooster_age_classifier.predict_rooster_age') as age_rerun:
+            saved = self.client.get(reverse('rooster_age_estimator'), {'estimate': record.pk})
+        self.assertEqual(saved.status_code, 200)
+        self.assertEqual(saved.context['results'][0]['overlay']['masks'], anatomy['masks'])
+        self.assertContains(saved, '8.00 cm using your supplied scale')
+        rerun.assert_not_called()
+        age_rerun.assert_not_called()
+        other_user = get_user_model().objects.create_user(username='other-anatomy-owner', password='password123')
+        self.client.force_login(other_user)
+        self.assertEqual(self.client.get(reverse('rooster_age_estimator'), {'estimate': record.pk}).status_code, 404)
+
+    def test_invalid_or_batch_calibration_does_not_produce_centimeter_values(self):
+        from pathlib import Path
+        content = (Path(__file__).resolve().parents[2] / 'spurs images/3monthsss.jpg').read_bytes()
+        from core.poultry_vision import analyze_poultry
+        for scale, count in [('nan', 1), ('-1', 1), ('10', 2)]:
+            with patch('core.poultry_vision.analyze_poultry', wraps=analyze_poultry) as predict:
+                response = self.client.post(reverse('rooster_age_estimator'), {
+                    'pixels_per_cm': scale,
+                    'photos': [SimpleUploadedFile(f'spur-{i}.jpg', content, content_type='image/jpeg') for i in range(count)],
+                })
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(all(call.args[1] is None for call in predict.call_args_list))
 
 
 class AnalyticsForecastTests(TestCase):

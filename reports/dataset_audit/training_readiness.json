@@ -1,0 +1,7 @@
+{
+  "status": "content_family_candidate_trained",
+  "training_executed": true,
+  "run": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\experiments\\20261109T074813049131Z",
+  "independence": "visual_family_holdout_bird_identity_unresolved",
+  "active_model_replaced": false
+}

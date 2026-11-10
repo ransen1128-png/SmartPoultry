@@ -10,13 +10,28 @@
 
 <form class="panel-card rooster-estimator" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {% if model_ready %}
-        <div class="alert alert-success" role="status">
-            A validated spur-image age classifier is active. It estimates age ranges only; chicken detection, spur visibility, and millimeter measurement are not included.
+    <div class="alert alert-warning" role="status">
+        {% if chicken_detector_ready %}
+            Chicken detection is available. Detector scores are not calibrated confidence.
+        {% else %}
+            Chicken detection is unavailable. Detector setup is required.
+        {% endif %}
+        {% if anatomy_ready %}
+            Experimental leg detection, spur outlines and visible-length measurements are available.
+            Detector scores are not calibrated probabilities.
+        {% else %}
+            Anatomy models are not available for this session.
+        {% endif %}
+        Centimeter measurements require your known in-plane image scale.
+    </div>
+    {% if age_model_ready %}
+        <div class="alert alert-warning" role="status">
+            The existing age model estimates from each readable upload. Results are experimental;
+            accuracy on unseen chickens is not established. Image quality warnings may affect the estimate.
         </div>
     {% else %}
         <div class="alert alert-warning" role="status">
-            No validated chicken/spur image model is available. Images can be saved, but age ranges remain unavailable until training data passes validation.
+            The age model is unavailable. No age estimate can be produced.
         </div>
     {% endif %}
     <div class="rooster-upload">
@@ -24,37 +39,80 @@
         <input class="form-control" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required>
     </div>
 
+    <p>You can upload a leg or spur close-up; a whole-chicken photo is not required. Chicken assessment also considers the leg and spur model results. All model outputs are experimental and can be wrong.</p>
+    <details class="mb-3">
+        <summary>Optional measurement calibration</summary>
+        <label for="pixelsPerCm">Known image scale (pixels per centimeter)</label>
+        <input id="pixelsPerCm" class="form-control" type="number" name="pixels_per_cm" min="0.000001" step="any" placeholder="Leave blank unless you have a measured reference">
+        <small>Use one photograph at a time. Enter a scale measured from a ruler or calibrated reference in the same plane as the spur. Otherwise only pixel lengths are reported. Camera perspective and model errors still affect measurements.</small>
+    </details>
+
     <div id="roosterCards" class="rooster-card-list"></div>
 
     <div class="rooster-actions">
         <button class="btn btn-primary" type="submit">
-            <i class="bi bi-upload"></i> Upload Images
+            <i class="bi bi-upload"></i> Estimate Age
         </button>
     </div>
 </form>
 
 {% if results %}
-<section class="rooster-results">
-    <h2 class="section-heading">Latest Result</h2>
+<section class="rooster-results" id="latest-results">
+    <h2 class="section-heading">{% if viewing_saved %}Saved Analysis{% else %}Latest Result{% endif %}</h2>
+    {% if viewing_saved %}
+        <p class="alert alert-info">You are viewing a saved analysis. Refreshing this page displays the saved predictions; use “Analyze again” to run the current models.</p>
+    {% endif %}
     {% for result in results %}
         <article class="panel-card rooster-result-card">
             <div class="rooster-result-title">
                 <strong>Image {{ result.number }}</strong>
                 <span>{{ result.photo_name }}</span>
             </div>
+            {% if result.photo_url %}
+                <form method="post" action="{% url 'rooster_age_estimator' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="reanalyze_estimate_id" value="{{ result.id }}">
+                    <button type="submit" class="btn btn-secondary mb-3">Analyze again with current models</button>
+                </form>
+            {% endif %}
+            {% if result.photo_url %}
+                <div class="poultry-preview">
+                    <img class="rooster-result-photo" src="{{ result.photo_url }}" alt="Uploaded image {{ result.number }}">
+                    {% if result.overlay.width and result.overlay.height %}
+                        <svg class="poultry-overlay" id="anatomyOverlay{{ result.id }}" aria-label="Experimental anatomy model overlay" preserveAspectRatio="xMidYMid meet"></svg>
+                    {% endif %}
+                </div>
+                {% if result.overlay.width and result.overlay.height %}
+                    <label class="poultry-overlay-toggle"><input type="checkbox" checked data-overlay-target="anatomyOverlay{{ result.id }}"> Show predicted boxes, spur outlines and visible centerlines</label>
+                {% endif %}
+            {% endif %}
             <dl>
-                <dt>Chicken detected:</dt>
-                <dd>{{ result.chicken_detected }}</dd>
+                <dt>Chicken assessment:</dt>
+                <dd>{{ result.chicken_detected }}<br><small>{{ result.chicken_evidence }}</small></dd>
+                <dt>Chicken location:</dt>
+                <dd>{{ result.chicken_location_assessment }}</dd>
+                <dt>Leg detection:</dt>
+                <dd>{{ result.leg_detection_status }}</dd>
+                <dt>Leg location:</dt>
+                <dd>{{ result.leg_location_assessment }}</dd>
+                <dt>Spur detection:</dt>
+                <dd>{{ result.spur_detection_status }}</dd>
+                <dt>Spur location:</dt>
+                <dd>{{ result.spur_location_assessment }}</dd>
                 <dt>Spur visibility:</dt>
                 <dd>{{ result.spur_visibility }}</dd>
+                <dt>Spur segmentation:</dt>
+                <dd>{{ result.spur_segmentation_status }}</dd>
                 <dt>Estimated spur length:</dt>
                 <dd>{{ result.spur_length_assessment }}</dd>
                 <dt>Estimated age:</dt>
-                <dd>{{ result.estimated_age_range }}</dd>
+                <dd class="rooster-age-estimate">{{ result.estimated_age_range }}</dd>
                 <dt>Evidence:</dt>
                 <dd>{{ result.spur_observations }}</dd>
                 <dt>Confidence:</dt>
                 <dd>{{ result.confidence }}</dd>
+                <dt>Model evaluation:</dt>
+                <dd>{{ result.model_evaluation }}</dd>
                 <dt>Limitations:</dt>
                 <dd>{{ result.limitations }}</dd>
                 <dt>Image quality:</dt>
@@ -74,8 +132,8 @@
         {% for estimate in saved_estimates %}
             <article class="rooster-saved-item">
                 <div class="rooster-saved-photo">
-                    {% if estimate.photo %}
-                        <img src="{{ estimate.photo.url }}" alt="{{ estimate.photo_name|default:'Rooster photo' }}">
+                    {% if estimate.photo and estimate.analysis.image_quality.quality != 'unreadable' %}
+                        <img src="{% url 'rooster_estimate_photo' estimate.pk %}" alt="{{ estimate.photo_name|default:'Rooster photo' }}">
                     {% else %}
                         <i class="bi bi-image"></i>
                     {% endif %}
@@ -86,7 +144,15 @@
                         <span>{{ estimate.created_at|date:"M d, Y h:i A" }}</span>
                     </div>
                     <p>{{ estimate.spur_observations }}</p>
+                    {% if estimate.analysis.age_prediction_status == 'experimental' %}
+                        <p>Experimental model result; independent validation pending.</p>
+                    {% endif %}
+                    {% if estimate.analysis.anatomy_assessment %}
+                        <p>{{ estimate.analysis.anatomy_assessment.leg_detection_status }} {{ estimate.analysis.anatomy_assessment.spur_segmentation_status }}</p>
+                        <small>{{ estimate.analysis.anatomy_assessment.spur_length_assessment }}</small>
+                    {% endif %}
                     <small>Confidence: {{ estimate.confidence }}{% if estimate.photo_name %} · {{ estimate.photo_name }}{% endif %}</small>
+                    <div><a href="?estimate={{ estimate.pk }}#latest-results">View saved analysis</a></div>
                 </div>
             </article>
         {% empty %}
@@ -97,10 +163,49 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ results|json_script:"poultry-analysis-results" }}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const cardList = document.getElementById('roosterCards');
         const photoInput = document.getElementById('photos');
+        const namespace = 'http://www.w3.org/2000/svg';
+        const results = JSON.parse(document.getElementById('poultry-analysis-results').textContent);
+        results.forEach(result => {
+            const svg = document.getElementById(`anatomyOverlay${result.id}`);
+            const overlay = result.overlay;
+            if (!svg || !overlay.width || !overlay.height) return;
+            svg.setAttribute('viewBox', `0 0 ${overlay.width} ${overlay.height}`);
+            const shape = (tag, attributes) => {
+                const element = document.createElementNS(namespace, tag);
+                Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+                svg.appendChild(element);
+                return element;
+            };
+            overlay.masks.forEach(mask => shape('polygon', {
+                points: mask.polygon.map(point => point.join(',')).join(' '),
+                fill: '#d81b60', 'fill-opacity': .25, stroke: '#d81b60',
+                'stroke-width': 1.5, 'vector-effect': 'non-scaling-stroke'
+            }));
+            overlay.boxes.forEach(box => {
+                const [x1, y1, x2, y2] = box.xyxy;
+                shape('rect', {x: x1, y: y1, width: x2-x1, height: y2-y1,
+                    fill: 'none', stroke: box.color, 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke'});
+                const label = shape('text', {x: x1+2, y: Math.max(12, y1+12),
+                    fill: box.color, 'font-size': Math.max(10, overlay.width/45),
+                    stroke: '#fff', 'stroke-width': .6, 'paint-order': 'stroke'});
+                label.textContent = `${box.label} ${Number(box.score).toFixed(2)}`;
+            });
+            overlay.measurements.forEach(measurement => shape('polyline', {
+                points: measurement.centerline.map(point => point.join(',')).join(' '),
+                fill: 'none', stroke: '#00e5ff', 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke'
+            }));
+        });
+        document.querySelectorAll('[data-overlay-target]').forEach(toggle => {
+            toggle.addEventListener('change', () => {
+                const overlay = document.getElementById(toggle.dataset.overlayTarget);
+                if (overlay) overlay.style.display = toggle.checked ? '' : 'none';
+            });
+        });
 
         photoInput.addEventListener('change', function () {
             cardList.replaceChildren();

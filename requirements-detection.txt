@@ -1,0 +1,10 @@
+# Optional ML runtime; the age checkpoint and detector remain separate.
+-r requirements.txt
+torch>=2.2,<3
+torchvision>=0.17,<1
+transformers>=4.40,<5
+ultralytics==8.3.221
+numpy==1.24.3
+matplotlib==3.8.4
+opencv-python==4.11.0.86
+scikit-image==0.22.0

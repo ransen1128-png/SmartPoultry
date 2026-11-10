@@ -1,0 +1,14 @@
+{
+  "seed": 42,
+  "epochs": 100,
+  "review_sha256": "462e1a378d1bb9c100ca8c56ecd17d5cbe072f565068b0ca7eeacedfaaf62f45",
+  "active_checkpoint_sha256": "caf542a63c69a003f85ddeddb6777480e61601f13f3f2d58a82ef0c9cd6ef2b7",
+  "torch": "2.14.1+cpu",
+  "torchvision": "0.29.1+cpu",
+  "optimizer": "Adam lr=0.01",
+  "loss": "L1",
+  "frozen_imagenet_features": true,
+  "split_manifest_sha256": "9f95535e7b3f541292af0f880a53a980da64263629be5b59cc1f8f6319ce16e4",
+  "independence": "visual_family_holdout_bird_identity_unresolved",
+  "training_weighting": "Inverse training-family image count, so long near-duplicate sequences do not dominate."
+}

@@ -56,6 +56,19 @@ db.sqlite3-journal
 
 # ML Models (optional - remove if you want to commit)
 ml_models/*.pkl
+ml_models/chicken_owlvit/
+.cache-huggingface/
+detection/dataset/
+detection/runs/
+ml_models/poultry_vision/*.pt
+detection/derived/
+detection/annotation_views/
+detection/annotation_review/
+detection/smoke/
+detection/*.log
+yolo11n.pt
+yolo11n-seg.pt
+detection/dataset.generated.yaml
 
 # OS
 Thumbs.db

@@ -1,4 +1,5 @@
 import calendar
+import math
 import os
 from datetime import date, timedelta
 
@@ -13,7 +14,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Min, Q, Sum
 from django.db.models.functions import TruncMonth
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import FileResponse, Http404, HttpResponseForbidden, JsonResponse
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import capfirst
 from PIL import Image, ImageFilter, ImageStat, UnidentifiedImageError
@@ -196,6 +198,28 @@ def dashboard(request):
     selected_branch_id = request.GET.get('branch', '')
     selected_branch = branches.filter(pk=selected_branch_id).first() if selected_branch_id.isdigit() else None
 
+    # Keep the overview in the same branch scope as the metrics and charts.
+    branch_summaries = []
+    summary_branches = branches.filter(pk=selected_branch.pk) if selected_branch else branches
+    for branch in summary_branches:
+        branch_flocks = Flock.objects.filter(user=request.user, branch=branch, status='active')
+        branch_bird_count = branch_flocks.aggregate(total=Sum('quantity'))['total'] or 0
+        branch_flock_count = branch_flocks.count()
+        branch_expenses = Expense.objects.filter(user=request.user, branch=branch, date__gte=current_month_start, date__lt=next_month_start)
+        branch_expense_total = branch_expenses.aggregate(total=Sum('amount'))['total'] or 0
+        branch_revenue = Revenue.objects.filter(user=request.user, branch=branch, date__gte=current_month_start, date__lt=next_month_start)
+        branch_revenue_total = branch_revenue.aggregate(total=Sum('total_amount'))['total'] or 0
+        branch_profit = branch_revenue_total - branch_expense_total
+        branch_summary = {
+            'branch': branch,
+            'flock_count': branch_flock_count,
+            'bird_count': branch_bird_count,
+            'expense_total': branch_expense_total,
+            'revenue_total': branch_revenue_total,
+            'profit': branch_profit,
+        }
+        branch_summaries.append(branch_summary)
+
     def records_for_period(model, start, end, **filters):
         queryset = model.objects.filter(
             user=request.user,
@@ -330,6 +354,7 @@ def dashboard(request):
             'profit': profit_values,
             'feed': feed_values,
         },
+        'branch_summaries': branch_summaries,
     }
     return render(request, 'dashboard.html', context)
 
@@ -859,8 +884,6 @@ def analyze_rooster_photo(photo):
         photo.seek(0)
 
     quality_flags = []
-    if width < 600 or height < 450:
-        quality_flags.append('low resolution')
     if brightness < 45:
         quality_flags.append('too dark')
     elif brightness > 220:
@@ -873,6 +896,8 @@ def analyze_rooster_photo(photo):
     if not quality_flags:
         return {
             'quality': 'good',
+            'width': width,
+            'height': height,
             'summary': f'Technical image quality is adequate ({width}x{height}, brightness and detail checks passed).',
             'penalty': 0,
         }
@@ -880,105 +905,293 @@ def analyze_rooster_photo(photo):
     penalty = 2 if len(quality_flags) >= 3 else 1
     return {
         'quality': 'limited',
+        'width': width,
+        'height': height,
         'summary': f'Technical image quality may limit visual assessment ({width}x{height}; {", ".join(quality_flags)}).',
         'penalty': penalty,
     }
 
 
+def _present_rooster_estimate(record, number=1):
+    """Present persisted results without rerunning models or rewriting history."""
+    from core.poultry_vision import assess_chicken_evidence, summarize_anatomy
+    analysis = record.analysis or {}
+    anatomy = analysis.get('anatomy') or {
+        'status': 'unavailable', 'message': 'Anatomy was not analyzed for this saved estimate.',
+        'legs': [], 'spurs': [], 'masks': [], 'measurements': [],
+    }
+    assessment = analysis.get('anatomy_assessment') or summarize_anatomy(anatomy)
+    detection = analysis.get('chicken_detection') or {
+        'status': 'unavailable', 'boxes': [], 'message': 'Chicken location was not analyzed for this saved estimate.',
+    }
+    quality = analysis.get('image_quality') or {}
+    prediction = analysis.get('age_prediction')
+    subject = assess_chicken_evidence(detection, anatomy)
+    # Update display wording for historical results while preserving raw analysis.
+    old_body_label = 'Possible chicken body; lower-score experimental candidate.'
+    body_label = 'Chicken-body model prediction; lower-score experimental result.'
+    return {
+        'number': number, 'id': record.pk, 'photo_name': record.photo_name,
+        'chicken_detected': subject['label'],
+        'chicken_evidence': subject['explanation'],
+        'chicken_location_assessment': detection['message'].replace(old_body_label, body_label),
+        'chicken_detection_status': detection['status'], 'chicken_boxes': detection['boxes'],
+        **assessment,
+        'estimated_age_range': record.estimated_age_range,
+        'spur_observations': record.spur_observations.replace(old_body_label, body_label),
+        'image_assessment': quality.get('summary', 'Image quality was not recorded.'),
+        'reasoning': record.reasoning, 'confidence': record.confidence, 'limitations': record.limitations,
+        'model_evaluation': (
+            f"Historical checkpoint MAE: {prediction['test_mae_months']:.2f} months. "
+            'Duplicate leakage was found; this is not independent validation or per-image confidence.'
+            if prediction else 'No saved age-model evaluation is available.'
+        ),
+        'photo_url': (reverse('rooster_estimate_photo', args=[record.pk])
+                      if record.photo and quality.get('quality') != 'unreadable' else ''),
+        'overlay': {
+            'width': anatomy.get('image_width') or quality.get('width') or 0,
+            'height': anatomy.get('image_height') or quality.get('height') or 0,
+            'boxes': ([{**box, 'label': 'chicken', 'color': '#1976d2'} for box in detection['boxes']]
+                      + [{**box, 'label': 'leg', 'color': '#e5a000'} for box in anatomy['legs']]
+                      + [{**box, 'label': 'spur', 'color': '#d81b60'} for box in anatomy['spurs']]),
+            'masks': anatomy['masks'], 'measurements': anatomy['measurements'],
+        },
+    }
+
+
 @login_required(login_url='login')
 def rooster_age_estimator_view(request):
-    """Save rooster photos without claiming analysis until a trained vision model is configured."""
-    from core.rooster_age_classifier import model_is_ready, predict_rooster_age
+    """Estimate chicken age from an uploaded spur image using the trained model."""
+    from core.rooster_age_classifier import (
+        model_is_ready,
+        model_test_mae,
+        predict_rooster_age,
+    )
 
+    age_model_ready = model_is_ready()
+    from core.chicken_detection import detect_chicken, load_detector
+    from core.poultry_vision import analyze_poultry, assess_chicken_evidence, constrain_legs_to_body, summarize_anatomy, vision_is_ready
+    chicken_detector_ready = load_detector() is not None
+    anatomy_ready = vision_is_ready()
     results = []
 
     if request.method == 'POST':
         photos = request.FILES.getlist('photos')
+        reanalysis_id = request.POST.get('reanalyze_estimate_id', '').strip()
+        if reanalysis_id:
+            if not reanalysis_id.isdigit():
+                raise Http404('Estimate not found.')
+            original = get_object_or_404(RoosterAgeEstimate, pk=reanalysis_id, user=request.user)
+            from django.core.files.uploadedfile import SimpleUploadedFile
+            try:
+                with original.photo.open('rb') as saved_photo:
+                    photos = [SimpleUploadedFile(original.photo_name or 'saved-photo.jpg', saved_photo.read())]
+            except (OSError, ValueError):
+                photos = []
+                messages.error(request, 'The saved photograph could not be opened for analysis.')
+        calibration = None
+        scale_text = request.POST.get('pixels_per_cm', '').strip()
+        if scale_text:
+            try:
+                calibration = float(scale_text)
+                if not math.isfinite(calibration) or calibration <= 0:
+                    raise ValueError
+                if len(photos) != 1:
+                    calibration = None
+                    messages.warning(request, 'A known scale applies to one photograph at a time. Pixel measurements will be shown for this batch.')
+            except ValueError:
+                calibration = None
+                messages.warning(request, 'The scale must be a positive finite pixels-per-centimeter value. No centimeter measurement will be generated.')
+
         if not photos:
             messages.error(request, 'Upload at least one image to continue.')
 
         for index, photo in enumerate(photos):
-            photo_analysis = analyze_rooster_photo(photo)
             photo_name = photo.name
+            photo_analysis = analyze_rooster_photo(photo)
             prediction = None
-            if photo_analysis['quality'] == 'good':
+            detection = detect_chicken(photo)
+            anatomy = analyze_poultry(photo, calibration)
+            anatomy = constrain_legs_to_body(detection, anatomy)
+            assessment = summarize_anatomy(anatomy)
+
+            # Quality heuristics are warnings, not a subject detector. Run the
+            # actual age model on every readable upload; only decode/model
+            # failures prevent an experimental estimate.
+            if age_model_ready and photo_analysis['quality'] in {'good', 'limited'}:
                 try:
+                    photo.seek(0)
                     prediction = predict_rooster_age(photo)
-                except (OSError, ValueError):
+                except (OSError, ValueError, RuntimeError):
                     prediction = None
 
             if prediction:
-                age_range = prediction['age_range']
-                confidence = prediction['confidence']
+                age_months = prediction['age_months']
+                age_range = f'Experimental estimate: {age_months:.1f} months'
+
                 evidence = (
-                    f"Validated spur-image classifier assigned this image to {age_range}. "
-                    f"Bird-separated holdout balanced accuracy: {prediction['balanced_accuracy']:.0%}."
+                    f'The existing ResNet-18 produced an experimental age estimate '
+                    f'of {age_months:.1f} months from the uploaded pixels. '
+                    'Anatomy model outputs, when available, are separate experimental predictions.'
                 )
-                reasoning = 'The validated classifier compares spur close-up image features with the labeled age ranges.'
+
+                reasoning = (
+                    'The ResNet-18 model generated an age estimate by '
+                    'comparing the uploaded image with patterns learned '
+                    'from the labeled training images.'
+                )
+
+                confidence = 'Uncalibrated experimental estimate'
+
                 limitations = (
-                    'The classifier does not independently confirm a chicken or spur is present, does not measure spur '
-                    'length, and does not determine exact age. Breed, trimming, injury, and image angle may affect results.'
+                    'This is an estimate, not a confirmed age. The age model '
+                    'does not detect chickens or spurs and does not measure '
+                    'spur length itself. The separate anatomy models are experimental; detection scores '
+                    'are not calibrated probabilities and predicted contours may be wrong. '
+                    'Visible-mask pixel length is a projected estimate, not a verified anatomical measurement. '
+                    'Image angle, lighting, and differences from '
+                    'training images may affect this prediction. Dataset inspection found exact-duplicate '
+                    'leakage in the historical split; performance on independent chickens is not established.'
                 )
+                if photo_analysis['quality'] == 'limited':
+                    limitations = f"Image quality warning: {photo_analysis['summary']} {limitations}"
+
             else:
                 age_range = 'Insufficient evidence'
-                confidence = 'Low'
-                reasoning = 'No supported age estimate can be made from this upload.'
-                if photo_analysis['quality'] != 'good':
-                    evidence = 'Image quality is limited; upload a clear, well-lit close-up of the spur.'
-                    limitations = f"{photo_analysis['summary']} No age estimate is provided."
-                else:
-                    evidence = 'Spur characteristics were not assessed because no validated age model is available.'
+                confidence = 'Not available'
+
+                if photo_analysis['quality'] == 'unreadable':
+                    evidence = (
+                        'No age estimate was provided because the uploaded file '
+                        'could not be decoded as an image.'
+                    )
+                    reasoning = (
+                        'Upload a readable JPEG, PNG, or WebP photograph.'
+                    )
                     limitations = (
-                        'No validated chicken/spur age model is configured. Technical image-quality checks do not '
-                        'detect chickens, measure spurs, or validate age. No age estimate is provided.'
+                        f"{photo_analysis['summary']} Image quality alone "
+                        'cannot confirm that the chicken or spur is visible.'
+                    )
+
+                elif not age_model_ready:
+                    evidence = 'The existing age model could not be loaded.'
+                    reasoning = 'No age prediction was made.'
+                    limitations = 'Check that the trained age-model file is present and valid.'
+                else:
+                    evidence = (
+                        'The model could not generate a prediction '
+                        'for this image.'
+                    )
+                    reasoning = 'The image prediction was unsuccessful.'
+                    limitations = (
+                        'Try uploading another clear, well-lit image.'
                     )
 
             record_data = {
                 'user': request.user,
                 'photo_name': photo_name,
-                'chicken_detected': 'unassessed',
-                'spur_visibility': 'unassessed',
+                'chicken_detected': (
+                    'yes' if detection['status'] == 'detected' else
+                    'unassessed'
+                ),
+                'spur_visibility': assessment['spur_visibility_value'],
                 'spur_length': 'unassessed',
                 'spur_thickness': 'unassessed',
                 'spur_point_shape': 'unassessed',
                 'spur_curvature': 'unassessed',
                 'secondary_clues': '',
                 'estimated_age_range': age_range,
-                'spur_observations': evidence,
+                'spur_observations': detection['message'] + ' ' + anatomy['message'] + ' ' + evidence,
                 'reasoning': reasoning,
                 'confidence': confidence,
                 'limitations': limitations,
+                'analysis': {
+                    'workflow_version': 6,
+                    'reanalysis_of': int(reanalysis_id) if reanalysis_id else None,
+                    'chicken_assessment': assess_chicken_evidence(detection, anatomy),
+                    'input_mode': 'experimental_image_estimate',
+                    'image_quality': photo_analysis,
+                    'chicken_detection': detection,
+                    'anatomy': anatomy,
+                    'anatomy_assessment': assessment,
+                    'leg_detection': {'status': anatomy['status'], 'boxes': anatomy['legs']},
+                    'spur_detection': {'status': anatomy['status'], 'boxes': anatomy['spurs']},
+                    'spur_segmentation': {'status': anatomy['status'], 'masks': anatomy['masks']},
+                    'spur_measurement': {'status': 'predicted_visible_length' if anatomy['measurements'] else 'unavailable',
+                                         'measurements': anatomy['measurements'],
+                                         'reason': 'Centimeter values require a supplied known in-plane scale; all geometry remains experimental.'},
+                    'age_prediction': prediction,
+                    'age_prediction_status': 'experimental' if prediction else 'not_produced',
+                },
             }
+
+            photo.seek(0)
             record_data['photo'] = photo
+
             record = RoosterAgeEstimate.objects.create(**record_data)
 
-            results.append({
-                'number': index + 1,
-                'id': record.id,
-                'photo_name': photo_name,
-                'chicken_detected': record.get_chicken_detected_display(),
-                'spur_visibility': record.get_spur_visibility_display(),
-                'spur_length_assessment': 'Not measured; the classifier predicts age range only and no scale reference is configured.',
-                'estimated_age_range': record.estimated_age_range,
-                'spur_observations': evidence,
-                'image_assessment': photo_analysis['summary'],
-                'reasoning': record.reasoning,
-                'confidence': record.confidence,
-                'limitations': record.limitations,
-            })
+            results.append(_present_rooster_estimate(record, index+1))
 
         if results:
-            if model_is_ready():
-                messages.success(request, f"Analyzed {len(results)} uploaded image{'s' if len(results) != 1 else ''}.")
-            else:
-                messages.info(request, f"Saved {len(results)} photo{'s' if len(results) != 1 else ''}. Age estimates remain unavailable until a model passes validation.")
+            successful = sum(
+                1 for result in results
+                if result['estimated_age_range'] != 'Insufficient evidence'
+            )
 
-    saved_estimates = RoosterAgeEstimate.objects.filter(user=request.user).exclude(photo='')[:20]
+            messages.success(
+                request,
+                f'Processed {len(results)} image(s). '
+                f'{successful} age estimate(s) generated.'
+            )
+
+        if reanalysis_id and results:
+            return redirect(reverse('rooster_age_estimator') + f"?estimate={results[-1]['id']}#latest-results")
+
+    selected_estimate = request.GET.get('estimate', '').strip()
+    if request.method == 'GET' and selected_estimate:
+        if not selected_estimate.isdigit():
+            raise Http404('Estimate not found.')
+        record = get_object_or_404(RoosterAgeEstimate, pk=selected_estimate, user=request.user)
+        results = [_present_rooster_estimate(record)]
+
+    saved_estimates = (
+        RoosterAgeEstimate.objects
+        .filter(user=request.user)
+        .exclude(photo='')
+        [:20]
+    )
+
     return render(request, 'rooster_age_estimator.html', {
         'results': results,
         'saved_estimates': saved_estimates,
-        'model_ready': model_is_ready(),
+        'age_model_ready': age_model_ready,
+        'chicken_detector_ready': chicken_detector_ready,
+        'anatomy_ready': anatomy_ready,
+        'viewing_saved': bool(request.method == 'GET' and selected_estimate),
+        'model_test_mae': model_test_mae(),
     })
+
+
+@login_required(login_url='login')
+def rooster_estimate_photo(request, estimate_id):
+    """Serve the owner's uploaded photograph even when DEBUG is disabled."""
+    record = get_object_or_404(RoosterAgeEstimate, pk=estimate_id, user=request.user)
+    if not record.photo:
+        raise Http404('No photograph is attached to this estimate.')
+    content_types = {'JPEG': 'image/jpeg', 'PNG': 'image/png', 'WEBP': 'image/webp'}
+    try:
+        with record.photo.open('rb') as source:
+            with Image.open(source) as photo:
+                content_type = content_types.get(photo.format)
+                photo.verify()
+        if content_type is None:
+            raise Http404('Unsupported photograph format.')
+        response = FileResponse(record.photo.open('rb'), content_type=content_type)
+    except (OSError, ValueError, UnidentifiedImageError) as exc:
+        raise Http404('The photograph is unavailable or unreadable.') from exc
+    response['X-Content-Type-Options'] = 'nosniff'
+    response['Cache-Control'] = 'private, no-store'
+    return response
 
 
 @login_required(login_url='login')

@@ -1032,6 +1032,49 @@ body {
     font-size: 0.86rem;
 }
 
+.rooster-result-photo {
+    display: block;
+    width: min(100%, 520px);
+    max-height: 340px;
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    object-fit: contain;
+}
+
+.rooster-age-estimate {
+    font-weight: 700;
+}
+
+.poultry-preview {
+    position: relative;
+    width: min(100%, 520px);
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.poultry-preview .rooster-result-photo {
+    width: 100%;
+    margin: 0;
+    border: 0;
+}
+
+.poultry-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.poultry-overlay-toggle {
+    display: block;
+    margin: 8px 0 12px;
+    font-size: .85rem;
+}
+
 .rooster-result-title {
     display: flex;
     align-items: baseline;

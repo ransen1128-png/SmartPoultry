@@ -100,6 +100,7 @@ class RoosterAgeEstimate(models.Model):
     reasoning = models.TextField()
     confidence = models.CharField(max_length=40)
     limitations = models.TextField()
+    analysis = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

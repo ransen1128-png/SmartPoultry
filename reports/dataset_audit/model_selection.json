@@ -1,0 +1,16 @@
+{
+  "active_model": "spur_age/models/spur_age_model.pth",
+  "candidate_model": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\experiments\\20261109T074813049131Z\\candidate.pth",
+  "candidate_promoted": false,
+  "reason": "Candidate validation MAE is poor; original-model comparative scores have potential prior training overlap. Bird identities remain unresolved.",
+  "candidate_validation_mae_months": 5.072080265391957,
+  "candidate_visual_family_test_mae_months": 6.927555513381958,
+  "verified_independent_chicken_count": null,
+  "distinct_photographs": 151,
+  "conservative_visual_families": 62,
+  "age_labels": "Existing user-verified labels unchanged",
+  "app_mode": "Existing ResNet-18 experimental age estimate plus real OWL-ViT chicken and locally trained leg/spur detection and spur segmentation; projected pixel measurement, optional supplied scale",
+  "targeted_tests_passed": 22,
+  "live_health_http_status": 200,
+  "anatomy_report": "detection/IMPLEMENTATION_REPORT.md"
+}

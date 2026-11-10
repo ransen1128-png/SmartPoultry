@@ -1,0 +1,59 @@
+{
+  "version": "2026-11-10T07:54:02.236531+00:00",
+  "experimental": true,
+  "limitations": "Small source-family holdouts; bird identity unresolved. Assistant annotations require expert review.",
+  "detect": {
+    "filename": "detect_45433d0396de91a7.pt",
+    "sha256": "45433d0396de91a7dfa2ba61590478340b5d2fb3142d940f6d725ef8fdd8fa80",
+    "threshold": 0.75,
+    "threshold_source": "Maximum smoothed mean F1 on validation only",
+    "metrics": {
+      "val": {
+        "metrics/precision(B)": 0.5868726325252873,
+        "metrics/recall(B)": 0.5692307692307692,
+        "metrics/mAP50(B)": 0.5906102667172565,
+        "metrics/mAP50-95(B)": 0.2257917709587069,
+        "fitness": 0.2257917709587069
+      },
+      "test": {
+        "metrics/precision(B)": 0.6351639128201736,
+        "metrics/recall(B)": 0.37222222222222223,
+        "metrics/mAP50(B)": 0.4149530749518749,
+        "metrics/mAP50-95(B)": 0.1625718458225764,
+        "fitness": 0.1625718458225764
+      }
+    },
+    "training_report": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\runs\\anatomy_detect2\\evaluation.json"
+  },
+  "segment": {
+    "filename": "segment_e2e91c19fb1839e9.pt",
+    "sha256": "e2e91c19fb1839e908db87679ce2c20f39bb863ab71ff9022ae1bcbb39956fbe",
+    "threshold": 0.6466466466466466,
+    "threshold_source": "Maximum smoothed mean F1 on validation only",
+    "metrics": {
+      "val": {
+        "metrics/precision(B)": 0.7972429503231884,
+        "metrics/recall(B)": 0.6058409818879595,
+        "metrics/mAP50(B)": 0.6321253636598271,
+        "metrics/mAP50-95(B)": 0.34695186502120245,
+        "metrics/precision(M)": 0.8100226265444169,
+        "metrics/recall(M)": 0.38461538461538464,
+        "metrics/mAP50(M)": 0.4628836690118825,
+        "metrics/mAP50-95(M)": 0.2399030062066204,
+        "fitness": 0.5868548712278229
+      },
+      "test": {
+        "metrics/precision(B)": 0.6238178301141941,
+        "metrics/recall(B)": 0.2,
+        "metrics/mAP50(B)": 0.24158078427700902,
+        "metrics/mAP50-95(B)": 0.18571303492699576,
+        "metrics/precision(M)": 0.6238178301141941,
+        "metrics/recall(M)": 0.2,
+        "metrics/mAP50(M)": 0.23883487171612172,
+        "metrics/mAP50-95(M)": 0.14432981264673783,
+        "fitness": 0.3300428475737336
+      }
+    },
+    "training_report": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\runs\\anatomy_segment\\evaluation.json"
+  }
+}

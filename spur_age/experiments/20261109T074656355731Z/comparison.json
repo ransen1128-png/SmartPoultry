@@ -1,0 +1,52 @@
+{
+  "candidate_validation": {
+    "n": 11,
+    "mae_months": 5.072080265391957,
+    "median_absolute_error_months": 4.383187294006348,
+    "rmse_months": 6.840814845572323,
+    "bias_months": -1.6223576285622336,
+    "within_1_month_fraction": 0.2727272727272727,
+    "within_3_months_fraction": 0.36363636363636365,
+    "p90_absolute_error_months": 11.906123161315918
+  },
+  "candidate_test": {
+    "n": 10,
+    "mae_months": 6.927555513381958,
+    "median_absolute_error_months": 5.690772771835327,
+    "rmse_months": 7.850871693190517,
+    "bias_months": -2.6118812084198,
+    "within_1_month_fraction": 0.0,
+    "within_3_months_fraction": 0.0,
+    "p90_absolute_error_months": 12.101183986663816
+  },
+  "existing_validation": {
+    "n": 11,
+    "mae_months": 1.25816011428833,
+    "median_absolute_error_months": 1.1051197052001953,
+    "rmse_months": 1.4859865313170884,
+    "bias_months": 0.430505709214644,
+    "within_1_month_fraction": 0.45454545454545453,
+    "within_3_months_fraction": 0.9090909090909091,
+    "p90_absolute_error_months": 2.0325775146484375
+  },
+  "existing_test": {
+    "n": 10,
+    "mae_months": 2.0970792889595034,
+    "median_absolute_error_months": 1.6094818115234375,
+    "rmse_months": 2.78534514153948,
+    "bias_months": 0.947540032863617,
+    "within_1_month_fraction": 0.4,
+    "within_3_months_fraction": 0.8,
+    "p90_absolute_error_months": 4.161905574798583
+  },
+  "selection": "No automatic promotion; existing-model training overlap is unknown.",
+  "independence": "visual_family_holdout_bird_identity_unresolved",
+  "candidate_selected_by": "Lowest validation MAE, never test MAE",
+  "original_checkpoint_unchanged": true,
+  "split_counts": {
+    "train": 130,
+    "validation": 11,
+    "test": 10
+  },
+  "limitation": "Existing-model scores may include prior training images; not an independent baseline comparison."
+}

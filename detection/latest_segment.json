@@ -1,0 +1,51 @@
+{
+  "task": "segment",
+  "checkpoint": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\runs\\anatomy_segment\\weights\\best.pt",
+  "run": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\runs\\anatomy_segment",
+  "metrics": {
+    "val": {
+      "metrics/precision(B)": 0.7972429503231884,
+      "metrics/recall(B)": 0.6058409818879595,
+      "metrics/mAP50(B)": 0.6321253636598271,
+      "metrics/mAP50-95(B)": 0.34695186502120245,
+      "metrics/precision(M)": 0.8100226265444169,
+      "metrics/recall(M)": 0.38461538461538464,
+      "metrics/mAP50(M)": 0.4628836690118825,
+      "metrics/mAP50-95(M)": 0.2399030062066204,
+      "fitness": 0.5868548712278229
+    },
+    "test": {
+      "metrics/precision(B)": 0.6238178301141941,
+      "metrics/recall(B)": 0.2,
+      "metrics/mAP50(B)": 0.24158078427700902,
+      "metrics/mAP50-95(B)": 0.18571303492699576,
+      "metrics/precision(M)": 0.6238178301141941,
+      "metrics/recall(M)": 0.2,
+      "metrics/mAP50(M)": 0.23883487171612172,
+      "metrics/mAP50-95(M)": 0.14432981264673783,
+      "fitness": 0.3300428475737336
+    }
+  },
+  "age_checkpoint_unchanged": true,
+  "annotation_summary": {
+    "distinct_originals": 151,
+    "detailed_review_records": 66,
+    "training_eligible_images": 43,
+    "excluded_with_reasons": 108,
+    "leg_boxes": 71,
+    "spur_polygons": 70,
+    "splits": {
+      "train": 27,
+      "val": 8,
+      "test": 8
+    },
+    "source_families": 40,
+    "source_family_leakage": false,
+    "actual_chicken_identity_verified": false,
+    "annotation_sha256": "43868703e7ca41aab462bc234cd1382e56ff3aa8744ee7d405071ee82099d835",
+    "provenance": "Codex visual inspection of coordinate reference photographs",
+    "caution": "Assistant visual annotations, not independent expert verification. Coarse and partial contours are flagged. No physical scale or bird identity invented."
+  },
+  "status": "experimental_candidate_executed",
+  "limitation": "Source-family holdouts; actual bird identity unresolved. Assistant visual annotations are not independent expert verification."
+}

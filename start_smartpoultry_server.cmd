@@ -3,8 +3,12 @@ setlocal
 
 set "ROOT=%~dp0"
 set "PROJECT=%ROOT%smartpoultry"
-set "PYTHON=%ROOT%venv\Scripts\python.exe"
+set "PYTHON=%ROOT%.venv\Scripts\python.exe"
 set "LOG=%ROOT%server.cmd.log"
+
+if not exist "%PYTHON%" (
+    set "PYTHON=%ROOT%venv\Scripts\python.exe"
+)
 
 if not exist "%PYTHON%" (
     set "PYTHON=py"

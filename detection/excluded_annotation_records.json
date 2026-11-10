@@ -1,0 +1,2792 @@
+[
+  {
+    "index": 1,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\1months (110).jpg",
+    "sha256": "0a842de3edafe2c5e46d251c8e9a025a2fca738952fbf8a1d07db57183a4f590",
+    "pixel_sha256": "03979a7c1e9e746ebd7357c2a515ee9008b335dc858db26f7b24be7d6da3a3dc",
+    "age_months": "1",
+    "recorded_chicken_id": "CHICKEN_006002",
+    "chicken_id": "CHICKEN_006002",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_001",
+    "content_type": "mixed_unlocalized",
+    "width": 932,
+    "height": 1200,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Visible rounded spur/bud on right shank; other tiny protrusion ambiguous. Exclude from spur training.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          142,
+          18,
+          260,
+          393
+        ],
+        [
+          293,
+          0,
+          422,
+          339
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            317,
+            241
+          ],
+          [
+            332,
+            225
+          ],
+          [
+            353,
+            227
+          ],
+          [
+            368,
+            242
+          ],
+          [
+            368,
+            264
+          ],
+          [
+            353,
+            279
+          ],
+          [
+            329,
+            278
+          ],
+          [
+            317,
+            262
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Visible rounded spur/bud on right shank; other tiny protrusion ambiguous. Exclude from spur training."
+    }
+  },
+  {
+    "index": 2,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (10).jpeg",
+    "sha256": "aa95cd223b36a49f91876fa84f35c4314ecae17dbb142dcb79b862044774f1c0",
+    "pixel_sha256": "0516e0e673973fdf4135071c7ea79c982a8f881b937c6a36edf88ea1109396db",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014601",
+    "chicken_id": "CHICKEN_014601",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 3,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (15).jpeg",
+    "sha256": "9ddfe42a118484bbfa68213b4d9c6cbfb27f5b85d0cdeb2366a166263956f6d8",
+    "pixel_sha256": "06d7b514d2dfd13497ea2dbd555116f75dd527f8200e631de79600f3d46ce16c",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014656",
+    "chicken_id": "CHICKEN_014656",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 5,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (368).jpeg",
+    "sha256": "cba759ae1688a90e3db0b60ded047b5c936755cd64eda074cfca6fac840bc9f9",
+    "pixel_sha256": "0c12f81dfa3d4dd60f44944543b5379f43a899dd4e1f32eab0fb18f60dce4fbe",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012860",
+    "chicken_id": "CHICKEN_012860",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 6,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (100).jpg",
+    "sha256": "cb429aeeb633128c59d8101581d889b3182e70f661928356cfdff358176e1744",
+    "pixel_sha256": "0f9a5251a50d352800b8e631e80933fb821153ec3ab611a5aa6338f4d6f40fcd",
+    "age_months": "6",
+    "recorded_chicken_id": "CHICKEN_012192",
+    "chicken_id": "CHICKEN_012192",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_004",
+    "content_type": "mixed_unlocalized",
+    "width": 2316,
+    "height": 3088,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Held chicken and background birds annotated; spur boundaries not established in this whole-bird view.",
+    "reviewed_annotations": {
+      "chickens": [
+        [
+          37,
+          63,
+          394,
+          600
+        ],
+        [
+          431,
+          463,
+          531,
+          574
+        ],
+        [
+          409,
+          552,
+          482,
+          600
+        ]
+      ],
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Held chicken and background birds annotated; spur boundaries not established in this whole-bird view."
+    }
+  },
+  {
+    "index": 7,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (21).jpeg",
+    "sha256": "48136602ff21879eb636994fdcda0565a2724ddd97e0c0296acf03b0ea17f01f",
+    "pixel_sha256": "0fa0b02d7306e8c8bca7b1a0fb5567f99e66bd0af76be008a4c3f38900356adc",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011533",
+    "chicken_id": "CHICKEN_011533",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 8,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (350).jpeg",
+    "sha256": "39f8bb1b98dbf459eb53c39f367b6e7d26706bba70a39042fea5487724697ef4",
+    "pixel_sha256": "1170119008358dbff531dee07976770383d415d80b930fcb54de4555803f2191",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012841",
+    "chicken_id": "CHICKEN_012841",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 9,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (10).jpeg",
+    "sha256": "f93bf0e5a073c54cb1fb2df7262d8233647dcf733fc62add351a6cede07c2d8d",
+    "pixel_sha256": "11823065f3c7a2261a2d0890cdf7f0c9bf43d32094786347a0a7b85238ac9383",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010191",
+    "chicken_id": "CHICKEN_010191",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 10,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\21months (1).jpg",
+    "sha256": "8c8995372f12559fb56fd53f0a8623a8870b5f5276114136ca12a74734bdddc4",
+    "pixel_sha256": "126365f263b93da775aecb90c91af8b3323b22515c5072da0123740ffde2c988",
+    "age_months": "21",
+    "recorded_chicken_id": "CHICKEN_006634",
+    "chicken_id": "CHICKEN_006634",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_005",
+    "content_type": "mixed_unlocalized",
+    "width": 316,
+    "height": 632,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Body is cropped at frame boundaries; white overlapping spur/foot geometry needs finer review.",
+    "reviewed_annotations": {
+      "chickens": [
+        [
+          0,
+          0,
+          600,
+          600
+        ]
+      ],
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Body is cropped at frame boundaries; white overlapping spur/foot geometry needs finer review."
+    }
+  },
+  {
+    "index": 11,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (100).jpeg",
+    "sha256": "4a7c8c997556bff3961c4611a167a0a7b1bae552baa5f05bf28c4a2288651828",
+    "pixel_sha256": "176d0f65059ce50e236133b548fb0ad058cd77e1ac3c510205979148b1fbefb6",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011363",
+    "chicken_id": "CHICKEN_011363",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 12,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (806).jpeg",
+    "sha256": "9eb70925f9f2ead47eb6fc6ca260df83dcdc09c9a849d1eb89b500ff7d0089c0",
+    "pixel_sha256": "1914ea260553f975d8d94ba8e1c9a5b4567365a5f2921e96c466c53c6582021f",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_012126",
+    "chicken_id": "CHICKEN_012126",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 13,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (332).jpeg",
+    "sha256": "228241f422364cee878831ee41b93e11bc202d1a2f4c7ff9d00a55f9190591a3",
+    "pixel_sha256": "1ad56323b7635cda7f7f2b0398a33dc0627b1d21141de90d0cceaaf8d4c43084",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012821",
+    "chicken_id": "CHICKEN_012821",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 14,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (103).jpeg",
+    "sha256": "19d246ac45b38e4b8fa30e73d0161cd9d8194c8d7956f1a4ba385c9584231eaa",
+    "pixel_sha256": "1d3e2ae369a8308207916183725f4355116cb7957d77ad82a622cb57b5763dfa",
+    "age_months": "6",
+    "recorded_chicken_id": "CHICKEN_012197",
+    "chicken_id": "CHICKEN_012197",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 16,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\18months (156).jpg",
+    "sha256": "b28c5a6014d68bfeee0237a587f0205c5467734e89c10e6cb8be21941337c1b3",
+    "pixel_sha256": "2278cdb52543c2e08936089810c0521a45d6969146b2b9e57e54c9da0bfc8fda",
+    "age_months": "18",
+    "recorded_chicken_id": "CHICKEN_005201",
+    "chicken_id": "CHICKEN_005201",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_007",
+    "content_type": "mixed_unlocalized",
+    "width": 558,
+    "height": 549,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird rectangle reviewed; small spur boundaries not used as ground truth.",
+    "reviewed_annotations": {
+      "chickens": [
+        [
+          87,
+          25,
+          584,
+          573
+        ]
+      ],
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Whole-bird rectangle reviewed; small spur boundaries not used as ground truth."
+    }
+  },
+  {
+    "index": 18,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\13months (1040).jpg",
+    "sha256": "007f3412cce3a6d0e71a658bb7a4acfdf27a1ccf5129fa0d706792d3e0c67a52",
+    "pixel_sha256": "28c67518dc5641540599a3d68bb62cd03ed6991714fcf22c6041f8699f31c8da",
+    "age_months": "13",
+    "recorded_chicken_id": "CHICKEN_002325",
+    "chicken_id": "CHICKEN_002325",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_009",
+    "content_type": "mixed_unlocalized",
+    "width": 500,
+    "height": 614,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Metal band occludes spur base; background leg/possible spur ambiguous. Retained, excluded from spur training.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          255,
+          113,
+          413,
+          548
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            279,
+            364
+          ],
+          [
+            236,
+            356
+          ],
+          [
+            198,
+            333
+          ],
+          [
+            169,
+            303
+          ],
+          [
+            147,
+            263
+          ],
+          [
+            135,
+            222
+          ],
+          [
+            134,
+            190
+          ],
+          [
+            141,
+            165
+          ],
+          [
+            148,
+            157
+          ],
+          [
+            150,
+            193
+          ],
+          [
+            166,
+            229
+          ],
+          [
+            191,
+            262
+          ],
+          [
+            224,
+            292
+          ],
+          [
+            260,
+            316
+          ],
+          [
+            289,
+            329
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Metal band occludes spur base; background leg/possible spur ambiguous. Retained, excluded from spur training."
+    }
+  },
+  {
+    "index": 20,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\17months (1).jpg",
+    "sha256": "97e97d19b14c0f22cf5727de050b5dcee6bcb448bcbb4812958205ac7cff6406",
+    "pixel_sha256": "2c44273308fa1e270f5b45adbf511f93ebbbcfbe9be999702a36580f4ec03629",
+    "age_months": "17",
+    "recorded_chicken_id": "CHICKEN_004726",
+    "chicken_id": "CHICKEN_004726",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_011",
+    "content_type": "mixed_unlocalized",
+    "width": 297,
+    "height": 587,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Crossed held feet and extreme curvature make instance boundaries ambiguous; retained for review, excluded from training.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          91,
+          208,
+          253,
+          441
+        ]
+      ],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Crossed held feet and extreme curvature make instance boundaries ambiguous; retained for review, excluded from training."
+    }
+  },
+  {
+    "index": 21,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (385).jpeg",
+    "sha256": "e0969be215d8a2cd4c6926da4d30b3bf13e51d194fe2457ea131a1d5cbd317ba",
+    "pixel_sha256": "2c5660e47a9dd257b1df1ff2fcc2e182a98c7eda0bb8c771452c7f96d8ef6ae9",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001429",
+    "chicken_id": "CHICKEN_001429",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 23,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\24months (163).jpg",
+    "sha256": "e0612c79979d8c5482faa38502986d0cdb09fc5c8f00cf595257a2f66881deda",
+    "pixel_sha256": "2d7e0430e627e1ab42703d9cc03e844755af80f3062ebe859201c910290d9d32",
+    "age_months": "24",
+    "recorded_chicken_id": "CHICKEN_009225",
+    "chicken_id": "CHICKEN_009225",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_013",
+    "content_type": "mixed_unlocalized",
+    "width": 580,
+    "height": 450,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Two very long overlapping coiled spurs; instance boundaries cannot be confidently separated in this view. Excluded rather than guessed.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          142,
+          194,
+          239,
+          535
+        ],
+        [
+          353,
+          126,
+          427,
+          454
+        ]
+      ],
+      "spurs": [],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Two very long overlapping coiled spurs; instance boundaries cannot be confidently separated in this view. Excluded rather than guessed."
+    }
+  },
+  {
+    "index": 25,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (256).jpeg",
+    "sha256": "d3653ff8ee4bbd5accd37a4ade7afe7b33a9257112c8142fb18f156866082b19",
+    "pixel_sha256": "2f478da029f866a4d6fbcfff88372f0f0dd3fc1a5fc71f9e191194351f655fce",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001272",
+    "chicken_id": "CHICKEN_001272",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 26,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (171).jpeg",
+    "sha256": "c4e4d9f672e5080d3da5c6f5417a8f1d87fd936d90f15516bc1fed1803d03f63",
+    "pixel_sha256": "31c1f1ffec9f81baf089e1bf3d8ffddb6fb32b9bbe5b030ba76c57048773022d",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010361",
+    "chicken_id": "CHICKEN_010361",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 27,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (103).jpeg",
+    "sha256": "226065f4fcdfeda70e40ceb889abb7c098b1b0086a685b5dc6381915d056f940",
+    "pixel_sha256": "32bcdfa23d19eb7b095258589f5b797b264cfc77ca0871e8effe6ce162bc108b",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010211",
+    "chicken_id": "CHICKEN_010211",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 30,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (36).jpeg",
+    "sha256": "bfd670fbdfd79b86dba85b8da83aaf5a63b3f524b18005332f24b7aa80a23185",
+    "pixel_sha256": "359f317cf127ded842e4c896c97a9a65ffa71dba42081523dd27a61171a25fc6",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011645",
+    "chicken_id": "CHICKEN_011645",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 31,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (100).jpeg",
+    "sha256": "996592e3247c45b58178c9879fb1d3a70d7b46001a013332105b7598ebfc26ea",
+    "pixel_sha256": "361d0d2ddc870261b6580c5931706c383dc5b1c8d92db9e041a8ede43437f542",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010193",
+    "chicken_id": "CHICKEN_010193",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 33,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (604).jpeg",
+    "sha256": "992748dfe0f5935b49361f47ea7e143cfea6eff5c06e720d4eafd8f19e74a30b",
+    "pixel_sha256": "36e11f2d0fb629e3e1bfdbc87779ad974855d3e05786a5199daca3c82574a1f6",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010879",
+    "chicken_id": "CHICKEN_010879",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 34,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (13).jpeg",
+    "sha256": "1705abac1da1503ec1acd7de00dd2ee78e33ea5cc8fb299aab1010520b8a8369",
+    "pixel_sha256": "38cf9fa512d9bcdb0e42907c4ed8139d600d1d076562c395bf9333ed8df7a7d2",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011417",
+    "chicken_id": "CHICKEN_011417",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 37,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (250).jpeg",
+    "sha256": "f5697611ea8c512f63554fc24a907a02edada15adb5198a965d3e4a8369f34f6",
+    "pixel_sha256": "4376ed14c8d4f4efb3ff84050e962597ac5393a06a61b81f7d11ca930853038f",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014737",
+    "chicken_id": "CHICKEN_014737",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 38,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (75).jpeg",
+    "sha256": "84829cee101e9b43b3f180557595fd13c136da03a4d71346cbfc402cce7a54f9",
+    "pixel_sha256": "4549719e7756476af577a5033ac7c8f9dfe732b94f07ef8d981af3d17de07c4d",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_012062",
+    "chicken_id": "CHICKEN_012062",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 39,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (106).jpeg",
+    "sha256": "8ad3cb56c4edf8c9905d26902ec16fe4ad20d5b7f9be05f2afeace65ed957ae5",
+    "pixel_sha256": "45ed36c1783fc9a7f301a20007ff7cda4935ec677aebdb825b2db3eb46ac43e9",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_000953",
+    "chicken_id": "CHICKEN_000953",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 40,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (278).jpeg",
+    "sha256": "b656533c42fbc5fd5343852444728dddfa038d56a6be4bd1270ab39f01f6e44e",
+    "pixel_sha256": "46dbbcdcd58ce882ac3c2fd8d54644c6b06e525be27c6f575891acd5ff08e0ce",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012761",
+    "chicken_id": "CHICKEN_012761",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 42,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (18).jpeg",
+    "sha256": "046e3b6f9e36a3d30778e01a0a1cd82f6ac8f4e60a1686dd321e95c547d8f19c",
+    "pixel_sha256": "4ba51564a2e2d6914896ef1e9d1bcc42d3e8c49f044b9aa656c4f4d77f47b2d3",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011495",
+    "chicken_id": "CHICKEN_011495",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 43,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (111).jpeg",
+    "sha256": "17c1cad2b3236e675d9a7f56ed948afdb7803b3e5c16d05c1548b32912e33c45",
+    "pixel_sha256": "4bf5b3ca762a20f3ae36cc1dcc813482c09b1d19911317bd79df2878e889bcc4",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011377",
+    "chicken_id": "CHICKEN_011377",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 44,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\15months (1).webp",
+    "sha256": "85c993db24061665cd0eecfb41d3f1b9fe60b68d6097fdd9cd76d6bc97ec21ed",
+    "pixel_sha256": "4caf83d926a4e54c1a4bd7f3f95b1b51eebb71c20c752f52959ee0e052de49c1",
+    "age_months": "15",
+    "recorded_chicken_id": "CHICKEN_003791",
+    "chicken_id": "CHICKEN_003791",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_021",
+    "content_type": "mixed_unlocalized",
+    "width": 1600,
+    "height": 990,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Overlapping curved spurs; polygons retain coarse visible outlines for review, excluded from segmentation training.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          192,
+          0,
+          242,
+          331
+        ],
+        [
+          346,
+          0,
+          441,
+          329
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            214,
+            217
+          ],
+          [
+            218,
+            239
+          ],
+          [
+            232,
+            257
+          ],
+          [
+            248,
+            260
+          ],
+          [
+            262,
+            249
+          ],
+          [
+            274,
+            223
+          ],
+          [
+            280,
+            195
+          ],
+          [
+            286,
+            159
+          ],
+          [
+            286,
+            119
+          ],
+          [
+            283,
+            76
+          ],
+          [
+            278,
+            96
+          ],
+          [
+            270,
+            137
+          ],
+          [
+            258,
+            174
+          ],
+          [
+            248,
+            207
+          ],
+          [
+            236,
+            225
+          ],
+          [
+            226,
+            224
+          ],
+          [
+            222,
+            214
+          ]
+        ],
+        [
+          [
+            383,
+            216
+          ],
+          [
+            358,
+            220
+          ],
+          [
+            334,
+            219
+          ],
+          [
+            311,
+            212
+          ],
+          [
+            288,
+            199
+          ],
+          [
+            270,
+            179
+          ],
+          [
+            255,
+            153
+          ],
+          [
+            249,
+            123
+          ],
+          [
+            245,
+            91
+          ],
+          [
+            244,
+            122
+          ],
+          [
+            245,
+            154
+          ],
+          [
+            253,
+            185
+          ],
+          [
+            269,
+            211
+          ],
+          [
+            293,
+            235
+          ],
+          [
+            323,
+            251
+          ],
+          [
+            351,
+            259
+          ],
+          [
+            380,
+            256
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Overlapping curved spurs; polygons retain coarse visible outlines for review, excluded from segmentation training."
+    }
+  },
+  {
+    "index": 45,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (1006).jpeg",
+    "sha256": "4f94f2bbcb9dcc6768b2e6422005a844e6028a4e32a0a12a98a2715e244a51db",
+    "pixel_sha256": "4df60ebe2d997ed7e1418fa6d988b66af9cb475866c130bc8016a8507b953f0f",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010201",
+    "chicken_id": "CHICKEN_010201",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 46,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (812).jpeg",
+    "sha256": "d44e0b672a2cd942472a51b67742401aabc752e61f5a5d1a330c2bcafc623a2f",
+    "pixel_sha256": "4e80e1582a78a10aa44cb9319fd68560ef9b732b4301e038257ad002c030b659",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_012133",
+    "chicken_id": "CHICKEN_012133",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 47,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (262).jpeg",
+    "sha256": "c3d2d0e02b3d8e896481db6abb7f42cdefaa0bf75830ea8be61900a4e1e836eb",
+    "pixel_sha256": "50c3c0e266fcfb3f47b8fa5ea4110c31269b198556d000c31f8948e9f32eea50",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012744",
+    "chicken_id": "CHICKEN_012744",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 49,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (115).jpeg",
+    "sha256": "1f1c4e740f35c4a2bcfc9055a6c838b48d7d181c599146bfd76cc686a39006ca",
+    "pixel_sha256": "54547d368214f8395706cdefba479c31c685707906a12509205801fbbba1f64a",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011385",
+    "chicken_id": "CHICKEN_011385",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 50,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (818).jpeg",
+    "sha256": "dbf00d316fc0303ef0cc8550abb78444d179d7220e1744d13fede26cafa209a5",
+    "pixel_sha256": "5a402200f40418371682cdce0f6d71cc14a2e2634d4d7ea15ee5e172b68f8b02",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_012139",
+    "chicken_id": "CHICKEN_012139",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 51,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\15months (168).jpg",
+    "sha256": "60bba382a8782a73557cf5a3558d33b18e67079a080ecf661f9a19bfdb75d3e6",
+    "pixel_sha256": "5a6bcab7da2688bd36be1d3174094338eb202687996739c38f9d32ca4c6294f4",
+    "age_months": "15",
+    "recorded_chicken_id": "CHICKEN_003845",
+    "chicken_id": "CHICKEN_003845",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_023",
+    "content_type": "mixed_unlocalized",
+    "width": 529,
+    "height": 579,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Spread-wing chicken and partial background bird; spur boundaries not resolved.",
+    "reviewed_annotations": {
+      "chickens": [
+        [
+          0,
+          49,
+          600,
+          565
+        ],
+        [
+          0,
+          242,
+          61,
+          383
+        ]
+      ],
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Spread-wing chicken and partial background bird; spur boundaries not resolved."
+    }
+  },
+  {
+    "index": 52,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (118).jpeg",
+    "sha256": "ef3caa509924b837a6b5b7b267c54eb9968d5dba4da4d8de9f145edfe8142180",
+    "pixel_sha256": "5a720b4ef0d4f99fc9411ae94802268e4efc1fe086b28be0deb5789891da1226",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_000979",
+    "chicken_id": "CHICKEN_000979",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 54,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (103).jpeg",
+    "sha256": "1c8a1480e59395f12ea55a2b64c4883372b551c0b654060e9ac37c85af44888c",
+    "pixel_sha256": "6263317a9e2dec8dcb0f8b6f8124a21ad3e40cf371a71ef7697c0e4d7933a049",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011366",
+    "chicken_id": "CHICKEN_011366",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 55,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (100).jpg",
+    "sha256": "1a32f5a9a8e182c5bb462b7fbd564e77f797c7761fb478898cf0b919664f7a29",
+    "pixel_sha256": "6285d49283e114de459e50d40befa0a6f84645c6fe6d03efe9f2c25bd7750962",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_000942",
+    "chicken_id": "CHICKEN_000942",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_025",
+    "content_type": "mixed_unlocalized",
+    "width": 450,
+    "height": 680,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Two visible birds at different depths; small/occluded spur regions not labeled absent.",
+    "reviewed_annotations": {
+      "chickens": [
+        [
+          16,
+          20,
+          578,
+          522
+        ],
+        [
+          276,
+          306,
+          524,
+          397
+        ]
+      ],
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Two visible birds at different depths; small/occluded spur regions not labeled absent."
+    }
+  },
+  {
+    "index": 56,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (102).jpeg",
+    "sha256": "af9e1697ec580a7fb6dc468fd5cee3b7e948958d74478416e39d4c00180c6170",
+    "pixel_sha256": "649fbdaf6adcccdb9b88bf3d953a25245b5003c95bdf2238fae148842b622ac8",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_000945",
+    "chicken_id": "CHICKEN_000945",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 57,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (404).jpeg",
+    "sha256": "23797788915ed87ecef0625ad72c9faeeb78fa968dbce33b7e4e11b7887eeacf",
+    "pixel_sha256": "64a882f8b184e49732cf4d57fa7536a9aba87d24e553b3e46296c4483d963d42",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012900",
+    "chicken_id": "CHICKEN_012900",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 58,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\14months (275).jpg",
+    "sha256": "627d30e0753e0a8fddd97c222e9e581e60aa41d09b91e215af7231a6411fa213",
+    "pixel_sha256": "650d9a3a22d44c0eb529d0dfae91203bbd900cd80380bf39dcc3fa1b5f5acbd1",
+    "age_months": "14",
+    "recorded_chicken_id": "CHICKEN_003268",
+    "chicken_id": "CHICKEN_003268",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_026",
+    "content_type": "mixed_unlocalized",
+    "width": 494,
+    "height": 619,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Composite collage contains multiple photos/scales. Retained, excluded from single-photo annotation training.",
+    "reviewed_annotations": {
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Composite collage contains multiple photos/scales. Retained, excluded from single-photo annotation training."
+    }
+  },
+  {
+    "index": 59,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (262).jpeg",
+    "sha256": "371ff9b37f6df57450da0a12b5832027682502469b81dd011738a49c8ee53e8b",
+    "pixel_sha256": "65884a713ecf99be756d7da88ae19a7fa665107e450fb01590863c3eeffd7a9c",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001280",
+    "chicken_id": "CHICKEN_001280",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 60,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (192).jpeg",
+    "sha256": "9c3fc7cf9d88b7180917dcdeca3d765e14aeeaea0bdd17971606a28e1ec249af",
+    "pixel_sha256": "659937aeba54d7689efb6ca1ddc5effb90ccb8ddb4a1874bb2cce2ed5e17e010",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001143",
+    "chicken_id": "CHICKEN_001143",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 61,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (386).jpeg",
+    "sha256": "36c58c0ec35908e0a163a9c457ec4cae21b26b334d8d754dd324536b4cca8a74",
+    "pixel_sha256": "66685e50e8081ec61a052b3c1aa10635bbd26245fee584d0cfe532d82d4ca36d",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012880",
+    "chicken_id": "CHICKEN_012880",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 66,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (11).jpeg",
+    "sha256": "954dfda90557121c1c8cafedc2b56dc79427a24b5de252070b5fc452bf1a413d",
+    "pixel_sha256": "6fab6c10fe67dcb13b47cc4fd3a0de62b356e4f93f263b4ceaf3258553e0f226",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010225",
+    "chicken_id": "CHICKEN_010225",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 67,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (296).jpeg",
+    "sha256": "4bc8bf33be33c863042e62a9b09177dcd3cc8a6ea4c5a2272d8df4e52e308cd4",
+    "pixel_sha256": "73eb38d8da6b5ad5c33a07a7f941098e353a8c6a516e4775f8cd48dad78dc0f3",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012781",
+    "chicken_id": "CHICKEN_012781",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 68,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (1).jpeg",
+    "sha256": "5854266bc4ea85345254c9dd7064bd732d50ccfffd19fb843a38e8c8c4b9866b",
+    "pixel_sha256": "74a9ac67e35adef012f97da2d4c3d560f8316f9090b3f30e4dccd20ef1c98124",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010189",
+    "chicken_id": "CHICKEN_010189",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 69,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\20months (156).jpg",
+    "sha256": "467618a0b282d24d3ac1ff3478df6cd99bc17d32858a8c38361a58f01317ed0b",
+    "pixel_sha256": "75a36165b9bfbd1410ab191c30df9ece3cef91f7e9d0b8c189c15bda91c25470",
+    "age_months": "20",
+    "recorded_chicken_id": "CHICKEN_006173",
+    "chicken_id": "CHICKEN_006173",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_031",
+    "content_type": "mixed_unlocalized",
+    "width": 335,
+    "height": 597,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Grass and feet obscure potential spur region. No absence label inferred.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          307,
+          246,
+          376,
+          359
+        ],
+        [
+          458,
+          224,
+          521,
+          293
+        ]
+      ],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Grass and feet obscure potential spur region. No absence label inferred."
+    }
+  },
+  {
+    "index": 70,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (122).jpeg",
+    "sha256": "6af968f4687d9f790e77330cee95f4ba997b3fe7e45998aed7570c2193f11762",
+    "pixel_sha256": "7663092f528af73ccc0649655dff939820aa69db3c14806baa0c0df96049eeda",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_000989",
+    "chicken_id": "CHICKEN_000989",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 71,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\3months (10).jpg",
+    "sha256": "60206b976bef82f6bac3d7a7a9b5f415c44624f6e33090d6a7b7ef009bc53af1",
+    "pixel_sha256": "78ec68b5e90beedd70ad4a1a8cbf272fccf43ece67b9fb5a030a4f238266edd9",
+    "age_months": "3",
+    "recorded_chicken_id": "CHICKEN_010118",
+    "chicken_id": "CHICKEN_010118",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_032",
+    "content_type": "mixed_unlocalized",
+    "width": 415,
+    "height": 739,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Cropped whole-bird view; no trustworthy visible spur outline.",
+    "reviewed_annotations": {
+      "chickens": [
+        [
+          0,
+          112,
+          470,
+          600
+        ]
+      ],
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Cropped whole-bird view; no trustworthy visible spur outline."
+    }
+  },
+  {
+    "index": 73,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (298).jpeg",
+    "sha256": "2405bf36a8b69cb9f2944e11b2ecab1b50b906d36f22f205cd9bb27014c3eecc",
+    "pixel_sha256": "7af022ad2c3a2177fb8bed130db47c0bad9f6dd8d988a8e7f8d11e21835654b2",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001322",
+    "chicken_id": "CHICKEN_001322",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 74,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (1).jpeg",
+    "sha256": "d4a252063d47019ba4b92e305148d733a5e337cf77c2eebf6960b8391bc8c750",
+    "pixel_sha256": "7c299964f7265669cc8148a8d1f43489bb77f8a4da88ce7c981392d481ebbd4b",
+    "age_months": "6",
+    "recorded_chicken_id": "CHICKEN_012187",
+    "chicken_id": "CHICKEN_012187",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 75,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (268).jpeg",
+    "sha256": "0f6c3eb2f125084b5284ff3fdf89e07bb5f870f96d2874bd824474822f792312",
+    "pixel_sha256": "7dc727abba4cea6259b0a1b6b752a01ab5d6a1f21cd73eca2f47bf4320187318",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014757",
+    "chicken_id": "CHICKEN_014757",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 78,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (340).jpeg",
+    "sha256": "28d3d950ad385f57c11d91a12010f700758d5785f0adca522db21178660d94cf",
+    "pixel_sha256": "82f8b5f4f61d1d62d50259c478c04c0e5c7b4b6d809342c8e4e2a546a7cab26a",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001376",
+    "chicken_id": "CHICKEN_001376",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 79,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (316).jpeg",
+    "sha256": "8da197aa18d422167a39c612a3daa6562288d72beed23de78bfdeddc84c089c0",
+    "pixel_sha256": "8392eb0cef9b1bb09452954966ebe8b64180be1fff148ab119168c60f024a5e1",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001346",
+    "chicken_id": "CHICKEN_001346",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 80,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (229).jpeg",
+    "sha256": "063b7e9a278cac67666f96888f8e7861f8fc3cba3d214142574ffeebc25b0c1b",
+    "pixel_sha256": "848a17c12dacac4c8b2a19f1040b62aade6f623d84cd732ba42b2ebba50a373c",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001223",
+    "chicken_id": "CHICKEN_001223",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 84,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (107).jpeg",
+    "sha256": "6344ad20efb18d4f921d34b2381b53e796c6f1d940aaa9ffd5670a190f085f20",
+    "pixel_sha256": "92350cda44ff7ff7618506264e26e16b0e329c924fa3486b81baba79a4b4e0c9",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011370",
+    "chicken_id": "CHICKEN_011370",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 85,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (328).jpeg",
+    "sha256": "0ca79bd2890be3f66b9c0c2dc811e60641e2a002db9294e2299f28b4f85ed632",
+    "pixel_sha256": "92796dc0a2e639d18d75dd6ecb3586ea63c69b0b02be64ac26e4f8b1037857f7",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001360",
+    "chicken_id": "CHICKEN_001360",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 86,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (286).jpeg",
+    "sha256": "94aaf6e0f94d0be2682ad4f980229037329b520b5a15588633905a750682622b",
+    "pixel_sha256": "946a73c83962117295abc74eda185102156e5a33a5474f049566a605b048d45b",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001308",
+    "chicken_id": "CHICKEN_001308",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 87,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (334).jpeg",
+    "sha256": "5c5d5b1246f8012a826ae5adaf25c3dc43fa00137f604178cef71884e60cfc4b",
+    "pixel_sha256": "967b7099d3fb7e97fe8073325faab181a89be56cdbea303cbab897d2a8733acf",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001368",
+    "chicken_id": "CHICKEN_001368",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 88,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (828).jpeg",
+    "sha256": "bc4b2c407fe1139a954c48c3f968cfd64e0546cf699332242f85af5fe66e4695",
+    "pixel_sha256": "98eec548a892ef79c830368c032bbd1aa33e66774b48fc17a4055eec0ddb044d",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_012150",
+    "chicken_id": "CHICKEN_012150",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 89,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (19).jpeg",
+    "sha256": "5e098ccfb2252f142588ee8e31ac59ba59493aaa41c7e8750aef6703e24840d9",
+    "pixel_sha256": "999d77e033c838a9641d15fd75800618254825b3a3f7ef7270f8d6c13fc10abf",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011507",
+    "chicken_id": "CHICKEN_011507",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 91,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (11).jpeg",
+    "sha256": "ba9e6538cf1ff462b6f7f6a78e5b681921c34a59df268fadb0b005750a58387a",
+    "pixel_sha256": "a09451f21a5be27a8fdccb20cf63fc17c5b448c4e41b202313c31cc008be031a",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011373",
+    "chicken_id": "CHICKEN_011373",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 92,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (10).jpeg",
+    "sha256": "111b1fe81ee1f06f79abfefad7418de5d002bed2ae20800f08c543149a93cb8f",
+    "pixel_sha256": "a1d0b13f2f0eebd51171fe989029d6dabd6d70e6ec9a1930668f23bdd9cb96ad",
+    "age_months": "6",
+    "recorded_chicken_id": "CHICKEN_012189",
+    "chicken_id": "CHICKEN_012189",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 93,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (268).jpeg",
+    "sha256": "4241a6eec9a5514e25e4329ca2d546f18beb88df68fafc3835de8a42161aef19",
+    "pixel_sha256": "a2c272d371398b509df47472faa1851545a474dd7544cdf69877c1cd26634602",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001286",
+    "chicken_id": "CHICKEN_001286",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 94,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (286).jpeg",
+    "sha256": "eb938d72c5878a8fbdaffecaf7a37bc5e0834e59b387bfe3c8dad7e5dd2f3120",
+    "pixel_sha256": "a67b58f008419059773f556fe51b2fabc3b8567e0b7abd72f213716ec89fcaae",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014779",
+    "chicken_id": "CHICKEN_014779",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 96,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (250).jpeg",
+    "sha256": "50cc61078d8b303bd77f0aa798fad19f5f07a637c8cc816ae02329bfbe75e1a7",
+    "pixel_sha256": "a923f9dc0a54dfd691da62c894870b8b4f59adf718c828b73c59f370c8442389",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001266",
+    "chicken_id": "CHICKEN_001266",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 97,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (1).jpeg",
+    "sha256": "a57065cce16fab798c118c830ce10b796612919a33a048bfcd229ba64ac3da66",
+    "pixel_sha256": "a9f0a37c7b583573d8ef80323c16d5f57448fbc1373240f26f3211c12c254fb6",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012727",
+    "chicken_id": "CHICKEN_012727",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 98,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (1).jpeg",
+    "sha256": "e10cdbe7d632c112670393940d534f2e8db515a478f0bbb602df299cdc84085f",
+    "pixel_sha256": "ab3df52ee8f9eaec1ff34109fe2c7755a8349056578bf4db52e6c7d7c27b4ea2",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011359",
+    "chicken_id": "CHICKEN_011359",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 100,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (824).jpeg",
+    "sha256": "55f7ac10af99e16bac01eacb6a783699c63e991c97520ab88beb67a938adfd8d",
+    "pixel_sha256": "ad5effb7e9a1a8ae36e8cfa05d647fd9e0d3bafa55c4ad2d5097f78bfe349771",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_012146",
+    "chicken_id": "CHICKEN_012146",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 101,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (10).jpeg",
+    "sha256": "40f996a25068a0237890137aeb7537e1efcb3c36ec58097dddf313d6850bd745",
+    "pixel_sha256": "ae0b780307ceefbc821ac3aad603af1e9093a7dcb084b70be8aecf4d13dfaae8",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_000939",
+    "chicken_id": "CHICKEN_000939",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 103,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\14months (383).jpg",
+    "sha256": "54cb089820905850d77d2b0543d8317747e6b5475bf134eb32c011c1622dcab6",
+    "pixel_sha256": "aef79391118e63e693e9f24a0137826ea7436ba58c9300073f38e78502a92038",
+    "age_months": "14",
+    "recorded_chicken_id": "CHICKEN_003388",
+    "chicken_id": "CHICKEN_003388",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_042",
+    "content_type": "mixed_unlocalized",
+    "width": 679,
+    "height": 452,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird box reviewed; thin distant spur region not used for mask training.",
+    "reviewed_annotations": {
+      "chickens": [
+        [
+          21,
+          27,
+          389,
+          597
+        ]
+      ],
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Whole-bird box reviewed; thin distant spur region not used for mask training."
+    }
+  },
+  {
+    "index": 104,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (1).jpeg",
+    "sha256": "4d2ac144c3ac8e502b8b54f99717f2b2274d65662fb50f7c15914d059df13f9f",
+    "pixel_sha256": "b0bb3a2cc97e30203e67bcf839d11df06cb6bbc7658a5ff1aa9d4a685ce731d2",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_000937",
+    "chicken_id": "CHICKEN_000937",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 105,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (13).jpeg",
+    "sha256": "fbfe2fd3e2f1c0a51a3b640bec75de7a0cbd0d706d45ac9af4bf5a50adc265ba",
+    "pixel_sha256": "b17b52a0a7b5e8d9dd3c2a4914253427c36eb6605914f52d7442dd473a620695",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012730",
+    "chicken_id": "CHICKEN_012730",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 106,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (229).jpeg",
+    "sha256": "414a72267ab30237b17b635efcb4a6984fb3d04e5a1f91008d05693ca289614b",
+    "pixel_sha256": "b18af016fdd8f09440cc7d0ced2d9f657994c6adf6f02e8a33133a78c567e7e8",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014710",
+    "chicken_id": "CHICKEN_014710",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 108,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\7months (314).jpeg",
+    "sha256": "f27c3436727d93dc3c2b037b11e08403dc9bc0675304301d666d1cca10b62499",
+    "pixel_sha256": "b53589308a7d2a2015ef1e741b3e7d401cc95b9f7b72c9191bb722ed9842ac99",
+    "age_months": "7",
+    "recorded_chicken_id": "CHICKEN_012801",
+    "chicken_id": "CHICKEN_012801",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 109,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (1).jpeg",
+    "sha256": "3c6bb29eeafbb6020c8523587333594618155f6b63397f2e8e135a4a825aa027",
+    "pixel_sha256": "b7e4d03ac3120d42ce7d734df47143ab09acdd9eae417ed98cff67146235c12e",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014599",
+    "chicken_id": "CHICKEN_014599",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 110,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (274).jpeg",
+    "sha256": "da7ff64658808e04b1cf1d3210575ec09f454d8eee6be75d86150289308cd569",
+    "pixel_sha256": "b870f156305ec2bd84feaa3b3e8e9a822a791024a95da1d6819c23acd72eceb0",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001294",
+    "chicken_id": "CHICKEN_001294",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 111,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (125).jpeg",
+    "sha256": "8f9649228c4ca06ed921079a6db1838f49d220f9cc30af5a50f62f0d369930d7",
+    "pixel_sha256": "b97ecd4ae4cca61b34c3118911bc878b471ea57439f11f47ed4fb03365a1e480",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010259",
+    "chicken_id": "CHICKEN_010259",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 113,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (388).jpeg",
+    "sha256": "4062571b6fe689290f38f46ec5c241dc38b067a2c839647d003368e361a32b47",
+    "pixel_sha256": "ba34931a57463edfbc640e18817897da02112610086f4bcf752e4eaa048aadbd",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001432",
+    "chicken_id": "CHICKEN_001432",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 114,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\12months (382).jpg",
+    "sha256": "407165f34212536e4191e7d59692c41f992c88975f482fa88037a2020944205e",
+    "pixel_sha256": "bcf417884ae32eb6c5118d9696fb59665e830e775f3ac963a9c0ba4ae9fdc456",
+    "age_months": "12",
+    "recorded_chicken_id": "CHICKEN_002055",
+    "chicken_id": "CHICKEN_002055",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_045",
+    "content_type": "mixed_unlocalized",
+    "width": 539,
+    "height": 371,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird box reviewed; spur presence/absence not inferred from raised foot.",
+    "reviewed_annotations": {
+      "chickens": [
+        [
+          137,
+          91,
+          577,
+          555
+        ]
+      ],
+      "legs": [],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Whole-bird box reviewed; spur presence/absence not inferred from raised foot."
+    }
+  },
+  {
+    "index": 119,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\2months (144).jpg",
+    "sha256": "2e0941ea4cbcaf948ad40c23d65421a3eb224261665a0661a036ab3f0b805921",
+    "pixel_sha256": "c2c709c6f4f6b74d282b2e58da59b516812e6fe42d8f2df86baf594441454e61",
+    "age_months": "2",
+    "recorded_chicken_id": "CHICKEN_009907",
+    "chicken_id": "CHICKEN_009907",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_014",
+    "content_type": "mixed_unlocalized",
+    "width": 800,
+    "height": 524,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Juvenile tiny projections cannot confidently be distinguished from background/skin detail; no absent-spur label inferred.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          156,
+          161,
+          223,
+          477
+        ],
+        [
+          304,
+          113,
+          430,
+          358
+        ]
+      ],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Juvenile tiny projections cannot confidently be distinguished from background/skin detail; no absent-spur label inferred."
+    }
+  },
+  {
+    "index": 120,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\1months (1).jpg",
+    "sha256": "ccd018bd6435eeb0f6d045d8cd52cc37b6ffc6bdf35b0f2cca5aed93e5ac77d8",
+    "pixel_sha256": "c4273fcf5b7ecb1e38cffa243397b07839c8eb26e5632bda4c527f1ff11ff5a7",
+    "age_months": "1",
+    "recorded_chicken_id": "CHICKEN_005987",
+    "chicken_id": "CHICKEN_005987",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_049",
+    "content_type": "mixed_unlocalized",
+    "width": 640,
+    "height": 480,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Feathers and frontal view obscure spur-bearing sides; not a negative example.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          192,
+          0,
+          286,
+          444
+        ],
+        [
+          335,
+          0,
+          445,
+          411
+        ]
+      ],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Feathers and frontal view obscure spur-bearing sides; not a negative example."
+    }
+  },
+  {
+    "index": 122,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (322).jpeg",
+    "sha256": "dd70db557d865ac9bbf4764567dec6a536146373f27d0119e52ebf78bbc96260",
+    "pixel_sha256": "c8038e9f75ccbecfb4d1f31f1dc73c3a9faa525ddf2c1600be1c2ca58e1f1873",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001354",
+    "chicken_id": "CHICKEN_001354",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 123,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (174).jpeg",
+    "sha256": "4aee2163422a7cc72100d978293d167843a1e3fd5a36089f1a0755e35a15f1c6",
+    "pixel_sha256": "cbc89d2b1e6e90f4065604398d55150eb49d7e85aa60a374cd3b543100c8e920",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001103",
+    "chicken_id": "CHICKEN_001103",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 124,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\2months (151).jpg",
+    "sha256": "8c7fbb63c838ba51d98c042b3f3963fbbc6cf52349dc15ef3af5f6d640df12e1",
+    "pixel_sha256": "cd031fc2d40934358c8434482063963e20afc8f3344b64998a60024ccd0f41b8",
+    "age_months": "2",
+    "recorded_chicken_id": "CHICKEN_009915",
+    "chicken_id": "CHICKEN_009915",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_051",
+    "content_type": "mixed_unlocalized",
+    "width": 641,
+    "height": 478,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Visible far-leg bud annotated; foreground region overlaps other foot, so completeness is not assured.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          171,
+          148,
+          245,
+          428
+        ],
+        [
+          309,
+          44,
+          402,
+          321
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            344,
+            215
+          ],
+          [
+            352,
+            212
+          ],
+          [
+            360,
+            215
+          ],
+          [
+            363,
+            224
+          ],
+          [
+            359,
+            234
+          ],
+          [
+            352,
+            238
+          ],
+          [
+            345,
+            234
+          ],
+          [
+            341,
+            226
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Visible far-leg bud annotated; foreground region overlaps other foot, so completeness is not assured."
+    }
+  },
+  {
+    "index": 125,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (147).jpeg",
+    "sha256": "94d17d0dc7142cbd2e70c512c6ed633eacaa57ede0943aadf9840b8b66a8e7d2",
+    "pixel_sha256": "cff758f0d4bde2ce650c3c30036df0db8af460b78a4f4fe4073dbd913a89f2c6",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011455",
+    "chicken_id": "CHICKEN_011455",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 126,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (292).jpeg",
+    "sha256": "60e517708d09a119943fc4110c0d8ebf3df7b54d8c383ee139bdbc0511404683",
+    "pixel_sha256": "d04e2846effffcecbe5e517841773655f43e29b4e61ba713fb55004d0cf57acb",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001316",
+    "chicken_id": "CHICKEN_001316",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 127,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (280).jpeg",
+    "sha256": "c8cc0c96da7ca5803ec10becee7fac33ecd05374d323c26876a1aeabaac1c714",
+    "pixel_sha256": "d1904dc1aa3dcd01a504585a4584d3a3206bc0e04e9bda0671b64987c28f6139",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001302",
+    "chicken_id": "CHICKEN_001302",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 128,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\1months (1).jpeg",
+    "sha256": "89ca0e7dec4a487f903ff973f1a0493558d4c98fb1171d6484ed9a8affb5d307",
+    "pixel_sha256": "d207ca94594c53395dd02dea2412295bc41de37aa0e81ed401d3b018bd9e266e",
+    "age_months": "1",
+    "recorded_chicken_id": "CHICKEN_005986",
+    "chicken_id": "CHICKEN_005986",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_052",
+    "content_type": "mixed_unlocalized",
+    "width": 3000,
+    "height": 4000,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Very small foreground bud; other side hidden by hand. Retained for review, not used as a negative.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          199,
+          55,
+          365,
+          260
+        ],
+        [
+          286,
+          160,
+          490,
+          401
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            325,
+            367
+          ],
+          [
+            334,
+            367
+          ],
+          [
+            341,
+            373
+          ],
+          [
+            341,
+            380
+          ],
+          [
+            331,
+            383
+          ],
+          [
+            323,
+            379
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Very small foreground bud; other side hidden by hand. Retained for review, not used as a negative."
+    }
+  },
+  {
+    "index": 129,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (143).jpeg",
+    "sha256": "1642139cf7a0970f770118613f95e4c53e247acc169c41e7aa49dd87e1a9da53",
+    "pixel_sha256": "d4872c7e90f5f0934235531905c91760eefc01e8153bd2c930773ac0f2a76444",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010299",
+    "chicken_id": "CHICKEN_010299",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 130,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\24months (361).jpg",
+    "sha256": "4db28ca071d93e88a44e312009cdd9552e49dcb5871252adc303b1f136aba809",
+    "pixel_sha256": "d4b99d1182ca946bd59c14243040e38e8a7fa14e7337af2ae07d1cbe626e4ebb",
+    "age_months": "24",
+    "recorded_chicken_id": "CHICKEN_009445",
+    "chicken_id": "CHICKEN_009445",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_053",
+    "content_type": "mixed_unlocalized",
+    "width": 300,
+    "height": 200,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Extreme coiled spur and overlapping second spur cannot be confidently separated from this view; excluded rather than guessed.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          0,
+          127,
+          600,
+          274
+        ]
+      ],
+      "spurs": [],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Extreme coiled spur and overlapping second spur cannot be confidently separated from this view; excluded rather than guessed."
+    }
+  },
+  {
+    "index": 132,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (304).jpeg",
+    "sha256": "f4f6b0ac192832f46437ff0d642b4cc0c1959fdee9117c462722bed1a837482b",
+    "pixel_sha256": "da528e94b03aa1f555c4bcdfd0bbd933da69334026236dee811d650231dc96f3",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001332",
+    "chicken_id": "CHICKEN_001332",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 133,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (1000).jpeg",
+    "sha256": "212e7fb2613eef2b66389069798b2f3d7ffef7e11269b22a4ad9c98c2401d393",
+    "pixel_sha256": "dd3fe67faffea99ae34af2f1d7beeba19771a47341e397e23543e67d866da060",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010195",
+    "chicken_id": "CHICKEN_010195",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 135,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (310).jpeg",
+    "sha256": "408c49fddcd6cc656b7d3575cdb01ee1b268a22a95d2ae37884b9b9dbf4b66e5",
+    "pixel_sha256": "e0ec8db41e05eb23d18cda717ea3b20cf055b3c8727d4a8922472d76b73b50f6",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001340",
+    "chicken_id": "CHICKEN_001340",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 136,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (304).jpeg",
+    "sha256": "4b2afcbdb0d41e9b56b7cbae7ddc1b80e54178d382a8e950562edc2387ceeaef",
+    "pixel_sha256": "e1e55a77427aa8c58e98c7e50421956e2429a0cd9aa62944238e4041aca3896f",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014803",
+    "chicken_id": "CHICKEN_014803",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 137,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (119).jpeg",
+    "sha256": "9fda1a40f750b660f534cf23ad8da95106a2ece965bb774bfa41390ed77e2d55",
+    "pixel_sha256": "e2abc70d6a96dc3d311f517899a735471d7e28b3148194034b67755d4cd16ae6",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011393",
+    "chicken_id": "CHICKEN_011393",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 139,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (243).jpeg",
+    "sha256": "4f0b8fbf6faaadc8160ef7fcadd79e15a376940530ea06a5c31f2718f28c01b6",
+    "pixel_sha256": "e81b694ce1523571de5eca15b5b27982bafa475aa4a5140f564fe449436b922f",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001255",
+    "chicken_id": "CHICKEN_001255",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 140,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\2months (259).jpg",
+    "sha256": "4a0365eec7ca8b3a5b02dc28e53d8422c534e4e96daffecb79175426d5e226fc",
+    "pixel_sha256": "e838031ffc2537dc82c2826e286cbe15a4cfedc81b9481c103654ecbc99d1ef6",
+    "age_months": "2",
+    "recorded_chicken_id": "CHICKEN_010033",
+    "chicken_id": "CHICKEN_010033",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_057",
+    "content_type": "mixed_unlocalized",
+    "width": 638,
+    "height": 480,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Frontal shank view with spur-bearing sides unclear. Excluded from spur training.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          146,
+          30,
+          296,
+          331
+        ],
+        [
+          249,
+          70,
+          328,
+          313
+        ]
+      ],
+      "spurs": [],
+      "visibility": "unknown",
+      "complete": false,
+      "note": "Frontal shank view with spur-bearing sides unclear. Excluded from spur training."
+    }
+  },
+  {
+    "index": 141,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (10).jpeg",
+    "sha256": "ff2fea320ec31f2ea4bd956f78ee51d2c9a54878642de26f2b122c0ed3d09eea",
+    "pixel_sha256": "e99f21a2d9c939dd5a083a3ca2c248a01830e0366076164df0d7899f6d494487",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011361",
+    "chicken_id": "CHICKEN_011361",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 143,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\12months (115).jpg",
+    "sha256": "93e0c83a1741cd0c2ce96ef241205f04ddad1fa45a9044a6457c39efd238fe74",
+    "pixel_sha256": "f0bcf99bb8a53261bfc4010bdc3778bb729062102756c1cddad76f12fb91d015",
+    "age_months": "12",
+    "recorded_chicken_id": "CHICKEN_001828",
+    "chicken_id": "CHICKEN_001828",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_058",
+    "content_type": "mixed_unlocalized",
+    "width": 662,
+    "height": 700,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Visible blunt foreground spur; background limb/clamp makes completeness uncertain.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          140,
+          48,
+          491,
+          306
+        ],
+        [
+          0,
+          61,
+          316,
+          122
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            391,
+            168
+          ],
+          [
+            421,
+            166
+          ],
+          [
+            450,
+            166
+          ],
+          [
+            478,
+            171
+          ],
+          [
+            490,
+            173
+          ],
+          [
+            487,
+            188
+          ],
+          [
+            489,
+            201
+          ],
+          [
+            485,
+            212
+          ],
+          [
+            459,
+            212
+          ],
+          [
+            426,
+            210
+          ],
+          [
+            393,
+            206
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Visible blunt foreground spur; background limb/clamp makes completeness uncertain."
+    }
+  },
+  {
+    "index": 146,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\23months (271).jpg",
+    "sha256": "8627a68e073efe8783186d9a84719396eea2310e6737224366f8db370816896b",
+    "pixel_sha256": "f5e8f086b84a2c4b229611db766af36ab6b4df4b4d25ba4aea5c5ec0dba294f8",
+    "age_months": "23",
+    "recorded_chicken_id": "CHICKEN_008553",
+    "chicken_id": "CHICKEN_008553",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_061",
+    "content_type": "mixed_unlocalized",
+    "width": 588,
+    "height": 521,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Main visible horn traced; additional pink projection behind it is ambiguous, excluded from training.",
+    "reviewed_annotations": {
+      "legs": [
+        [
+          0,
+          143,
+          288,
+          365
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            128,
+            246
+          ],
+          [
+            155,
+            245
+          ],
+          [
+            178,
+            263
+          ],
+          [
+            196,
+            293
+          ],
+          [
+            209,
+            327
+          ],
+          [
+            217,
+            369
+          ],
+          [
+            218,
+            410
+          ],
+          [
+            213,
+            451
+          ],
+          [
+            201,
+            490
+          ],
+          [
+            184,
+            524
+          ],
+          [
+            165,
+            547
+          ],
+          [
+            144,
+            563
+          ],
+          [
+            137,
+            563
+          ],
+          [
+            145,
+            546
+          ],
+          [
+            157,
+            521
+          ],
+          [
+            167,
+            487
+          ],
+          [
+            174,
+            450
+          ],
+          [
+            177,
+            412
+          ],
+          [
+            174,
+            371
+          ],
+          [
+            166,
+            332
+          ],
+          [
+            153,
+            297
+          ],
+          [
+            138,
+            270
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": false,
+      "note": "Main visible horn traced; additional pink projection behind it is ambiguous, excluded from training."
+    }
+  },
+  {
+    "index": 147,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (2).jpeg",
+    "sha256": "ee0469b20b8e89fdba575af0c7c0beda597e5a0bf9b9a4a5bb98e4da3777c775",
+    "pixel_sha256": "f6f320ed41921e9fcf599204acae4eda48b09577d7207087cee9688e5a9a6a02",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011519",
+    "chicken_id": "CHICKEN_011519",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 149,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (210).jpeg",
+    "sha256": "cbc050cd7764aa25442b56cff0464919722623b7e919ff8bc074ece19f0d0842",
+    "pixel_sha256": "f89ac422aaf155a68989b563542482e8505e23ccd4c48414826d1d41afd9cf88",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001183",
+    "chicken_id": "CHICKEN_001183",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  },
+  {
+    "index": 150,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (119).jpeg",
+    "sha256": "9b4ff7fab9224e8e57f6739efe3a769b70a467b050b63289843a0e4d54358847",
+    "pixel_sha256": "f8cf4fee9e7d5073d87e39485590ce852e138905afddd14472cb06ca77fca134",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010245",
+    "chicken_id": "CHICKEN_010245",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_002",
+    "content_type": "mixed_unlocalized",
+    "width": 1200,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "reason": "Whole-bird/frame family reviewed in contact sheets; small spur boundaries unresolved. Not a negative label."
+  }
+]

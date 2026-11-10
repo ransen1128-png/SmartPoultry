@@ -1,0 +1,43 @@
+{
+  "task": "detect",
+  "checkpoint": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\runs\\anatomy_detect2\\weights\\best.pt",
+  "run": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\runs\\anatomy_detect2",
+  "metrics": {
+    "val": {
+      "metrics/precision(B)": 0.5868726325252873,
+      "metrics/recall(B)": 0.5692307692307692,
+      "metrics/mAP50(B)": 0.5906102667172565,
+      "metrics/mAP50-95(B)": 0.2257917709587069,
+      "fitness": 0.2257917709587069
+    },
+    "test": {
+      "metrics/precision(B)": 0.6351639128201736,
+      "metrics/recall(B)": 0.37222222222222223,
+      "metrics/mAP50(B)": 0.4149530749518749,
+      "metrics/mAP50-95(B)": 0.1625718458225764,
+      "fitness": 0.1625718458225764
+    }
+  },
+  "age_checkpoint_unchanged": true,
+  "annotation_summary": {
+    "distinct_originals": 151,
+    "detailed_review_records": 66,
+    "training_eligible_images": 43,
+    "excluded_with_reasons": 108,
+    "leg_boxes": 71,
+    "spur_polygons": 70,
+    "splits": {
+      "train": 27,
+      "val": 8,
+      "test": 8
+    },
+    "source_families": 40,
+    "source_family_leakage": false,
+    "actual_chicken_identity_verified": false,
+    "annotation_sha256": "43868703e7ca41aab462bc234cd1382e56ff3aa8744ee7d405071ee82099d835",
+    "provenance": "Codex visual inspection of coordinate reference photographs",
+    "caution": "Assistant visual annotations, not independent expert verification. Coarse and partial contours are flagged. No physical scale or bird identity invented."
+  },
+  "status": "experimental_candidate_executed",
+  "limitation": "Source-family holdouts; actual bird identity unresolved. Assistant visual annotations are not independent expert verification."
+}

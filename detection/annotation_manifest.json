@@ -1,0 +1,5214 @@
+[
+  {
+    "index": 4,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\16months (1).jpg",
+    "sha256": "e3b0be5cbb44808192781c048ce956cc244289c18edfaab5c99dc66e67c7ce1e",
+    "pixel_sha256": "08c0a1b925af2a1113ecbbe8a133d547067dc3e785b29a211106ec01a1aa2450",
+    "age_months": "16",
+    "recorded_chicken_id": "CHICKEN_004258",
+    "chicken_id": "CHICKEN_004258",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_003",
+    "content_type": "mixed_unlocalized",
+    "width": 538,
+    "height": 570,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          113,
+          119,
+          204,
+          333
+        ],
+        [
+          382,
+          135,
+          476,
+          359
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            169,
+            229
+          ],
+          [
+            190,
+            203
+          ],
+          [
+            207,
+            168
+          ],
+          [
+            213,
+            133
+          ],
+          [
+            223,
+            128
+          ],
+          [
+            238,
+            132
+          ],
+          [
+            236,
+            166
+          ],
+          [
+            225,
+            199
+          ],
+          [
+            205,
+            227
+          ],
+          [
+            184,
+            246
+          ]
+        ],
+        [
+          [
+            397,
+            243
+          ],
+          [
+            372,
+            239
+          ],
+          [
+            342,
+            224
+          ],
+          [
+            323,
+            208
+          ],
+          [
+            312,
+            208
+          ],
+          [
+            306,
+            219
+          ],
+          [
+            314,
+            239
+          ],
+          [
+            335,
+            258
+          ],
+          [
+            362,
+            270
+          ],
+          [
+            398,
+            276
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 15,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\22months (263).jpg",
+    "sha256": "31f0468f616ff1119622e32fb8f771665041f47f422f6d58c53f89a0cea662e1",
+    "pixel_sha256": "1e30c40e4b66f4fc8eab03e846d0ee1002728b6b80c503127d563268f144fddf",
+    "age_months": "22",
+    "recorded_chicken_id": "CHICKEN_007589",
+    "chicken_id": "CHICKEN_007589",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_006",
+    "content_type": "mixed_unlocalized",
+    "width": 371,
+    "height": 539,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          94,
+          300,
+          518,
+          445
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            207,
+            334
+          ],
+          [
+            198,
+            314
+          ],
+          [
+            198,
+            284
+          ],
+          [
+            201,
+            255
+          ],
+          [
+            214,
+            228
+          ],
+          [
+            235,
+            205
+          ],
+          [
+            257,
+            188
+          ],
+          [
+            282,
+            174
+          ],
+          [
+            302,
+            167
+          ],
+          [
+            303,
+            171
+          ],
+          [
+            278,
+            194
+          ],
+          [
+            260,
+            220
+          ],
+          [
+            247,
+            248
+          ],
+          [
+            245,
+            279
+          ],
+          [
+            249,
+            311
+          ],
+          [
+            259,
+            342
+          ],
+          [
+            246,
+            345
+          ],
+          [
+            225,
+            341
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 17,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\13months (1).jpg",
+    "sha256": "f93f3de3f0f8d640ac512c439a22f0bb0fe58ce944b51ed3918ebbdfb4ffa2d4",
+    "pixel_sha256": "2691812d5f329b041466b875d2fbd66310c55e26c974819c1f605c796e030180",
+    "age_months": "13",
+    "recorded_chicken_id": "CHICKEN_002278",
+    "chicken_id": "CHICKEN_002278",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_008",
+    "content_type": "mixed_unlocalized",
+    "width": 800,
+    "height": 500,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          144,
+          89,
+          216,
+          435
+        ],
+        [
+          373,
+          87,
+          444,
+          352
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            204,
+            256
+          ],
+          [
+            222,
+            243
+          ],
+          [
+            234,
+            218
+          ],
+          [
+            246,
+            181
+          ],
+          [
+            252,
+            161
+          ],
+          [
+            251,
+            187
+          ],
+          [
+            247,
+            222
+          ],
+          [
+            237,
+            251
+          ],
+          [
+            222,
+            275
+          ],
+          [
+            202,
+            294
+          ]
+        ],
+        [
+          [
+            381,
+            222
+          ],
+          [
+            353,
+            218
+          ],
+          [
+            330,
+            205
+          ],
+          [
+            307,
+            183
+          ],
+          [
+            287,
+            159
+          ],
+          [
+            274,
+            145
+          ],
+          [
+            278,
+            169
+          ],
+          [
+            289,
+            195
+          ],
+          [
+            306,
+            218
+          ],
+          [
+            329,
+            241
+          ],
+          [
+            352,
+            254
+          ],
+          [
+            378,
+            258
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 19,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (11).jpg",
+    "sha256": "c301d751cd2b07ce59e6e869173a92868a509ddd4277023846492ae3c9a68858",
+    "pixel_sha256": "29be57cdad5b7fcbef878644a38d50c0ea05a8cd814f4756286e62f3d0da2a6a",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011374",
+    "chicken_id": "CHICKEN_011374",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_010",
+    "content_type": "mixed_unlocalized",
+    "width": 230,
+    "height": 347,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          208,
+          269,
+          290,
+          485
+        ],
+        [
+          433,
+          298,
+          494,
+          486
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            279,
+            354
+          ],
+          [
+            303,
+            347
+          ],
+          [
+            335,
+            341
+          ],
+          [
+            376,
+            336
+          ],
+          [
+            364,
+            347
+          ],
+          [
+            341,
+            357
+          ],
+          [
+            315,
+            368
+          ],
+          [
+            282,
+            377
+          ]
+        ],
+        [
+          [
+            448,
+            398
+          ],
+          [
+            423,
+            395
+          ],
+          [
+            393,
+            389
+          ],
+          [
+            364,
+            385
+          ],
+          [
+            374,
+            398
+          ],
+          [
+            399,
+            409
+          ],
+          [
+            426,
+            418
+          ],
+          [
+            448,
+            416
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "note": "Low-resolution visible outlines; retain coarse-boundary flag.",
+      "boundary_quality": "coarse"
+    },
+    "split": "train"
+  },
+  {
+    "index": 22,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\18months (1).jpg",
+    "sha256": "a9717081c4a857b91c27ec73be16a48b4af4061eaf0e33f77a36134cbed525d9",
+    "pixel_sha256": "2d28402138ae91145ebcb8c9a449fa98dbc52764d77c02f00d45ff640ac216f9",
+    "age_months": "18",
+    "recorded_chicken_id": "CHICKEN_005194",
+    "chicken_id": "CHICKEN_005194",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_012",
+    "content_type": "mixed_unlocalized",
+    "width": 480,
+    "height": 640,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          144,
+          228,
+          227,
+          362
+        ],
+        [
+          330,
+          194,
+          411,
+          354
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            183,
+            313
+          ],
+          [
+            208,
+            297
+          ],
+          [
+            230,
+            270
+          ],
+          [
+            244,
+            238
+          ],
+          [
+            246,
+            210
+          ],
+          [
+            238,
+            168
+          ],
+          [
+            222,
+            131
+          ],
+          [
+            196,
+            101
+          ],
+          [
+            182,
+            81
+          ],
+          [
+            190,
+            72
+          ],
+          [
+            211,
+            81
+          ],
+          [
+            236,
+            105
+          ],
+          [
+            262,
+            143
+          ],
+          [
+            279,
+            181
+          ],
+          [
+            286,
+            221
+          ],
+          [
+            277,
+            260
+          ],
+          [
+            254,
+            291
+          ],
+          [
+            223,
+            321
+          ],
+          [
+            198,
+            330
+          ]
+        ],
+        [
+          [
+            360,
+            298
+          ],
+          [
+            333,
+            279
+          ],
+          [
+            309,
+            248
+          ],
+          [
+            295,
+            217
+          ],
+          [
+            291,
+            185
+          ],
+          [
+            296,
+            151
+          ],
+          [
+            314,
+            113
+          ],
+          [
+            341,
+            77
+          ],
+          [
+            371,
+            47
+          ],
+          [
+            398,
+            28
+          ],
+          [
+            415,
+            17
+          ],
+          [
+            405,
+            34
+          ],
+          [
+            382,
+            61
+          ],
+          [
+            362,
+            96
+          ],
+          [
+            349,
+            130
+          ],
+          [
+            339,
+            165
+          ],
+          [
+            335,
+            199
+          ],
+          [
+            344,
+            233
+          ],
+          [
+            365,
+            264
+          ],
+          [
+            379,
+            280
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 32,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\14months (1).jpg",
+    "sha256": "d00384b73a6decb0754e1d2741b173e4d34f545133e3f6a5ab054c2741b91c9c",
+    "pixel_sha256": "36ddec734fb62816ff515a9381ad8e4d7dba41e8a92b77402140fce6896e2c51",
+    "age_months": "14",
+    "recorded_chicken_id": "CHICKEN_003178",
+    "chicken_id": "CHICKEN_003178",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_017",
+    "content_type": "mixed_unlocalized",
+    "width": 300,
+    "height": 300,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          86,
+          18,
+          151,
+          290
+        ],
+        [
+          327,
+          48,
+          492,
+          300
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            138,
+            174
+          ],
+          [
+            161,
+            162
+          ],
+          [
+            186,
+            147
+          ],
+          [
+            212,
+            130
+          ],
+          [
+            232,
+            119
+          ],
+          [
+            229,
+            129
+          ],
+          [
+            213,
+            150
+          ],
+          [
+            191,
+            170
+          ],
+          [
+            166,
+            187
+          ],
+          [
+            140,
+            198
+          ]
+        ],
+        [
+          [
+            386,
+            200
+          ],
+          [
+            353,
+            196
+          ],
+          [
+            320,
+            195
+          ],
+          [
+            308,
+            199
+          ],
+          [
+            317,
+            208
+          ],
+          [
+            337,
+            220
+          ],
+          [
+            362,
+            230
+          ],
+          [
+            398,
+            236
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 35,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\22months (1).jpg",
+    "sha256": "be9a6ecb04d4b0890d2d8d47284ef9e335261bddcff7d0b485928d3f93c62771",
+    "pixel_sha256": "419d106809e0a81d0bbe5eae55c24fa80bc865cc5f534290a76a459a8f525000",
+    "age_months": "22",
+    "recorded_chicken_id": "CHICKEN_007570",
+    "chicken_id": "CHICKEN_007570",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_018",
+    "content_type": "mixed_unlocalized",
+    "width": 638,
+    "height": 480,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "chickens": [
+        [
+          74,
+          0,
+          577,
+          569
+        ]
+      ],
+      "legs": [
+        [
+          252,
+          306,
+          320,
+          488
+        ],
+        [
+          303,
+          289,
+          347,
+          366
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            307,
+            405
+          ],
+          [
+            327,
+            402
+          ],
+          [
+            349,
+            389
+          ],
+          [
+            370,
+            372
+          ],
+          [
+            389,
+            356
+          ],
+          [
+            406,
+            347
+          ],
+          [
+            402,
+            368
+          ],
+          [
+            391,
+            391
+          ],
+          [
+            374,
+            411
+          ],
+          [
+            354,
+            425
+          ],
+          [
+            330,
+            434
+          ],
+          [
+            307,
+            436
+          ]
+        ],
+        [
+          [
+            337,
+            348
+          ],
+          [
+            348,
+            342
+          ],
+          [
+            360,
+            332
+          ],
+          [
+            370,
+            319
+          ],
+          [
+            377,
+            313
+          ],
+          [
+            376,
+            328
+          ],
+          [
+            369,
+            343
+          ],
+          [
+            355,
+            358
+          ],
+          [
+            340,
+            362
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true,
+      "note": "Cropped chicken body with two visible curved spurs."
+    },
+    "split": "train"
+  },
+  {
+    "index": 41,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\17months (272).jpg",
+    "sha256": "1e4cbb17213f728d064689d25968c08fccf5a6c06eec4728cc68a8e2c7ce403d",
+    "pixel_sha256": "4a1b31abaa1a4c7ecc4242ac6d325542d6ca0caf601cf67d3d42d49f539339f7",
+    "age_months": "17",
+    "recorded_chicken_id": "CHICKEN_004862",
+    "chicken_id": "CHICKEN_004862",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_020",
+    "content_type": "mixed_unlocalized",
+    "width": 1024,
+    "height": 736,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          178,
+          190,
+          268,
+          405
+        ],
+        [
+          448,
+          78,
+          524,
+          315
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            233,
+            315
+          ],
+          [
+            265,
+            310
+          ],
+          [
+            300,
+            307
+          ],
+          [
+            334,
+            302
+          ],
+          [
+            364,
+            290
+          ],
+          [
+            395,
+            277
+          ],
+          [
+            390,
+            295
+          ],
+          [
+            366,
+            314
+          ],
+          [
+            337,
+            330
+          ],
+          [
+            298,
+            342
+          ],
+          [
+            261,
+            343
+          ],
+          [
+            234,
+            340
+          ]
+        ],
+        [
+          [
+            500,
+            204
+          ],
+          [
+            520,
+            205
+          ],
+          [
+            537,
+            197
+          ],
+          [
+            547,
+            178
+          ],
+          [
+            552,
+            152
+          ],
+          [
+            551,
+            118
+          ],
+          [
+            550,
+            85
+          ],
+          [
+            555,
+            79
+          ],
+          [
+            563,
+            106
+          ],
+          [
+            568,
+            138
+          ],
+          [
+            568,
+            167
+          ],
+          [
+            565,
+            196
+          ],
+          [
+            555,
+            220
+          ],
+          [
+            540,
+            233
+          ],
+          [
+            519,
+            240
+          ],
+          [
+            500,
+            237
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 48,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\16months (156).jpg",
+    "sha256": "9ac2a73152b775a3f6a06fcc683fbb825902116dccca0fff0460d2ec7eaf82bf",
+    "pixel_sha256": "51ac7fa436f6ce27b4ee1a1db38f9341cea455bf0b1cbf203fd77aa9d9618b00",
+    "age_months": "16",
+    "recorded_chicken_id": "CHICKEN_004265",
+    "chicken_id": "CHICKEN_004265",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_022",
+    "content_type": "mixed_unlocalized",
+    "width": 300,
+    "height": 300,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          154,
+          291,
+          219,
+          408
+        ],
+        [
+          421,
+          279,
+          477,
+          412
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            192,
+            286
+          ],
+          [
+            221,
+            286
+          ],
+          [
+            252,
+            290
+          ],
+          [
+            283,
+            299
+          ],
+          [
+            308,
+            310
+          ],
+          [
+            291,
+            315
+          ],
+          [
+            260,
+            314
+          ],
+          [
+            230,
+            313
+          ],
+          [
+            198,
+            314
+          ]
+        ],
+        [
+          [
+            430,
+            283
+          ],
+          [
+            398,
+            289
+          ],
+          [
+            365,
+            296
+          ],
+          [
+            336,
+            306
+          ],
+          [
+            316,
+            318
+          ],
+          [
+            338,
+            321
+          ],
+          [
+            369,
+            316
+          ],
+          [
+            399,
+            312
+          ],
+          [
+            431,
+            311
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 63,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (1).jpg",
+    "sha256": "f0c2bd9355a650e8631b3de8a385e1e62cf8191cebc548333605f9e36ff2bd47",
+    "pixel_sha256": "6c189ab6d1e7277f5c88f1bba42c0ce0941266af573619e0eef6ac92ec2ae870",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_000938",
+    "chicken_id": "CHICKEN_000938",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_028",
+    "content_type": "mixed_unlocalized",
+    "width": 452,
+    "height": 678,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          72,
+          143,
+          204,
+          412
+        ],
+        [
+          366,
+          191,
+          519,
+          483
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            194,
+            271
+          ],
+          [
+            227,
+            268
+          ],
+          [
+            259,
+            259
+          ],
+          [
+            286,
+            246
+          ],
+          [
+            309,
+            225
+          ],
+          [
+            329,
+            209
+          ],
+          [
+            324,
+            232
+          ],
+          [
+            313,
+            256
+          ],
+          [
+            290,
+            276
+          ],
+          [
+            262,
+            290
+          ],
+          [
+            230,
+            300
+          ],
+          [
+            195,
+            303
+          ]
+        ],
+        [
+          [
+            396,
+            379
+          ],
+          [
+            366,
+            380
+          ],
+          [
+            330,
+            376
+          ],
+          [
+            296,
+            368
+          ],
+          [
+            261,
+            356
+          ],
+          [
+            229,
+            340
+          ],
+          [
+            201,
+            329
+          ],
+          [
+            211,
+            349
+          ],
+          [
+            233,
+            371
+          ],
+          [
+            261,
+            390
+          ],
+          [
+            297,
+            407
+          ],
+          [
+            333,
+            419
+          ],
+          [
+            371,
+            421
+          ],
+          [
+            395,
+            419
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 72,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (110).jpg",
+    "sha256": "91fe2e76c6cd1d4dec31a5c3472a6f092150ce30f21d456e498e9e44e2017ff9",
+    "pixel_sha256": "7a217d42203d7464259254b427d6034e2e00a3b0e8eab3dc0c59ca2f3d5ec369",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011376",
+    "chicken_id": "CHICKEN_011376",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_033",
+    "content_type": "mixed_unlocalized",
+    "width": 480,
+    "height": 640,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          0,
+          110,
+          417,
+          193
+        ],
+        [
+          0,
+          439,
+          492,
+          552
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            264,
+            134
+          ],
+          [
+            268,
+            117
+          ],
+          [
+            267,
+            98
+          ],
+          [
+            258,
+            78
+          ],
+          [
+            242,
+            60
+          ],
+          [
+            249,
+            65
+          ],
+          [
+            268,
+            75
+          ],
+          [
+            289,
+            93
+          ],
+          [
+            304,
+            115
+          ],
+          [
+            306,
+            139
+          ],
+          [
+            295,
+            152
+          ],
+          [
+            278,
+            154
+          ]
+        ],
+        [
+          [
+            346,
+            420
+          ],
+          [
+            343,
+            397
+          ],
+          [
+            339,
+            375
+          ],
+          [
+            331,
+            351
+          ],
+          [
+            322,
+            326
+          ],
+          [
+            327,
+            315
+          ],
+          [
+            345,
+            334
+          ],
+          [
+            365,
+            355
+          ],
+          [
+            383,
+            379
+          ],
+          [
+            395,
+            402
+          ],
+          [
+            397,
+            421
+          ],
+          [
+            379,
+            432
+          ],
+          [
+            357,
+            430
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 76,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\19months (1).jpg",
+    "sha256": "f61c6133ad1c0043e6fcceb275b65b88e382af7bc965991c2953fbccc6ee9a6b",
+    "pixel_sha256": "7fc2b47903f7b354511badaf51049b68cad859dff83c771b72209d4a468c04c3",
+    "age_months": "19",
+    "recorded_chicken_id": "CHICKEN_005662",
+    "chicken_id": "CHICKEN_005662",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_003",
+    "content_type": "mixed_unlocalized",
+    "width": 387,
+    "height": 516,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          295,
+          160,
+          405,
+          552
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            327,
+            353
+          ],
+          [
+            295,
+            348
+          ],
+          [
+            264,
+            340
+          ],
+          [
+            236,
+            329
+          ],
+          [
+            210,
+            315
+          ],
+          [
+            185,
+            296
+          ],
+          [
+            166,
+            272
+          ],
+          [
+            153,
+            248
+          ],
+          [
+            146,
+            223
+          ],
+          [
+            143,
+            238
+          ],
+          [
+            147,
+            270
+          ],
+          [
+            157,
+            300
+          ],
+          [
+            177,
+            326
+          ],
+          [
+            201,
+            348
+          ],
+          [
+            228,
+            365
+          ],
+          [
+            260,
+            379
+          ],
+          [
+            294,
+            389
+          ],
+          [
+            326,
+            396
+          ]
+        ],
+        [
+          [
+            0,
+            207
+          ],
+          [
+            21,
+            188
+          ],
+          [
+            41,
+            157
+          ],
+          [
+            58,
+            123
+          ],
+          [
+            67,
+            93
+          ],
+          [
+            69,
+            68
+          ],
+          [
+            80,
+            76
+          ],
+          [
+            86,
+            102
+          ],
+          [
+            83,
+            132
+          ],
+          [
+            74,
+            162
+          ],
+          [
+            59,
+            191
+          ],
+          [
+            35,
+            220
+          ],
+          [
+            0,
+            246
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "note": "Secondary spur intersects left image boundary; annotate visible portion only."
+    },
+    "split": "train"
+  },
+  {
+    "index": 77,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\13months (368).jpg",
+    "sha256": "0c86d123587f199c0bfde63ad733b98d98bbcd268964adc10ea473d6c0366047",
+    "pixel_sha256": "8252c4a78c014522dd185a815aa4d41a6b855830a14edd184746f05520d1820b",
+    "age_months": "13",
+    "recorded_chicken_id": "CHICKEN_002468",
+    "chicken_id": "CHICKEN_002468",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_034",
+    "content_type": "mixed_unlocalized",
+    "width": 1600,
+    "height": 1167,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          247,
+          175,
+          325,
+          373
+        ],
+        [
+          352,
+          229,
+          412,
+          431
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            307,
+            273
+          ],
+          [
+            314,
+            287
+          ],
+          [
+            326,
+            299
+          ],
+          [
+            342,
+            305
+          ],
+          [
+            363,
+            303
+          ],
+          [
+            359,
+            312
+          ],
+          [
+            344,
+            317
+          ],
+          [
+            328,
+            316
+          ],
+          [
+            315,
+            308
+          ],
+          [
+            306,
+            294
+          ],
+          [
+            301,
+            282
+          ]
+        ],
+        [
+          [
+            405,
+            315
+          ],
+          [
+            426,
+            311
+          ],
+          [
+            450,
+            303
+          ],
+          [
+            472,
+            294
+          ],
+          [
+            488,
+            284
+          ],
+          [
+            483,
+            300
+          ],
+          [
+            469,
+            314
+          ],
+          [
+            449,
+            329
+          ],
+          [
+            430,
+            338
+          ],
+          [
+            405,
+            343
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 83,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (118).jpg",
+    "sha256": "f28e7a755a2969e64fbace5a81b3240ed3d99b0aa3993892da88613c9c361275",
+    "pixel_sha256": "8eb85a20ad908f857d5557aeed9e831ec2abc6eb34592d2c3cfede6f1aa0bd40",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011392",
+    "chicken_id": "CHICKEN_011392",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_037",
+    "content_type": "mixed_unlocalized",
+    "width": 401,
+    "height": 498,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          0,
+          63,
+          107,
+          459
+        ],
+        [
+          413,
+          119,
+          517,
+          469
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            93,
+            342
+          ],
+          [
+            108,
+            352
+          ],
+          [
+            129,
+            366
+          ],
+          [
+            152,
+            379
+          ],
+          [
+            172,
+            390
+          ],
+          [
+            173,
+            398
+          ],
+          [
+            151,
+            399
+          ],
+          [
+            128,
+            393
+          ],
+          [
+            106,
+            385
+          ],
+          [
+            85,
+            372
+          ]
+        ],
+        [
+          [
+            432,
+            361
+          ],
+          [
+            410,
+            373
+          ],
+          [
+            387,
+            385
+          ],
+          [
+            361,
+            394
+          ],
+          [
+            337,
+            404
+          ],
+          [
+            350,
+            410
+          ],
+          [
+            374,
+            410
+          ],
+          [
+            400,
+            407
+          ],
+          [
+            430,
+            399
+          ],
+          [
+            442,
+            391
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 90,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (1).jpg",
+    "sha256": "e6944d3144c2adbdc86b23dec3e679f0aa2a9985a35c832abe23e81b8c823a66",
+    "pixel_sha256": "9de24829961a80a57be774e789103608f7a391a29b1fe812801f3cace5e2f611",
+    "age_months": "6",
+    "recorded_chicken_id": "CHICKEN_012188",
+    "chicken_id": "CHICKEN_012188",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_038",
+    "content_type": "mixed_unlocalized",
+    "width": 2400,
+    "height": 1600,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          214,
+          9,
+          299,
+          335
+        ],
+        [
+          298,
+          34,
+          376,
+          420
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            299,
+            236
+          ],
+          [
+            272,
+            233
+          ],
+          [
+            248,
+            222
+          ],
+          [
+            226,
+            205
+          ],
+          [
+            207,
+            184
+          ],
+          [
+            202,
+            178
+          ],
+          [
+            207,
+            198
+          ],
+          [
+            218,
+            222
+          ],
+          [
+            235,
+            243
+          ],
+          [
+            258,
+            260
+          ],
+          [
+            281,
+            269
+          ],
+          [
+            299,
+            273
+          ]
+        ],
+        [
+          [
+            267,
+            319
+          ],
+          [
+            250,
+            320
+          ],
+          [
+            234,
+            323
+          ],
+          [
+            221,
+            329
+          ],
+          [
+            220,
+            336
+          ],
+          [
+            231,
+            341
+          ],
+          [
+            248,
+            340
+          ],
+          [
+            266,
+            335
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true,
+      "note": "Long rear spur and short blunt foreground spur/stump."
+    },
+    "split": "train"
+  },
+  {
+    "index": 95,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\8months (1).jpg",
+    "sha256": "24ce1b713fd4c578b456b7d62bca72c6b6897002e3fbd41cd1dec6fb121a112c",
+    "pixel_sha256": "a882afd905dbd204d31fbf8212f5cf7974d235a9bc5a3ea2cc5e1836bc61238c",
+    "age_months": "8",
+    "recorded_chicken_id": "CHICKEN_013519",
+    "chicken_id": "CHICKEN_013519",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_039",
+    "content_type": "mixed_unlocalized",
+    "width": 499,
+    "height": 432,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          47,
+          28,
+          319,
+          431
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            258,
+            179
+          ],
+          [
+            284,
+            153
+          ],
+          [
+            319,
+            128
+          ],
+          [
+            355,
+            111
+          ],
+          [
+            383,
+            103
+          ],
+          [
+            399,
+            101
+          ],
+          [
+            408,
+            114
+          ],
+          [
+            406,
+            139
+          ],
+          [
+            396,
+            159
+          ],
+          [
+            379,
+            181
+          ],
+          [
+            354,
+            206
+          ],
+          [
+            325,
+            231
+          ],
+          [
+            291,
+            255
+          ],
+          [
+            270,
+            263
+          ],
+          [
+            255,
+            244
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true,
+      "boundary_quality": "coarse"
+    },
+    "split": "train"
+  },
+  {
+    "index": 107,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (10).jpg",
+    "sha256": "4364af5f8d99c7783405e06589759be9dfbad9a3dd065c3a435b8e4f3ddd8449",
+    "pixel_sha256": "b4e92944dfdce6987e87f4c26af03c12dfe1d9b5cdf5bb7733f491ac08541d8a",
+    "age_months": "6",
+    "recorded_chicken_id": "CHICKEN_012190",
+    "chicken_id": "CHICKEN_012190",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_043",
+    "content_type": "mixed_unlocalized",
+    "width": 480,
+    "height": 640,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          43,
+          136,
+          154,
+          600
+        ],
+        [
+          501,
+          181,
+          600,
+          600
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            132,
+            301
+          ],
+          [
+            160,
+            300
+          ],
+          [
+            189,
+            294
+          ],
+          [
+            220,
+            289
+          ],
+          [
+            235,
+            292
+          ],
+          [
+            237,
+            300
+          ],
+          [
+            220,
+            312
+          ],
+          [
+            195,
+            324
+          ],
+          [
+            164,
+            337
+          ],
+          [
+            130,
+            347
+          ]
+        ],
+        [
+          [
+            519,
+            296
+          ],
+          [
+            493,
+            287
+          ],
+          [
+            468,
+            275
+          ],
+          [
+            443,
+            262
+          ],
+          [
+            416,
+            245
+          ],
+          [
+            420,
+            262
+          ],
+          [
+            435,
+            283
+          ],
+          [
+            458,
+            305
+          ],
+          [
+            483,
+            319
+          ],
+          [
+            513,
+            331
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 112,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\13months (1000).jpg",
+    "sha256": "ce6f7de71d161f34b48679afb8218c6867406c90b41a9ad441ba346b59c86d66",
+    "pixel_sha256": "ba1d5275ae6f7745a78e8a168584942289900bf0927d7c24aaf0c7cb9e5d143e",
+    "age_months": "13",
+    "recorded_chicken_id": "CHICKEN_002281",
+    "chicken_id": "CHICKEN_002281",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_044",
+    "content_type": "mixed_unlocalized",
+    "width": 654,
+    "height": 468,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          202,
+          126,
+          254,
+          322
+        ],
+        [
+          338,
+          196,
+          383,
+          405
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            350,
+            318
+          ],
+          [
+            336,
+            321
+          ],
+          [
+            323,
+            320
+          ],
+          [
+            311,
+            316
+          ],
+          [
+            302,
+            312
+          ],
+          [
+            307,
+            322
+          ],
+          [
+            321,
+            333
+          ],
+          [
+            336,
+            338
+          ],
+          [
+            352,
+            335
+          ]
+        ],
+        [
+          [
+            236,
+            255
+          ],
+          [
+            248,
+            262
+          ],
+          [
+            263,
+            265
+          ],
+          [
+            268,
+            268
+          ],
+          [
+            258,
+            276
+          ],
+          [
+            241,
+            274
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "boundary_quality": "coarse",
+      "note": "Small distant visible spurs; coarse outline flag."
+    },
+    "split": "train"
+  },
+  {
+    "index": 118,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\12months (1).jpg",
+    "sha256": "d5dfaa882040b26a2b321fde81927e9b6018ba779899b2dec7b5b1a5edaad0e1",
+    "pixel_sha256": "bf2a5289a82e7c2ffa8e42bbab95dbf0980c554ba40879d397e7caa17a6acb9c",
+    "age_months": "12",
+    "recorded_chicken_id": "CHICKEN_001810",
+    "chicken_id": "CHICKEN_001810",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_009",
+    "content_type": "mixed_unlocalized",
+    "width": 415,
+    "height": 739,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          177,
+          209,
+          307,
+          514
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            298,
+            322
+          ],
+          [
+            316,
+            325
+          ],
+          [
+            339,
+            330
+          ],
+          [
+            362,
+            331
+          ],
+          [
+            364,
+            338
+          ],
+          [
+            353,
+            348
+          ],
+          [
+            331,
+            354
+          ],
+          [
+            307,
+            359
+          ],
+          [
+            291,
+            351
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "boundary_quality": "coarse"
+    },
+    "split": "train"
+  },
+  {
+    "index": 121,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\10months (1).jpg",
+    "sha256": "6206e665c1da9d5822d37614d7ccb5b0b4ae9c9d61f7b642e7e770b61ee8e78f",
+    "pixel_sha256": "c5206ebdf47869e73c77dab13c89a6f898cbdecc69f2dc64c5d79d86550a3619",
+    "age_months": "10",
+    "recorded_chicken_id": "CHICKEN_000001",
+    "chicken_id": "CHICKEN_000001",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_050",
+    "content_type": "mixed_unlocalized",
+    "width": 480,
+    "height": 640,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          0,
+          286,
+          299,
+          432
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            240,
+            338
+          ],
+          [
+            256,
+            339
+          ],
+          [
+            274,
+            349
+          ],
+          [
+            283,
+            369
+          ],
+          [
+            289,
+            390
+          ],
+          [
+            287,
+            406
+          ],
+          [
+            280,
+            414
+          ],
+          [
+            274,
+            409
+          ],
+          [
+            266,
+            390
+          ],
+          [
+            258,
+            374
+          ],
+          [
+            246,
+            360
+          ],
+          [
+            239,
+            348
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true,
+      "note": "String near spur base; only visible horn traced."
+    },
+    "split": "train"
+  },
+  {
+    "index": 134,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\3months (1).jpg",
+    "sha256": "820dfcee30230387449906f8af9e31404d6ea6f7bc1229079494a814492be5f8",
+    "pixel_sha256": "dde111e7bc9ba7810d414e56a5a4387489d4d8f208f9cd9f7f2e7d61253369c4",
+    "age_months": "3",
+    "recorded_chicken_id": "CHICKEN_010117",
+    "chicken_id": "CHICKEN_010117",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_055",
+    "content_type": "mixed_unlocalized",
+    "width": 678,
+    "height": 452,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          211,
+          0,
+          343,
+          448
+        ],
+        [
+          467,
+          247,
+          574,
+          437
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            235,
+            190
+          ],
+          [
+            218,
+            185
+          ],
+          [
+            206,
+            188
+          ],
+          [
+            201,
+            198
+          ],
+          [
+            202,
+            220
+          ],
+          [
+            207,
+            240
+          ],
+          [
+            220,
+            249
+          ],
+          [
+            239,
+            249
+          ]
+        ],
+        [
+          [
+            550,
+            345
+          ],
+          [
+            559,
+            322
+          ],
+          [
+            565,
+            292
+          ],
+          [
+            567,
+            260
+          ],
+          [
+            565,
+            230
+          ],
+          [
+            559,
+            205
+          ],
+          [
+            548,
+            184
+          ],
+          [
+            526,
+            163
+          ],
+          [
+            533,
+            181
+          ],
+          [
+            541,
+            207
+          ],
+          [
+            545,
+            236
+          ],
+          [
+            545,
+            266
+          ],
+          [
+            542,
+            299
+          ],
+          [
+            536,
+            330
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 138,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (1).jpg",
+    "sha256": "fa4e5f36b8deb48fbadbcf45232e0d4c3659d00efd0ca198b0a268f80bb0a207",
+    "pixel_sha256": "e3beaa3e8b4a666f1c06162b41c430093971158805b121f00127aa343efbb941",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011360",
+    "chicken_id": "CHICKEN_011360",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_056",
+    "content_type": "mixed_unlocalized",
+    "width": 600,
+    "height": 900,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          174,
+          224,
+          289,
+          401
+        ],
+        [
+          277,
+          244,
+          369,
+          424
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            232,
+            334
+          ],
+          [
+            248,
+            335
+          ],
+          [
+            266,
+            342
+          ],
+          [
+            271,
+            347
+          ],
+          [
+            263,
+            352
+          ],
+          [
+            247,
+            352
+          ],
+          [
+            229,
+            348
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "note": "Visible rear-leg spur; foreground side is hidden, no absence inferred."
+    },
+    "split": "train"
+  },
+  {
+    "index": 142,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\23months (100).jpg",
+    "sha256": "bc417cb6ba35396fe6998d991abb8225f99b227cda225194c102f2c90a079994",
+    "pixel_sha256": "eb4baaf3583a8330e338ced20ee60f9a52937dc595d8891b84c2d284237db9fd",
+    "age_months": "23",
+    "recorded_chicken_id": "CHICKEN_008364",
+    "chicken_id": "CHICKEN_008364",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_010",
+    "content_type": "mixed_unlocalized",
+    "width": 415,
+    "height": 739,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          248,
+          178,
+          321,
+          321
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            270,
+            267
+          ],
+          [
+            245,
+            272
+          ],
+          [
+            216,
+            274
+          ],
+          [
+            188,
+            270
+          ],
+          [
+            165,
+            259
+          ],
+          [
+            148,
+            242
+          ],
+          [
+            146,
+            230
+          ],
+          [
+            152,
+            218
+          ],
+          [
+            154,
+            215
+          ],
+          [
+            142,
+            222
+          ],
+          [
+            135,
+            235
+          ],
+          [
+            134,
+            248
+          ],
+          [
+            140,
+            262
+          ],
+          [
+            153,
+            275
+          ],
+          [
+            174,
+            283
+          ],
+          [
+            202,
+            287
+          ],
+          [
+            233,
+            287
+          ],
+          [
+            269,
+            281
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "boundary_quality": "coarse"
+    },
+    "split": "train"
+  },
+  {
+    "index": 144,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\14months (491).jpg",
+    "sha256": "0059345efaf5d744f40128d150b3c47f27b73a4062388e0b0b72263fa0612a22",
+    "pixel_sha256": "f2550ec1f1644085c2c935743bf12c7b95e64f3170d052032a896e7c6da30366",
+    "age_months": "14",
+    "recorded_chicken_id": "CHICKEN_003508",
+    "chicken_id": "CHICKEN_003508",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_059",
+    "content_type": "mixed_unlocalized",
+    "width": 423,
+    "height": 472,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          209,
+          65,
+          470,
+          205
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            212,
+            190
+          ],
+          [
+            234,
+            181
+          ],
+          [
+            253,
+            190
+          ],
+          [
+            266,
+            213
+          ],
+          [
+            275,
+            248
+          ],
+          [
+            278,
+            286
+          ],
+          [
+            273,
+            327
+          ],
+          [
+            266,
+            361
+          ],
+          [
+            257,
+            386
+          ],
+          [
+            249,
+            396
+          ],
+          [
+            241,
+            385
+          ],
+          [
+            237,
+            355
+          ],
+          [
+            232,
+            318
+          ],
+          [
+            227,
+            277
+          ],
+          [
+            218,
+            237
+          ]
+        ],
+        [
+          [
+            347,
+            177
+          ],
+          [
+            367,
+            176
+          ],
+          [
+            386,
+            187
+          ],
+          [
+            399,
+            212
+          ],
+          [
+            405,
+            242
+          ],
+          [
+            401,
+            269
+          ],
+          [
+            391,
+            296
+          ],
+          [
+            376,
+            306
+          ],
+          [
+            379,
+            324
+          ],
+          [
+            376,
+            344
+          ],
+          [
+            368,
+            343
+          ],
+          [
+            357,
+            328
+          ],
+          [
+            349,
+            307
+          ],
+          [
+            346,
+            278
+          ],
+          [
+            346,
+            248
+          ],
+          [
+            340,
+            211
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true,
+      "note": "Trimming photo; tool is background, not spur."
+    },
+    "split": "train"
+  },
+  {
+    "index": 145,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\20months (1).jpg",
+    "sha256": "ddee952ae33dd4f5f565886539c50f3eddcb26d30a5fc1d44a89237cea7b321f",
+    "pixel_sha256": "f515b334aa12a6b6a373f7a721d152c65c1154f6649cfd25c3f72a207a141ea2",
+    "age_months": "20",
+    "recorded_chicken_id": "CHICKEN_006166",
+    "chicken_id": "CHICKEN_006166",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_060",
+    "content_type": "mixed_unlocalized",
+    "width": 638,
+    "height": 480,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          130,
+          284,
+          199,
+          481
+        ],
+        [
+          347,
+          307,
+          472,
+          496
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            170,
+            333
+          ],
+          [
+            159,
+            351
+          ],
+          [
+            145,
+            367
+          ],
+          [
+            125,
+            379
+          ],
+          [
+            106,
+            386
+          ],
+          [
+            91,
+            390
+          ],
+          [
+            90,
+            402
+          ],
+          [
+            98,
+            419
+          ],
+          [
+            113,
+            432
+          ],
+          [
+            127,
+            435
+          ],
+          [
+            146,
+            429
+          ],
+          [
+            165,
+            412
+          ],
+          [
+            178,
+            391
+          ],
+          [
+            188,
+            363
+          ],
+          [
+            187,
+            345
+          ]
+        ],
+        [
+          [
+            396,
+            390
+          ],
+          [
+            365,
+            395
+          ],
+          [
+            331,
+            398
+          ],
+          [
+            295,
+            399
+          ],
+          [
+            260,
+            397
+          ],
+          [
+            230,
+            393
+          ],
+          [
+            206,
+            389
+          ],
+          [
+            193,
+            393
+          ],
+          [
+            200,
+            409
+          ],
+          [
+            219,
+            423
+          ],
+          [
+            246,
+            434
+          ],
+          [
+            276,
+            440
+          ],
+          [
+            308,
+            439
+          ],
+          [
+            342,
+            432
+          ],
+          [
+            372,
+            421
+          ],
+          [
+            400,
+            413
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 148,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\10months (100).jpg",
+    "sha256": "22a8e0ebf46f587d628d046357d30b97f75a69e1b0f1679bb04285a9db57035f",
+    "pixel_sha256": "f7fd2cd4e66b17f45ceef3989bbeec6e24c6c8c43ed5e3bb70b3dbea24af7acd",
+    "age_months": "10",
+    "recorded_chicken_id": "CHICKEN_000003",
+    "chicken_id": "CHICKEN_000003",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_003",
+    "content_type": "mixed_unlocalized",
+    "width": 549,
+    "height": 558,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          91,
+          78,
+          174,
+          349
+        ],
+        [
+          367,
+          72,
+          469,
+          361
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            152,
+            216
+          ],
+          [
+            177,
+            212
+          ],
+          [
+            199,
+            203
+          ],
+          [
+            216,
+            188
+          ],
+          [
+            230,
+            167
+          ],
+          [
+            235,
+            145
+          ],
+          [
+            234,
+            125
+          ],
+          [
+            232,
+            109
+          ],
+          [
+            239,
+            105
+          ],
+          [
+            248,
+            112
+          ],
+          [
+            254,
+            132
+          ],
+          [
+            256,
+            155
+          ],
+          [
+            252,
+            177
+          ],
+          [
+            240,
+            199
+          ],
+          [
+            220,
+            219
+          ],
+          [
+            195,
+            234
+          ],
+          [
+            165,
+            245
+          ]
+        ],
+        [
+          [
+            398,
+            194
+          ],
+          [
+            372,
+            197
+          ],
+          [
+            348,
+            194
+          ],
+          [
+            326,
+            185
+          ],
+          [
+            307,
+            172
+          ],
+          [
+            293,
+            151
+          ],
+          [
+            282,
+            124
+          ],
+          [
+            274,
+            122
+          ],
+          [
+            271,
+            133
+          ],
+          [
+            273,
+            155
+          ],
+          [
+            283,
+            180
+          ],
+          [
+            300,
+            202
+          ],
+          [
+            324,
+            218
+          ],
+          [
+            350,
+            227
+          ],
+          [
+            378,
+            229
+          ],
+          [
+            400,
+            225
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "train"
+  },
+  {
+    "index": 151,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\22months (412).jpg",
+    "sha256": "195c0546fe43cafe4c4bcfb70a69c3699ae3e3bbbad9998fb6673d05e2c93be7",
+    "pixel_sha256": "fb5edd99a0e0e8d6a4717e70bfdf2492ae9a4b940cd850119a81e39b27ed71d7",
+    "age_months": "22",
+    "recorded_chicken_id": "CHICKEN_007755",
+    "chicken_id": "CHICKEN_007755",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_062",
+    "content_type": "mixed_unlocalized",
+    "width": 415,
+    "height": 739,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          134,
+          191,
+          215,
+          288
+        ],
+        [
+          294,
+          246,
+          384,
+          377
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            302,
+            252
+          ],
+          [
+            284,
+            248
+          ],
+          [
+            268,
+            240
+          ],
+          [
+            256,
+            229
+          ],
+          [
+            249,
+            216
+          ],
+          [
+            249,
+            211
+          ],
+          [
+            244,
+            217
+          ],
+          [
+            247,
+            231
+          ],
+          [
+            256,
+            246
+          ],
+          [
+            270,
+            258
+          ],
+          [
+            285,
+            269
+          ],
+          [
+            303,
+            274
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "boundary_quality": "coarse",
+      "note": "Low contrast; visible horn only, no inference of hidden spur."
+    },
+    "split": "train"
+  },
+  {
+    "index": 24,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\2months (10).jpg",
+    "sha256": "64671d10fc82eac8fcc60e86d73ad6b82d03697c999c44a37429b6fec45982b4",
+    "pixel_sha256": "2e56708516b6483fac8958a522cc13e0526224d9e2e83da5c54f6bb83c3d92a1",
+    "age_months": "2",
+    "recorded_chicken_id": "CHICKEN_009902",
+    "chicken_id": "CHICKEN_009902",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_014",
+    "content_type": "mixed_unlocalized",
+    "width": 573,
+    "height": 535,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          164,
+          119,
+          434,
+          441
+        ],
+        [
+          0,
+          205,
+          149,
+          600
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            310,
+            331
+          ],
+          [
+            319,
+            328
+          ],
+          [
+            326,
+            335
+          ],
+          [
+            330,
+            349
+          ],
+          [
+            323,
+            359
+          ],
+          [
+            313,
+            359
+          ],
+          [
+            307,
+            352
+          ],
+          [
+            307,
+            341
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true,
+      "note": "Visible small bud only; burned-in red circle is not the annotation."
+    },
+    "split": "val"
+  },
+  {
+    "index": 28,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\2months (1).jpg",
+    "sha256": "cff02d41e3284b0b357fc0c1b5583418d5a3659b7fb542b5e7f93378d155e1bf",
+    "pixel_sha256": "3383a9a824940da2c3c82fae194903ad6b816c8dd16a7d1fd6ed62a40b2c1358",
+    "age_months": "2",
+    "recorded_chicken_id": "CHICKEN_009901",
+    "chicken_id": "CHICKEN_009901",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_015",
+    "content_type": "mixed_unlocalized",
+    "width": 598,
+    "height": 513,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          186,
+          88,
+          245,
+          335
+        ],
+        [
+          354,
+          45,
+          414,
+          328
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            235,
+            234
+          ],
+          [
+            247,
+            237
+          ],
+          [
+            264,
+            242
+          ],
+          [
+            276,
+            249
+          ],
+          [
+            272,
+            256
+          ],
+          [
+            258,
+            261
+          ],
+          [
+            238,
+            264
+          ]
+        ],
+        [
+          [
+            363,
+            172
+          ],
+          [
+            350,
+            173
+          ],
+          [
+            335,
+            178
+          ],
+          [
+            324,
+            182
+          ],
+          [
+            324,
+            187
+          ],
+          [
+            337,
+            194
+          ],
+          [
+            350,
+            199
+          ],
+          [
+            365,
+            199
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "val"
+  },
+  {
+    "index": 36,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (116).jpg",
+    "sha256": "de0c71b44ecee5788fa41d60c128db39931da00b427a0b22c3d3c89f14070091",
+    "pixel_sha256": "4345e5c43721a9b0cf6035ab27c55e0477f82431d5c7eb453d152b711a6d5a0e",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011388",
+    "chicken_id": "CHICKEN_011388",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_019",
+    "content_type": "mixed_unlocalized",
+    "width": 353,
+    "height": 441,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          0,
+          205,
+          142,
+          412
+        ],
+        [
+          370,
+          271,
+          475,
+          479
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            131,
+            306
+          ],
+          [
+            156,
+            292
+          ],
+          [
+            182,
+            275
+          ],
+          [
+            207,
+            254
+          ],
+          [
+            218,
+            252
+          ],
+          [
+            222,
+            260
+          ],
+          [
+            216,
+            281
+          ],
+          [
+            205,
+            302
+          ],
+          [
+            181,
+            322
+          ],
+          [
+            149,
+            343
+          ]
+        ],
+        [
+          [
+            373,
+            356
+          ],
+          [
+            343,
+            352
+          ],
+          [
+            311,
+            347
+          ],
+          [
+            285,
+            347
+          ],
+          [
+            275,
+            353
+          ],
+          [
+            280,
+            365
+          ],
+          [
+            299,
+            379
+          ],
+          [
+            330,
+            386
+          ],
+          [
+            372,
+            391
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "val"
+  },
+  {
+    "index": 62,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (10).jpg",
+    "sha256": "4357cb0c582209c1c0a9a5a78963f541f3c4b804ac7b536d5680e305809bcd31",
+    "pixel_sha256": "6b77b143e4e73abbbecf48b3c01336dee9287003577cb2d7df6cf793ad1ca5b6",
+    "age_months": "5",
+    "recorded_chicken_id": "CHICKEN_011362",
+    "chicken_id": "CHICKEN_011362",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_027",
+    "content_type": "mixed_unlocalized",
+    "width": 424,
+    "height": 722,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          0,
+          194,
+          176,
+          390
+        ],
+        [
+          393,
+          235,
+          548,
+          411
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            113,
+            337
+          ],
+          [
+            99,
+            336
+          ],
+          [
+            85,
+            341
+          ],
+          [
+            80,
+            351
+          ],
+          [
+            89,
+            360
+          ],
+          [
+            105,
+            367
+          ],
+          [
+            122,
+            364
+          ],
+          [
+            130,
+            354
+          ],
+          [
+            127,
+            344
+          ]
+        ],
+        [
+          [
+            457,
+            365
+          ],
+          [
+            427,
+            370
+          ],
+          [
+            398,
+            374
+          ],
+          [
+            368,
+            377
+          ],
+          [
+            335,
+            375
+          ],
+          [
+            309,
+            373
+          ],
+          [
+            321,
+            383
+          ],
+          [
+            352,
+            390
+          ],
+          [
+            388,
+            394
+          ],
+          [
+            423,
+            392
+          ],
+          [
+            461,
+            388
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "val"
+  },
+  {
+    "index": 65,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\24months (1).jpg",
+    "sha256": "d17f3537d06b155634f00bd7a96eaf3a0f26bf3a9787aca7f846c6b581fe177c",
+    "pixel_sha256": "6c67257bd5df475c73dd3a6f917c37dd50ba61a2b68f2da0e43785b74e2d5c51",
+    "age_months": "24",
+    "recorded_chicken_id": "CHICKEN_009154",
+    "chicken_id": "CHICKEN_009154",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_030",
+    "content_type": "mixed_unlocalized",
+    "width": 425,
+    "height": 470,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          167,
+          72,
+          285,
+          386
+        ],
+        [
+          551,
+          246,
+          600,
+          547
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            286,
+            298
+          ],
+          [
+            314,
+            300
+          ],
+          [
+            344,
+            313
+          ],
+          [
+            374,
+            339
+          ],
+          [
+            398,
+            372
+          ],
+          [
+            418,
+            414
+          ],
+          [
+            431,
+            460
+          ],
+          [
+            437,
+            503
+          ],
+          [
+            433,
+            542
+          ],
+          [
+            420,
+            569
+          ],
+          [
+            402,
+            588
+          ],
+          [
+            388,
+            599
+          ],
+          [
+            394,
+            579
+          ],
+          [
+            401,
+            548
+          ],
+          [
+            401,
+            515
+          ],
+          [
+            398,
+            481
+          ],
+          [
+            390,
+            444
+          ],
+          [
+            375,
+            406
+          ],
+          [
+            355,
+            373
+          ],
+          [
+            329,
+            346
+          ],
+          [
+            306,
+            330
+          ],
+          [
+            286,
+            324
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "note": "Only visible spur contour traced; lower tip reaches frame."
+    },
+    "split": "val"
+  },
+  {
+    "index": 82,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\23months (1).jpg",
+    "sha256": "5a1c76f6a03deee5dd2d7b0731b7136e6bed377b79523868a8db0c10fc13beed",
+    "pixel_sha256": "8e871c3d2aafcc422c4f72586e8ca80fdb53a410e8f2584aa3ae311497145eb4",
+    "age_months": "23",
+    "recorded_chicken_id": "CHICKEN_008362",
+    "chicken_id": "CHICKEN_008362",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_036",
+    "content_type": "mixed_unlocalized",
+    "width": 491,
+    "height": 407,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          76,
+          102,
+          205,
+          474
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            167,
+            272
+          ],
+          [
+            191,
+            287
+          ],
+          [
+            223,
+            298
+          ],
+          [
+            260,
+            308
+          ],
+          [
+            305,
+            316
+          ],
+          [
+            352,
+            319
+          ],
+          [
+            398,
+            314
+          ],
+          [
+            442,
+            304
+          ],
+          [
+            481,
+            288
+          ],
+          [
+            515,
+            265
+          ],
+          [
+            542,
+            242
+          ],
+          [
+            552,
+            232
+          ],
+          [
+            546,
+            254
+          ],
+          [
+            533,
+            277
+          ],
+          [
+            513,
+            302
+          ],
+          [
+            488,
+            325
+          ],
+          [
+            458,
+            345
+          ],
+          [
+            423,
+            360
+          ],
+          [
+            381,
+            369
+          ],
+          [
+            335,
+            370
+          ],
+          [
+            290,
+            363
+          ],
+          [
+            248,
+            350
+          ],
+          [
+            209,
+            334
+          ],
+          [
+            176,
+            314
+          ],
+          [
+            158,
+            294
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "val"
+  },
+  {
+    "index": 99,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (127).jpg",
+    "sha256": "04e7525620a2c7adc237a396857a16e3d76556b854f1a106a8f620a7d8632bbc",
+    "pixel_sha256": "ac9a63a4c5a9611ec576eafaf59ed95f1c9be5a4ca6e89ce09021d28be14e8f0",
+    "age_months": "11",
+    "recorded_chicken_id": "CHICKEN_001000",
+    "chicken_id": "CHICKEN_001000",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_040",
+    "content_type": "mixed_unlocalized",
+    "width": 612,
+    "height": 405,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          61,
+          0,
+          143,
+          408
+        ],
+        [
+          299,
+          0,
+          383,
+          447
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            120,
+            235
+          ],
+          [
+            128,
+            226
+          ],
+          [
+            137,
+            206
+          ],
+          [
+            145,
+            188
+          ],
+          [
+            152,
+            188
+          ],
+          [
+            155,
+            199
+          ],
+          [
+            154,
+            227
+          ],
+          [
+            150,
+            255
+          ],
+          [
+            141,
+            280
+          ],
+          [
+            128,
+            293
+          ],
+          [
+            118,
+            292
+          ],
+          [
+            113,
+            279
+          ]
+        ],
+        [
+          [
+            312,
+            227
+          ],
+          [
+            283,
+            225
+          ],
+          [
+            259,
+            215
+          ],
+          [
+            237,
+            198
+          ],
+          [
+            216,
+            176
+          ],
+          [
+            201,
+            153
+          ],
+          [
+            191,
+            133
+          ],
+          [
+            190,
+            157
+          ],
+          [
+            195,
+            185
+          ],
+          [
+            201,
+            211
+          ],
+          [
+            214,
+            237
+          ],
+          [
+            233,
+            257
+          ],
+          [
+            258,
+            272
+          ],
+          [
+            284,
+            280
+          ],
+          [
+            312,
+            280
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "val"
+  },
+  {
+    "index": 116,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (102).jpg",
+    "sha256": "2b3a27c4eb1ce832d1bf973eeea4ce3403387cd6d9b8d0ee14358f725861bce6",
+    "pixel_sha256": "be2fc0ab27e4495cd0081870489172a48475f43a7f579e022dacafbedd888093",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010210",
+    "chicken_id": "CHICKEN_010210",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_047",
+    "content_type": "mixed_unlocalized",
+    "width": 300,
+    "height": 300,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          142,
+          0,
+          252,
+          324
+        ],
+        [
+          279,
+          0,
+          473,
+          412
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            224,
+            171
+          ],
+          [
+            247,
+            170
+          ],
+          [
+            278,
+            166
+          ],
+          [
+            304,
+            167
+          ],
+          [
+            311,
+            175
+          ],
+          [
+            298,
+            192
+          ],
+          [
+            278,
+            205
+          ],
+          [
+            250,
+            219
+          ],
+          [
+            230,
+            224
+          ]
+        ],
+        [
+          [
+            386,
+            259
+          ],
+          [
+            366,
+            249
+          ],
+          [
+            342,
+            244
+          ],
+          [
+            320,
+            247
+          ],
+          [
+            310,
+            254
+          ],
+          [
+            318,
+            267
+          ],
+          [
+            341,
+            282
+          ],
+          [
+            364,
+            292
+          ],
+          [
+            392,
+            295
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "val"
+  },
+  {
+    "index": 29,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\12months (292).jpg",
+    "sha256": "5e70cd03d296a5f93f374b75da7737d9e07a2ac9bff2afc0f92c2556196ff352",
+    "pixel_sha256": "3419855a3278a286ed7544b66ddf87542cd87fdd9d2bd8f58ddc2ed4fe6b9b04",
+    "age_months": "12",
+    "recorded_chicken_id": "CHICKEN_001955",
+    "chicken_id": "CHICKEN_001955",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_016",
+    "content_type": "mixed_unlocalized",
+    "width": 1000,
+    "height": 1500,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          150,
+          56,
+          285,
+          310
+        ],
+        [
+          298,
+          45,
+          443,
+          400
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            295,
+            217
+          ],
+          [
+            257,
+            215
+          ],
+          [
+            218,
+            203
+          ],
+          [
+            179,
+            189
+          ],
+          [
+            148,
+            177
+          ],
+          [
+            122,
+            165
+          ],
+          [
+            103,
+            158
+          ],
+          [
+            112,
+            173
+          ],
+          [
+            137,
+            193
+          ],
+          [
+            166,
+            212
+          ],
+          [
+            198,
+            226
+          ],
+          [
+            235,
+            237
+          ],
+          [
+            294,
+            246
+          ]
+        ],
+        [
+          [
+            291,
+            284
+          ],
+          [
+            266,
+            280
+          ],
+          [
+            237,
+            280
+          ],
+          [
+            203,
+            284
+          ],
+          [
+            169,
+            286
+          ],
+          [
+            144,
+            286
+          ],
+          [
+            136,
+            294
+          ],
+          [
+            141,
+            301
+          ],
+          [
+            169,
+            302
+          ],
+          [
+            204,
+            305
+          ],
+          [
+            240,
+            311
+          ],
+          [
+            270,
+            322
+          ],
+          [
+            293,
+            322
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "test"
+  },
+  {
+    "index": 53,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\24months (280).jpg",
+    "sha256": "c1768aa10d6cc8dd59f0b449d2270265e46964fd3157304220be8a59f91e2849",
+    "pixel_sha256": "5d56dce4307e5d1a6f1b378b07191bd16cf143b8447e7a57828eba5fe5d15ff8",
+    "age_months": "24",
+    "recorded_chicken_id": "CHICKEN_009355",
+    "chicken_id": "CHICKEN_009355",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_024",
+    "content_type": "mixed_unlocalized",
+    "width": 526,
+    "height": 421,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [],
+      "spurs": [
+        [
+          [
+            178,
+            41
+          ],
+          [
+            156,
+            50
+          ],
+          [
+            133,
+            78
+          ],
+          [
+            107,
+            124
+          ],
+          [
+            95,
+            200
+          ],
+          [
+            101,
+            285
+          ],
+          [
+            127,
+            359
+          ],
+          [
+            169,
+            421
+          ],
+          [
+            215,
+            466
+          ],
+          [
+            277,
+            514
+          ],
+          [
+            344,
+            545
+          ],
+          [
+            415,
+            555
+          ],
+          [
+            481,
+            542
+          ],
+          [
+            531,
+            517
+          ],
+          [
+            565,
+            501
+          ],
+          [
+            560,
+            480
+          ],
+          [
+            535,
+            460
+          ],
+          [
+            526,
+            438
+          ],
+          [
+            509,
+            428
+          ],
+          [
+            489,
+            452
+          ],
+          [
+            461,
+            473
+          ],
+          [
+            417,
+            487
+          ],
+          [
+            368,
+            488
+          ],
+          [
+            321,
+            480
+          ],
+          [
+            276,
+            461
+          ],
+          [
+            233,
+            433
+          ],
+          [
+            198,
+            400
+          ],
+          [
+            176,
+            362
+          ],
+          [
+            162,
+            317
+          ],
+          [
+            156,
+            267
+          ],
+          [
+            156,
+            215
+          ],
+          [
+            160,
+            164
+          ],
+          [
+            169,
+            106
+          ],
+          [
+            186,
+            47
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true,
+      "note": "Detached spur; no leg is annotated."
+    },
+    "split": "test"
+  },
+  {
+    "index": 64,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\21months (100).jpg",
+    "sha256": "62e3c7f44bb18017f4777917a3215852c7a4e48d9a34dddb33780c53e13e487a",
+    "pixel_sha256": "6c2000315a45ecb4208da6c77b10fe83db88a166f5ce81e8e9694639bff5876c",
+    "age_months": "21",
+    "recorded_chicken_id": "CHICKEN_006636",
+    "chicken_id": "CHICKEN_006636",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_029",
+    "content_type": "mixed_unlocalized",
+    "width": 612,
+    "height": 500,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          393,
+          202,
+          554,
+          443
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            390,
+            339
+          ],
+          [
+            369,
+            351
+          ],
+          [
+            352,
+            374
+          ],
+          [
+            333,
+            405
+          ],
+          [
+            315,
+            444
+          ],
+          [
+            295,
+            488
+          ],
+          [
+            279,
+            538
+          ],
+          [
+            269,
+            579
+          ],
+          [
+            267,
+            600
+          ],
+          [
+            292,
+            600
+          ],
+          [
+            303,
+            563
+          ],
+          [
+            318,
+            520
+          ],
+          [
+            336,
+            474
+          ],
+          [
+            352,
+            434
+          ],
+          [
+            371,
+            396
+          ],
+          [
+            392,
+            369
+          ],
+          [
+            403,
+            358
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "note": "Spur tip runs beyond lower frame; visible region only, no full-length ground truth."
+    },
+    "split": "test"
+  },
+  {
+    "index": 81,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\9months (1).jpg",
+    "sha256": "a7961a3915508c54820a309ea1e57927d23a9ee06194903dfab44091e2e76eec",
+    "pixel_sha256": "8e29939cba118758c4f319bbf69d6becc4ae42820eb7661aa2b9a46479da96bd",
+    "age_months": "9",
+    "recorded_chicken_id": "CHICKEN_014600",
+    "chicken_id": "CHICKEN_014600",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_035",
+    "content_type": "mixed_unlocalized",
+    "width": 1080,
+    "height": 1080,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          155,
+          65,
+          343,
+          285
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            302,
+            218
+          ],
+          [
+            319,
+            231
+          ],
+          [
+            340,
+            254
+          ],
+          [
+            359,
+            277
+          ],
+          [
+            378,
+            300
+          ],
+          [
+            378,
+            315
+          ],
+          [
+            368,
+            325
+          ],
+          [
+            352,
+            325
+          ],
+          [
+            336,
+            313
+          ],
+          [
+            321,
+            294
+          ],
+          [
+            305,
+            275
+          ],
+          [
+            290,
+            254
+          ],
+          [
+            287,
+            238
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true,
+      "note": "Blunt visible spur stump; no sharp tip inferred."
+    },
+    "split": "test"
+  },
+  {
+    "index": 102,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (1).jpg",
+    "sha256": "d6a16bbca3b697c758a5bd5e5462ab20ca51e7f1be4de3633782f504b84f819a",
+    "pixel_sha256": "ae6f268f43f9bd347a7c2084afc6c70c5714423f214c8a45fd16ce45e2d415ff",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010190",
+    "chicken_id": "CHICKEN_010190",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_041",
+    "content_type": "mixed_unlocalized",
+    "width": 415,
+    "height": 739,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          0,
+          246,
+          229,
+          362
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            200,
+            332
+          ],
+          [
+            223,
+            345
+          ],
+          [
+            245,
+            365
+          ],
+          [
+            266,
+            396
+          ],
+          [
+            282,
+            425
+          ],
+          [
+            287,
+            437
+          ],
+          [
+            274,
+            428
+          ],
+          [
+            253,
+            407
+          ],
+          [
+            235,
+            384
+          ],
+          [
+            216,
+            365
+          ],
+          [
+            198,
+            354
+          ]
+        ]
+      ],
+      "visibility": "partial",
+      "complete": true,
+      "note": "Visible small spur protruding below held shank."
+    },
+    "split": "test"
+  },
+  {
+    "index": 115,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\12months (238).jpg",
+    "sha256": "9c7ec3fe697bdf7afabd41adc15ff0caef060882f62f88b78d9de9f4d2df7190",
+    "pixel_sha256": "bd470456c7697b3c7089e452d46d29e64108211c1b9e002a985aa98e26a83c09",
+    "age_months": "12",
+    "recorded_chicken_id": "CHICKEN_001895",
+    "chicken_id": "CHICKEN_001895",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_046",
+    "content_type": "mixed_unlocalized",
+    "width": 515,
+    "height": 388,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          0,
+          370,
+          331,
+          600
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            308,
+            296
+          ],
+          [
+            300,
+            278
+          ],
+          [
+            301,
+            250
+          ],
+          [
+            300,
+            221
+          ],
+          [
+            303,
+            193
+          ],
+          [
+            315,
+            165
+          ],
+          [
+            327,
+            146
+          ],
+          [
+            333,
+            145
+          ],
+          [
+            338,
+            156
+          ],
+          [
+            342,
+            181
+          ],
+          [
+            341,
+            210
+          ],
+          [
+            337,
+            240
+          ],
+          [
+            333,
+            268
+          ],
+          [
+            333,
+            296
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "test"
+  },
+  {
+    "index": 117,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (10).jpg",
+    "sha256": "92ff7d6295ead1b5126e71f361c036dde366e36f3382c8d0fab2df9520c0aacd",
+    "pixel_sha256": "be5f30cb97262ca3e16ed1cdd37b397dbdf1e58b56ff7c90cb3a7bf302a5a9d3",
+    "age_months": "4",
+    "recorded_chicken_id": "CHICKEN_010192",
+    "chicken_id": "CHICKEN_010192",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_048",
+    "content_type": "mixed_unlocalized",
+    "width": 480,
+    "height": 640,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          257,
+          81,
+          351,
+          346
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            246,
+            260
+          ],
+          [
+            222,
+            265
+          ],
+          [
+            196,
+            268
+          ],
+          [
+            175,
+            268
+          ],
+          [
+            169,
+            273
+          ],
+          [
+            179,
+            281
+          ],
+          [
+            201,
+            291
+          ],
+          [
+            223,
+            298
+          ],
+          [
+            244,
+            301
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "test"
+  },
+  {
+    "index": 131,
+    "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\15months (1).jpg",
+    "sha256": "22870cdf599b88a76b442fa01bc8cf26eb4eac4a824516b268866be112b08abb",
+    "pixel_sha256": "da4c0583d808b960fff20ee1b08b2988d88220661ef0ab23403332d097169b09",
+    "age_months": "15",
+    "recorded_chicken_id": "CHICKEN_003790",
+    "chicken_id": "CHICKEN_003790",
+    "identity_verified": "unresolved",
+    "age_verified": "yes",
+    "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+    "source_family": "visual_family_054",
+    "content_type": "mixed_unlocalized",
+    "width": 612,
+    "height": 408,
+    "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+    "annotations": {
+      "legs": [
+        [
+          109,
+          176,
+          177,
+          476
+        ],
+        [
+          334,
+          170,
+          407,
+          487
+        ]
+      ],
+      "spurs": [
+        [
+          [
+            109,
+            322
+          ],
+          [
+            96,
+            297
+          ],
+          [
+            89,
+            266
+          ],
+          [
+            85,
+            231
+          ],
+          [
+            81,
+            194
+          ],
+          [
+            82,
+            153
+          ],
+          [
+            87,
+            120
+          ],
+          [
+            82,
+            148
+          ],
+          [
+            75,
+            183
+          ],
+          [
+            71,
+            217
+          ],
+          [
+            74,
+            250
+          ],
+          [
+            81,
+            281
+          ],
+          [
+            93,
+            314
+          ],
+          [
+            108,
+            337
+          ]
+        ],
+        [
+          [
+            348,
+            329
+          ],
+          [
+            325,
+            332
+          ],
+          [
+            302,
+            330
+          ],
+          [
+            280,
+            322
+          ],
+          [
+            260,
+            309
+          ],
+          [
+            244,
+            288
+          ],
+          [
+            232,
+            266
+          ],
+          [
+            221,
+            243
+          ],
+          [
+            224,
+            268
+          ],
+          [
+            232,
+            297
+          ],
+          [
+            248,
+            324
+          ],
+          [
+            269,
+            345
+          ],
+          [
+            295,
+            359
+          ],
+          [
+            323,
+            363
+          ],
+          [
+            347,
+            357
+          ]
+        ]
+      ],
+      "visibility": "clear",
+      "complete": true
+    },
+    "split": "test"
+  }
+]

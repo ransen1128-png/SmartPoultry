@@ -5,10 +5,10 @@
 <div class="page-heading">
     <div>
         <h1>Dashboard</h1>
-        <p>Overview of your poultry farm performance</p>
+        <p>{% if selected_branch %}Overview of {{ selected_branch.name }} performance{% else %}Overview of your poultry farm performance{% endif %}</p>
     </div>
     <form method="get" class="dashboard-filters">
-        <select class="form-select form-select-sm date-filter" name="branch" aria-label="Farm branch">
+        <select class="form-select form-select-sm date-filter" name="branch" aria-label="Farm branch" onchange="this.form.requestSubmit()">
             <option value="">All branches</option>
             {% for branch in branches %}
                 <option value="{{ branch.pk }}" {% if selected_branch.pk == branch.pk %}selected{% endif %}>{{ branch.name }}</option>
@@ -105,6 +105,37 @@
     <div class="panel-card panel-wide">
         <div class="panel-title">Feed Expense Trend</div>
         <canvas id="feedChart"></canvas>
+    </div>
+    <div class="panel-card panel-wide">
+        <div class="panel-title">Branch Overview</div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Branch</th>
+                        <th>Flocks</th>
+                        <th>Chickens</th>
+                        <th>Expenses</th>
+                        <th>Revenue</th>
+                        <th>Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for summary in branch_summaries %}
+                    <tr>
+                        <td>{{ summary.branch.name }}</td>
+                        <td>{{ summary.flock_count }}</td>
+                        <td>{{ summary.bird_count }}</td>
+                        <td>&#8369;{{ summary.expense_total|floatformat:2 }}</td>
+                        <td>&#8369;{{ summary.revenue_total|floatformat:2 }}</td>
+                        <td>{% if summary.profit >= 0 %}<span class="text-success">&#8369;{{ summary.profit|floatformat:2 }}</span>{% else %}<span class="text-danger">&#8369;{{ summary.profit|floatformat:2 }}</span>{% endif %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center">No branches found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="panel-card prediction-card">
         <div class="panel-title">Live Snapshot</div>

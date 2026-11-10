@@ -1,0 +1,19 @@
+{
+  "distinct_originals": 151,
+  "detailed_review_records": 66,
+  "training_eligible_images": 43,
+  "excluded_with_reasons": 108,
+  "leg_boxes": 71,
+  "spur_polygons": 70,
+  "splits": {
+    "train": 27,
+    "val": 8,
+    "test": 8
+  },
+  "source_families": 40,
+  "source_family_leakage": false,
+  "actual_chicken_identity_verified": false,
+  "annotation_sha256": "43868703e7ca41aab462bc234cd1382e56ff3aa8744ee7d405071ee82099d835",
+  "provenance": "Codex visual inspection of coordinate reference photographs",
+  "caution": "Assistant visual annotations, not independent expert verification. Coarse and partial contours are flagged. No physical scale or bird identity invented."
+}

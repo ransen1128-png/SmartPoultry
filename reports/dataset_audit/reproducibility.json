@@ -1,0 +1,8 @@
+{
+  "first_run": "spur_age\\experiments\\20261109T074656355731Z",
+  "second_run": "spur_age\\experiments\\20261109T074813049131Z",
+  "all_model_tensors_equal": true,
+  "candidate_validation_mae_equal": true,
+  "candidate_test_mae_equal": true,
+  "split_manifests_identical": true
+}

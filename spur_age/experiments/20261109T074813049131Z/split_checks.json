@@ -1,0 +1,8 @@
+{
+  "exact_pixel_groups_crossing_splits": 0,
+  "detected_near_duplicate_pairs_crossing_splits": 0,
+  "source_families_crossing_splits": 0,
+  "recorded_chicken_ids_crossing_splits": 0,
+  "actual_bird_identity_independence": "unresolved",
+  "all_distinct_audited_images_used": true
+}

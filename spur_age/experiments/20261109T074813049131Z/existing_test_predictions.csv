@@ -1,0 +1,11 @@
+image,age_months,prediction_months,error_months,absolute_error_months
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\1months (110).jpg,1.0,3.8701045513153076,2.8701045513153076,2.8701045513153076
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\22months (263).jpg,22.0,23.870403289794922,1.8704032897949219,1.8704032897949219
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\24months (163).jpg,24.0,23.097349166870117,-0.9026508331298828,0.9026508331298828
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\14months (1).jpg,14.0,13.187307357788086,-0.8126926422119141,0.8126926422119141
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\14months (275).jpg,14.0,12.191299438476562,-1.8087005615234375,1.8087005615234375
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\1months (1).jpg,1.0,4.892058372497559,3.8920583724975586,3.8920583724975586
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\2months (151).jpg,2.0,8.590530395507812,6.5905303955078125,6.5905303955078125
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\2months (259).jpg,2.0,1.2802006006240845,-0.7197993993759155,0.7197993993759155
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\12months (115).jpg,12.0,10.589736938476562,-1.4102630615234375,1.4102630615234375
+C:\Users\Administrator\Desktop\SMARTPOULTRY\spur_age\dataset\images\20months (1).jpg,20.0,19.906410217285156,-0.09358978271484375,0.09358978271484375
