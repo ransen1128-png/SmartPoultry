@@ -84,6 +84,9 @@
                 <p>Machine Learning-Based Poultry Farm Financial Analytics System</p>
             </div>
 
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }}" role="status">{{ message }}</div>
+            {% endfor %}
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3">

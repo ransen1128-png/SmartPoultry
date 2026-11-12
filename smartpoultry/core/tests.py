@@ -23,6 +23,28 @@ from reports.models import Report
 from revenue.models import Revenue
 
 
+class RegistrationTests(TestCase):
+    def test_new_account_requires_login_before_dashboard(self):
+        response = self.client.post(reverse('register'), {
+            'username': 'new-farm-owner',
+            'email': 'new-owner@example.com',
+            'password': 'RegistrationTest123!',
+            'password2': 'RegistrationTest123!',
+        }, follow=True)
+        self.assertEqual(response.redirect_chain, [(reverse('login'), 302)])
+        self.assertContains(response, 'Account created successfully. Please log in.')
+        self.assertNotIn('_auth_user_id', self.client.session)
+        account = get_user_model().objects.get(username='new-farm-owner')
+        self.assertTrue(account.is_active)
+        self.assertTrue(account.check_password('RegistrationTest123!'))
+        self.assertEqual(self.client.get(reverse('dashboard')).status_code, 302)
+        login_response = self.client.post(reverse('login'), {
+            'email': 'new-owner@example.com', 'password': 'RegistrationTest123!',
+        })
+        self.assertRedirects(login_response, reverse('dashboard'), fetch_redirect_response=False)
+        self.assertEqual(int(self.client.session['_auth_user_id']), account.pk)
+
+
 class BranchTrackingTests(TestCase):
     def test_records_reference_the_branch_they_came_from(self):
         user = get_user_model().objects.create_user(username='branch-owner', password='password123')
