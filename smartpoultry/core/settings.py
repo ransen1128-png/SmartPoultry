@@ -4,7 +4,6 @@ Django settings for SMARTPOULTRY project.
 
 import os
 from pathlib import Path
-from urllib.parse import unquote, urlparse
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -93,50 +92,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database
-# Using SQLite for development (default), PostgreSQL for production
-DATABASE_URL = os.getenv('DATABASE_URL')
-database_url = urlparse(DATABASE_URL) if DATABASE_URL else None
-database_url_is_local = database_url and database_url.hostname in ('localhost', '127.0.0.1', '::1')
-allow_local_database_url = os.getenv('ALLOW_LOCAL_DATABASE_URL', '').lower() in ('1', 'true', 'yes', 'on')
-use_database_url = DATABASE_URL and (allow_local_database_url or not database_url_is_local)
-use_named_postgres = (
-    os.getenv('USE_POSTGRES', 'False').lower() in ('1', 'true', 'yes', 'on')
-    and os.getenv('DB_HOST')
-    and (
-        allow_local_database_url
-        or os.getenv('DB_HOST') not in ('localhost', '127.0.0.1', '::1')
-    )
-)
-if use_database_url:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': database_url.path.lstrip('/'),
-            'USER': unquote(database_url.username or ''),
-            'PASSWORD': unquote(database_url.password or ''),
-            'HOST': database_url.hostname,
-            'PORT': database_url.port or '5432',
-        }
-    }
-elif use_named_postgres:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'smartpoultry'),
-            'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', 'password'),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', '5432'),
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+# PostgreSQL is explicit locally and mandatory on Render.
+from .database import database_settings
+DATABASES = {'default': database_settings(os.environ, BASE_DIR)}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

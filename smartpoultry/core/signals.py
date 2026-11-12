@@ -55,7 +55,9 @@ def _record_expense_transaction(instance, action, using):
 
 
 @receiver(post_save, sender=Revenue, dispatch_uid='record_revenue_transaction_save')
-def record_revenue_save(sender, instance, created, using, **kwargs):
+def record_revenue_save(sender, instance, created, using, raw=False, **kwargs):
+    if raw:
+        return
     action = 'created' if created else 'updated'
     _record_revenue_transaction(instance, action, using)
 
@@ -66,7 +68,9 @@ def record_revenue_delete(sender, instance, using, **kwargs):
 
 
 @receiver(post_save, sender=Expense, dispatch_uid='record_expense_transaction_save')
-def record_expense_save(sender, instance, created, using, **kwargs):
+def record_expense_save(sender, instance, created, using, raw=False, **kwargs):
+    if raw:
+        return
     action = 'created' if created else 'updated'
     _record_expense_transaction(instance, action, using)
 
@@ -77,8 +81,8 @@ def record_expense_delete(sender, instance, using, **kwargs):
 
 
 @receiver(post_save, sender=Inventory, dispatch_uid='create_expense_for_inventory_create')
-def create_expense_for_inventory_create(sender, instance, created, using, **kwargs):
-    if not created:
+def create_expense_for_inventory_create(sender, instance, created, using, raw=False, **kwargs):
+    if raw or not created:
         return
 
     Expense.objects.using(using).create(

@@ -2,6 +2,7 @@ services:
   - type: web
     name: smartpoultry
     env: python
+    healthCheckPath: /__health/
     buildCommand: pip install -r requirements.txt && python smartpoultry/manage.py collectstatic --noinput
     startCommand: cd smartpoultry && python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
