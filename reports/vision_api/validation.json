@@ -1,0 +1,162 @@
+{
+  "status": "incomplete_or_no_crops",
+  "split": "validation",
+  "n": 11,
+  "api_model": "gemini-3.8-flash",
+  "prompt_sha256": "451b8e129a5c30dc3fd5ebfa9efe3be56b83aef29fbe29b1eebe319f023705b6",
+  "checkpoint_sha256": "91ec42527a3d958e75cb105bc31deffa2f96b5ce82aa3e7fd2c8b3d7015bb61c",
+  "age_model": "finetuned",
+  "baseline_mae_months": 1.2454545454545451,
+  "api_crop_mae_months": 1.2454545454545451,
+  "relative_error_reduction_percent": 0.0,
+  "api_errors": 11,
+  "crops_used": 0,
+  "fixed_policy": "Largest spur box with 15% padding; full-image fallback when no box/error",
+  "limitation": "Source-family comparison only. Prior age-model training overlap and unresolved bird identities prevent independent accuracy claims. API boxes are not ground truth.",
+  "deployed": false,
+  "results": [
+    {
+      "source_sha256": "f93f3de3f0f8d640ac512c439a22f0bb0fe58ce944b51ed3918ebbdfb4ffa2d4",
+      "source_family": "visual_family_008",
+      "verified_age_months": 13.0,
+      "baseline_prediction": 12.4,
+      "api_crop_prediction": 12.4,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "007f3412cce3a6d0e71a658bb7a4acfdf27a1ccf5129fa0d706792d3e0c67a52",
+      "source_family": "visual_family_009",
+      "verified_age_months": 13.0,
+      "baseline_prediction": 12.3,
+      "api_crop_prediction": 12.3,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "de0c71b44ecee5788fa41d60c128db39931da00b427a0b22c3d3c89f14070091",
+      "source_family": "visual_family_019",
+      "verified_age_months": 5.0,
+      "baseline_prediction": 6.6,
+      "api_crop_prediction": 6.6,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "60bba382a8782a73557cf5a3558d33b18e67079a080ecf661f9a19bfdb75d3e6",
+      "source_family": "visual_family_023",
+      "verified_age_months": 15.0,
+      "baseline_prediction": 14.8,
+      "api_crop_prediction": 14.8,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "c1768aa10d6cc8dd59f0b449d2270265e46964fd3157304220be8a59f91e2849",
+      "source_family": "visual_family_024",
+      "verified_age_months": 24.0,
+      "baseline_prediction": 23.1,
+      "api_crop_prediction": 23.1,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "e6944d3144c2adbdc86b23dec3e679f0aa2a9985a35c832abe23e81b8c823a66",
+      "source_family": "visual_family_038",
+      "verified_age_months": 6.0,
+      "baseline_prediction": 7.0,
+      "api_crop_prediction": 7.0,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "4364af5f8d99c7783405e06589759be9dfbad9a3dd065c3a435b8e4f3ddd8449",
+      "source_family": "visual_family_043",
+      "verified_age_months": 6.0,
+      "baseline_prediction": 8.5,
+      "api_crop_prediction": 8.5,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "d5dfaa882040b26a2b321fde81927e9b6018ba779899b2dec7b5b1a5edaad0e1",
+      "source_family": "visual_family_009",
+      "verified_age_months": 12.0,
+      "baseline_prediction": 12.2,
+      "api_crop_prediction": 12.2,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini response could not be obtained or validated."
+      }
+    },
+    {
+      "source_sha256": "4db28ca071d93e88a44e312009cdd9552e49dcb5871252adc303b1f136aba809",
+      "source_family": "visual_family_053",
+      "verified_age_months": 24.0,
+      "baseline_prediction": 21.2,
+      "api_crop_prediction": 21.2,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "22870cdf599b88a76b442fa01bc8cf26eb4eac4a824516b268866be112b08abb",
+      "source_family": "visual_family_054",
+      "verified_age_months": 15.0,
+      "baseline_prediction": 13.9,
+      "api_crop_prediction": 13.9,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 503)."
+      }
+    },
+    {
+      "source_sha256": "fa4e5f36b8deb48fbadbcf45232e0d4c3659d00efd0ca198b0a268f80bb0a207",
+      "source_family": "visual_family_056",
+      "verified_age_months": 5.0,
+      "baseline_prediction": 7.1,
+      "api_crop_prediction": 7.1,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "message": "Gemini request failed (HTTP 429)."
+      }
+    }
+  ]
+}

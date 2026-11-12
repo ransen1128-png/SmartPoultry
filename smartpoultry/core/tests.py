@@ -624,7 +624,24 @@ class RoosterAgeEstimatorTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Model availability is checked when you submit')
 
-    def test_finetuned_model_comparison_keeps_original_prediction_and_checkpoint(self):
+    def test_quick_mode_uses_same_age_prediction_without_loading_detectors(self):
+        from pathlib import Path
+        content=(Path(__file__).resolve().parents[2]/'spurs images/4months.jpg').read_bytes()
+        full=self.client.post(reverse('rooster_age_estimator'),{'photos':[SimpleUploadedFile('full.jpg',content,content_type='image/jpeg')]})
+        full_record=RoosterAgeEstimate.objects.get(pk=full.context['results'][0]['id'])
+        with patch('core.chicken_detection.load_detector',side_effect=AssertionError('Detector loaded')), \
+             patch('core.poultry_vision.vision_is_ready',side_effect=AssertionError('Anatomy loaded')), \
+             patch('core.chicken_detection.detect_chicken',side_effect=AssertionError('Detection ran')), \
+             patch('core.poultry_vision.analyze_poultry',side_effect=AssertionError('Anatomy ran')):
+            quick=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'age_only','photos':[SimpleUploadedFile('quick.jpg',content,content_type='image/jpeg')]})
+        self.assertEqual(quick.status_code,200)
+        record=RoosterAgeEstimate.objects.get(pk=quick.context['results'][0]['id'])
+        self.assertEqual(record.analysis['age_prediction'],full_record.analysis['age_prediction'])
+        self.assertEqual(record.analysis['anatomy']['status'],'not_run')
+        self.assertEqual(record.analysis['analysis_mode'],'age_only')
+        self.assertContains(quick,'Detection and spur measurements were not run.')
+
+    def test_single_finetuned_model_keeps_original_checkpoint_as_backup(self):
         from pathlib import Path
         import hashlib
         from core.age_model_registry import candidate_entry
@@ -642,7 +659,8 @@ class RoosterAgeEstimatorTests(TestCase):
         self.assertEqual(record.analysis['age_model'], 'finetuned')
         self.assertEqual(record.analysis['age_prediction']['model_variant'], 'finetuned')
         self.assertLess(abs(record.analysis['age_prediction']['age_months']-3), 1)
-        self.assertGreater(record.analysis['original_age_prediction']['age_months'], 7)
+        self.assertIsNone(record.analysis['original_age_prediction'])
+        self.assertNotContains(response, 'name="age_model"')
         self.assertNotContains(response, 'Original-model estimate:')
         saved = self.client.get(reverse('rooster_age_estimator'), {'estimate': record.pk})
         self.assertEqual(saved.context['selected_age_model'], 'finetuned')

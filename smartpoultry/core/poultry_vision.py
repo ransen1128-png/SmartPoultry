@@ -249,6 +249,9 @@ def constrain_legs_to_body(detection, anatomy):
 
 def assess_chicken_evidence(detection, anatomy):
     """Combine actual model evidence without claiming species verification."""
+    if detection.get('status') == 'not_run':
+        return {'status':'not_run','label':'Not analyzed — quick age mode',
+                'explanation':'Use full photo analysis for chicken and spur detection.'}
     if detection.get('status') == 'detected' and detection.get('boxes'):
         return {'status': 'body_candidate', 'label': 'Yes',
                 'explanation': 'The chicken detector found a body candidate. This is a model prediction.'}

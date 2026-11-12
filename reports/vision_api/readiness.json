@@ -1,0 +1,9 @@
+{
+  "status": "blocked_missing_credentials",
+  "accuracy_comparison_executed": false,
+  "required_environment": [
+    "GEMINI_API_KEY",
+    "GEMINI_VISION_MODEL"
+  ],
+  "live_app_unchanged": true
+}

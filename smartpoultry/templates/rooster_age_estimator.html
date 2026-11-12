@@ -39,14 +39,6 @@
     {% endif %}
     {% endif %}
     <div class="rooster-upload">
-        {% if candidate_available %}
-            <label for="ageModel">Age model</label>
-            <select class="form-control mb-2" id="ageModel" name="age_model">
-                <option value="original" {% if selected_age_model == 'original' %}selected{% endif %}>Original ResNet-18</option>
-                <option value="finetuned" {% if selected_age_model == 'finetuned' %}selected{% endif %}>Fine-tuned ResNet-18 — compare results</option>
-            </select>
-            <p>The fine-tuned model improved the measured average error slightly. It is a comparison option; accuracy on independent chickens remains unverified.</p>
-        {% endif %}
         <label for="photos">Chicken images</label>
         <input class="form-control" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required>
     </div>
@@ -62,9 +54,11 @@
     <div id="roosterCards" class="rooster-card-list"></div>
 
     <div class="rooster-actions">
-        <button class="btn btn-primary" type="submit">
-            <i class="bi bi-upload"></i> Estimate Age
+        <button class="btn btn-primary" type="submit" name="analysis_mode" value="full">
+            <i class="bi bi-upload"></i> Estimate Age + full photo analysis
         </button>
+        <button class="btn btn-outline-primary" type="submit" name="analysis_mode" value="age_only">Quick age estimate</button>
+        <small>Quick mode uses the same age model and skips chicken/spur detection and length measurement.</small>
     </div>
 </form>
 
@@ -84,31 +78,26 @@
                 <form method="post" action="{% url 'rooster_age_estimator' %}">
                     {% csrf_token %}
                     <input type="hidden" name="reanalyze_estimate_id" value="{{ result.id }}">
-                    <input type="hidden" name="age_model" value="{{ result.age_model }}">
-                    <button type="submit" class="btn btn-secondary mb-3">Analyze again with current models</button>
+                    <button type="submit" class="btn btn-secondary mb-3" name="analysis_mode" value="full">Analyze again with current models</button>
+                    <button type="submit" class="btn btn-outline-primary mb-3" name="analysis_mode" value="age_only">Quick age estimate</button>
                 </form>
-                {% if candidate_available and result.age_model != 'finetuned' %}
-                    <form method="post" action="{% url 'rooster_age_estimator' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="reanalyze_estimate_id" value="{{ result.id }}">
-                        <input type="hidden" name="age_model" value="finetuned">
-                        <button type="submit" class="btn btn-secondary mb-3">Compare fine-tuned age model</button>
-                    </form>
-                {% endif %}
             {% endif %}
             {% if result.photo_url %}
                 <div class="poultry-preview">
                     <img class="rooster-result-photo" src="{{ result.photo_url }}" alt="Uploaded image {{ result.number }}">
-                    {% if result.overlay.width and result.overlay.height %}
+                    {% if result.overlay.width and result.overlay.height and result.analysis_mode != 'age_only' %}
                         <svg class="poultry-overlay" id="anatomyOverlay{{ result.id }}" aria-label="Experimental anatomy model overlay" preserveAspectRatio="xMidYMid meet"></svg>
                     {% endif %}
                 </div>
-                {% if result.overlay.width and result.overlay.height %}
+                {% if result.overlay.width and result.overlay.height and result.analysis_mode != 'age_only' %}
                     <label class="poultry-overlay-toggle"><input type="checkbox" checked data-overlay-target="anatomyOverlay{{ result.id }}"> Show predicted boxes, spur outlines and visible centerlines</label>
                 {% endif %}
             {% endif %}
             <p>These are model predictions. Detections can be incorrect; length describes the visible outline in the photo. Age accuracy on independent chickens is not established.</p>
             <dl>
+                {% if result.analysis_mode == 'age_only' %}
+                <dt>Analysis:</dt><dd>Quick age estimate. Detection and spur measurements were not run.</dd>
+                {% else %}
                 <dt>Chicken assessment:</dt>
                 <dd>{{ result.chicken_detected }}<br><small>{{ result.chicken_evidence }}</small></dd>
                 <dt>Chicken location:</dt>
@@ -127,6 +116,7 @@
                 <dd>{{ result.spur_segmentation_status }}</dd>
                 <dt>Estimated spur length:</dt>
                 <dd>{{ result.spur_length_assessment }}</dd>
+                {% endif %}
                 <dt>Estimated age:</dt>
                 <dd class="rooster-age-estimate">{{ result.estimated_age_range }}</dd>
                 <dt>Image quality:</dt>

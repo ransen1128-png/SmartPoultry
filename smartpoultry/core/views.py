@@ -953,9 +953,9 @@ def _present_rooster_estimate(record, number=1):
     if prediction and prediction.get('model_variant') == 'finetuned':
         metrics = prediction.get('comparison_metrics') or {}
         evaluation = (
-            f"Fine-tuned comparison model: validation MAE {metrics.get('validation_mae_months', 0):.2f} months; "
+            f"Fine-tuned ResNet-18: validation MAE {metrics.get('validation_mae_months', 0):.2f} months; "
             f"held-out source-family MAE {prediction['test_mae_months']:.2f} months. "
-            'The improvement is small; prior checkpoint training overlap prevents independent-chicken accuracy claims.'
+            'The improvement is small; prior checkpoint training overlap means this is not independent validation on new chickens.'
         )
     subject = assess_chicken_evidence(detection, anatomy)
     # Update display wording for historical results while preserving raw analysis.
@@ -974,6 +974,7 @@ def _present_rooster_estimate(record, number=1):
         'reasoning': record.reasoning, 'confidence': record.confidence, 'limitations': record.limitations,
         'model_evaluation': evaluation,
         'age_model': analysis.get('age_model', 'original'),
+        'analysis_mode': analysis.get('analysis_mode', 'full'),
         'original_age_prediction': analysis.get('original_age_prediction'),
         'photo_url': (reverse('rooster_estimate_photo', args=[record.pk])
                       if record.photo and quality.get('quality') != 'unreadable' else ''),
@@ -996,19 +997,18 @@ def rooster_age_estimator_view(request):
     age_model_ready = chicken_detector_ready = anatomy_ready = False
     from core.age_model_registry import candidate_entry
     candidate_available = candidate_entry() is not None
-    selected_age_model = 'original'
+    selected_age_model = 'finetuned' if candidate_available else 'original'
     results = []
+    quick_mode = request.method == 'POST' and request.POST.get('analysis_mode') == 'age_only'
 
     if request.method == 'POST':
         from core.rooster_age_classifier import model_is_ready, predict_rooster_age
         from core.chicken_detection import detect_chicken, load_detector
         from core.poultry_vision import analyze_poultry, assess_chicken_evidence, constrain_legs_to_body, summarize_anatomy, vision_is_ready
-        selected_age_model = request.POST.get('age_model', 'original')
-        if selected_age_model not in ('original', 'finetuned'):
-            selected_age_model = 'original'
         age_model_ready = model_is_ready(selected_age_model)
-        chicken_detector_ready = load_detector() is not None
-        anatomy_ready = vision_is_ready()
+        if not quick_mode:
+            chicken_detector_ready = load_detector() is not None
+            anatomy_ready = vision_is_ready()
         photos = request.FILES.getlist('photos')
         reanalysis_id = request.POST.get('reanalyze_estimate_id', '').strip()
         if reanalysis_id:
@@ -1044,9 +1044,14 @@ def rooster_age_estimator_view(request):
             photo_analysis = analyze_rooster_photo(photo)
             prediction = None
             original_prediction = None
-            detection = detect_chicken(photo)
-            anatomy = analyze_poultry(photo, calibration)
-            anatomy = constrain_legs_to_body(detection, anatomy)
+            if quick_mode:
+                detection = {'status':'not_run','boxes':[], 'message':'Chicken detection skipped in quick age mode.'}
+                anatomy = {'status':'not_run','legs':[],'spurs':[],'masks':[],'measurements':[],
+                           'message':'Spur detection and measurement skipped in quick age mode.'}
+            else:
+                detection = detect_chicken(photo)
+                anatomy = analyze_poultry(photo, calibration)
+                anatomy = constrain_legs_to_body(detection, anatomy)
             assessment = summarize_anatomy(anatomy)
 
             # Quality heuristics are warnings, not a subject detector. Run the
@@ -1057,8 +1062,6 @@ def rooster_age_estimator_view(request):
                     photo.seek(0)
                     if selected_age_model == 'finetuned':
                         prediction = predict_rooster_age(photo, model_variant='finetuned')
-                        photo.seek(0)
-                        original_prediction = predict_rooster_age(photo)
                     else:
                         prediction = predict_rooster_age(photo)
                 except (OSError, ValueError, RuntimeError):
@@ -1069,7 +1072,7 @@ def rooster_age_estimator_view(request):
                 age_range = f'Experimental estimate: {age_months:.1f} months'
 
                 evidence = (
-                    f'The {"fine-tuned comparison" if selected_age_model == "finetuned" else "existing"} ResNet-18 produced an experimental age estimate '
+                    f'The ResNet-18 produced an experimental age estimate '
                     f'of {age_months:.1f} months from the uploaded pixels. '
                     'Anatomy model outputs, when available, are separate experimental predictions.'
                 )
@@ -1161,6 +1164,7 @@ def rooster_age_estimator_view(request):
                                          'reason': 'Centimeter values require a supplied known in-plane scale; all geometry remains experimental.'},
                     'age_prediction': prediction,
                     'age_model': selected_age_model,
+                    'analysis_mode': 'age_only' if quick_mode else 'full',
                     'original_age_prediction': original_prediction,
                     'age_prediction_status': 'experimental' if prediction else 'not_produced',
                 },
@@ -1209,7 +1213,7 @@ def rooster_age_estimator_view(request):
         'age_model_ready': age_model_ready,
         'chicken_detector_ready': chicken_detector_ready,
         'anatomy_ready': anatomy_ready,
-        'models_checked': request.method == 'POST',
+        'models_checked': request.method == 'POST' and not quick_mode,
         'candidate_available': candidate_available,
         'selected_age_model': selected_age_model,
         'viewing_saved': bool(request.method == 'GET' and selected_estimate),
