@@ -22,13 +22,14 @@ from core.views import rooster_age_estimator_view
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('estimate_id', type=int)
+    parser.add_argument('--age-model', choices=['original', 'finetuned'], default='original')
     args = parser.parse_args()
     torch.set_num_threads(4)
     original = RoosterAgeEstimate.objects.select_related('user').get(pk=args.estimate_id)
     previous_analysis = original.analysis
     with original.photo.open('rb') as stream:
         image_hash = hashlib.sha256(stream.read()).hexdigest()
-    request = RequestFactory().post('/rooster-age-estimator/', {'reanalyze_estimate_id': str(original.pk)})
+    request = RequestFactory().post('/rooster-age-estimator/', {'reanalyze_estimate_id': str(original.pk), 'age_model': args.age_model})
     request.user = original.user
     request.session = {}
     request._messages = FallbackStorage(request)
@@ -43,6 +44,9 @@ def main():
     report = {'original_id': original.pk, 'new_id': new_id,
               'url': 'http://127.0.0.1:8000' + response.url,
               'original_preserved': True, 'source_photo_sha256': image_hash,
+              'age_model': latest.analysis.get('age_model'),
+              'age_prediction': latest.analysis.get('age_prediction'),
+              'original_age_prediction': latest.analysis.get('original_age_prediction'),
               'chicken_assessment': latest.analysis['chicken_assessment'],
               'chicken_detection': latest.analysis['chicken_detection'],
               'legs': len(latest.analysis['anatomy']['legs']),

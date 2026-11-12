@@ -71,6 +71,10 @@
         <span>Feed Cost</span>
         <strong>&#8369;{{ metrics.feed_cost|floatformat:2 }}</strong>
         <small>{{ metrics.feed_expense_share }}% of expenses</small>
+        {% if selected_branch %}
+            <small>Farm-wide inventory feed purchases: &#8369;{{ metrics.inventory_feed_cost|floatformat:2 }}</small>
+            <a href="{% url 'dashboard' %}?month={{ selected_month }}&amp;year={{ selected_year }}">View farm-wide feed cost</a>
+        {% endif %}
     </div>
     <div class="metric-card">
         <span>Mortality Rate</span>

@@ -11,8 +11,14 @@ class ProductionRecordViewSet(viewsets.ModelViewSet):
     serializer_class = ProductionRecordSerializer
     permission_classes = [IsAuthenticated]
 
+    def perform_destroy(self, instance):
+        from rest_framework.exceptions import ValidationError
+        if instance.revenue_sales.exists():
+            raise ValidationError('Production with sales history cannot be deleted.')
+        instance.delete()
+
     def get_queryset(self):
-        return ProductionRecord.objects.filter(user=self.request.user)
+        return ProductionRecord.objects.filter(user=self.request.user).exclude(flock__status='inactive').exclude(branch__status='inactive').exclude(flock__branch__status='inactive')
 
     def perform_create(self, serializer):
         record = serializer.save(user=self.request.user)
@@ -30,7 +36,7 @@ class MortalityRecordViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return MortalityRecord.objects.filter(user=self.request.user)
+        return MortalityRecord.objects.filter(user=self.request.user).exclude(flock__status='inactive').exclude(branch__status='inactive').exclude(flock__branch__status='inactive')
 
     def perform_create(self, serializer):
         record = serializer.save(user=self.request.user)

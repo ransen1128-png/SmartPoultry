@@ -5,6 +5,13 @@ from .models import Flock
 class FlockSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(source='branch.name', read_only=True)
 
+    def validate(self, attrs):
+        branch = attrs.get('branch', getattr(self.instance, 'branch', None))
+        status = attrs.get('status', getattr(self.instance, 'status', 'active'))
+        if branch and branch.status != 'active' and status == 'active':
+            raise serializers.ValidationError({'branch': 'Activate this branch before activating its flocks.'})
+        return attrs
+
     def validate_branch(self, branch):
         request = self.context.get('request')
         if request and branch and branch.farm.owner_id != request.user.id:

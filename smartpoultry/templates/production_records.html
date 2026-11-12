@@ -13,6 +13,7 @@
 
 <div class="panel-card">
     <div class="panel-title">Production Records</div>
+    <p class="text-muted">Available stock deducts sales linked to each production entry. Older revenue without a production reference is not deducted.</p>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead>
@@ -22,7 +23,7 @@
                     <th>Flock</th>
                     <th>Current Birds Remaining</th>
                     <th>Product</th>
-                    <th>Quantity</th>
+                    <th>Produced</th><th>Sold</th><th>Available</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -30,7 +31,7 @@
                 {% regroup records by branch.name|default:"Unassigned" as branch_records %}
                 {% for branch in branch_records %}
                     <tr class="table-light">
-                        <td colspan="7"><strong>{{ branch.grouper }}</strong></td>
+                        <td colspan="9"><strong>{{ branch.grouper }}</strong></td>
                     </tr>
                     {% for record in branch.list|dictsortreversed:"date" %}
                         <tr>
@@ -40,6 +41,8 @@
                             <td>{{ record.flock.quantity }}</td>
                             <td>{{ record.get_product_type_display }}</td>
                             <td>{{ record.quantity|floatformat:0 }}</td>
+                            <td>{{ record.sold_quantity|floatformat:2 }}</td>
+                            <td>{{ record.available_quantity|floatformat:2 }}</td>
                             <td class="text-end">
                                 <div class="btn-group btn-group-sm">
                                     <a href="{% url 'production_record_update' record.id %}" class="btn btn-outline-primary">
@@ -57,11 +60,16 @@
                     {% endfor %}
                 {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">No production records yet.</td>
+                        <td colspan="9" class="text-center text-muted py-4">No production records yet.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+<details class="panel-card mt-3"><summary>Production Sales History</summary>
+<div class="table-responsive"><table class="table"><thead><tr><th>Revenue #</th><th>Sale date</th><th>Branch</th><th>Flock</th><th>Production date</th><th>Product</th><th>Quantity sold</th><th>Amount</th></tr></thead><tbody>
+{% for sale in sales_history %}<tr><td>{{ sale.pk }}</td><td>{{ sale.date }}</td><td>{{ sale.branch.name|default:'Unassigned' }}</td><td>{{ sale.flock.flock_id }}</td><td>{{ sale.production.date }}</td><td>{{ sale.get_revenue_type_display }}</td><td>{{ sale.quantity|floatformat:2 }}</td><td>&#8369;{{ sale.total_amount|floatformat:2 }}</td></tr>
+{% empty %}<tr><td colspan="8">No production stock has been sold yet.</td></tr>{% endfor %}
+</tbody></table></div></details>
 {% endblock %}

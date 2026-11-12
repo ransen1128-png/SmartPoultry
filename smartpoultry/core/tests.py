@@ -186,6 +186,57 @@ class BranchTrackingTests(TestCase):
         self.assertEqual({row['branch'] for row in all_response.context['branch_summaries']}, {north, south})
 
 
+class DashboardInventoryFeedCostTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username='feed-dashboard-owner', password='password123')
+        self.farm = Farm.objects.create(owner=self.user, name='Feed farm', location='Test',
+            established_date=date(2026, 1, 1), contact_email='feed@example.com', contact_phone='123')
+        self.branch = Branch.objects.create(farm=self.farm, name='Main')
+        self.client.force_login(self.user)
+
+    def test_feed_purchase_appears_once_and_distribution_does_not_reduce_cost(self):
+        added = self.client.post(reverse('inventory-list'), {
+            'item_type': 'feed', 'name': 'Feed purchase', 'quantity': '100', 'unit': 'kg',
+            'cost_per_unit': '50', 'date_added': '2026-11-12',
+        })
+        self.assertEqual(added.status_code, 201)
+        item = Inventory.objects.get(pk=added.json()['id'])
+        Expense.objects.create(user=self.user, branch=self.branch, expense_type='feed',
+            description='Separate feed expense', amount=250, date=date(2026, 11, 12))
+        Inventory.objects.create(user=self.user, item_type='medicine', name='Medicine', quantity=2,
+            unit='bottle', cost_per_unit=100, date_added=date(2026, 11, 12))
+        for distributed in (False, True):
+            if distributed:
+                distribution = self.client.post(reverse('inventory-distribution-list'), {
+                    'inventory': item.pk, 'branch': self.branch.pk, 'quantity': '20', 'date': '2026-11-12',
+                })
+                self.assertEqual(distribution.status_code, 201)
+            response = self.client.get(reverse('dashboard'), {'month': 11, 'year': 2026})
+            self.assertEqual(response.context['metrics']['feed_cost'], Decimal('5250'))
+            self.assertEqual(response.context['metrics']['inventory_feed_cost'], Decimal('5000'))
+            self.assertEqual(response.context['metrics']['expenses'], Decimal('5450'))
+            self.assertEqual(response.context['chart_data']['feed'][-1], 5250.)
+            self.assertNotContains(response, 'in inventory feed purchases')
+        item.refresh_from_db()
+        self.assertEqual(item.total_value, Decimal('4000'))
+        self.assertEqual(Expense.objects.filter(user=self.user, category='inventory', expense_type='feed').count(), 1)
+
+    def test_branch_view_shows_farm_purchase_cost_without_misattributing_it(self):
+        Inventory.objects.create(user=self.user, item_type='feed', name='Current feed', quantity=10,
+            unit='kg', cost_per_unit=50, date_added=date(2026, 11, 12))
+        Inventory.objects.create(user=self.user, item_type='feed', name='Old feed', quantity=100,
+            unit='kg', cost_per_unit=50, date_added=date(2026, 10, 12))
+        neighbor = get_user_model().objects.create_user(username='feed-dashboard-neighbor', password='password123')
+        Inventory.objects.create(user=neighbor, item_type='feed', name='Private feed', quantity=100,
+            unit='kg', cost_per_unit=50, date_added=date(2026, 11, 12))
+        response = self.client.get(reverse('dashboard'), {'branch': self.branch.pk, 'month': 11, 'year': 2026})
+        self.assertEqual(response.context['metrics']['feed_cost'], 0)
+        self.assertEqual(response.context['metrics']['inventory_feed_cost'], Decimal('500'))
+        self.assertContains(response, 'Farm-wide inventory feed purchases:')
+        self.assertContains(response, 'View farm-wide feed cost')
+        self.assertContains(response, 'month=11&amp;year=2026')
+
+
 class BranchScopedFlockIdTests(TestCase):
     def test_flock_ids_can_repeat_across_branches_but_not_within_one(self):
         user = get_user_model().objects.create_user(username='flock-branch-owner', password='password123')
@@ -559,6 +610,44 @@ class RoosterAgeEstimatorTests(TestCase):
         self.override.disable()
         shutil.rmtree(self.media_root, ignore_errors=True)
 
+    def test_opening_estimator_does_not_import_heavy_model_runtimes(self):
+        import builtins
+        original_import = builtins.__import__
+
+        def reject_model_import(name, *args, **kwargs):
+            if name in ('core.rooster_age_classifier', 'torch', 'transformers', 'ultralytics'):
+                raise AssertionError('Opening the estimator tried to load an ML runtime: ' + name)
+            return original_import(name, *args, **kwargs)
+
+        with patch('builtins.__import__', side_effect=reject_model_import):
+            response = self.client.get(reverse('rooster_age_estimator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Model availability is checked when you submit')
+
+    def test_finetuned_model_comparison_keeps_original_prediction_and_checkpoint(self):
+        from pathlib import Path
+        import hashlib
+        from core.age_model_registry import candidate_entry
+        if candidate_entry() is None:
+            self.skipTest('Comparison weights are not installed')
+        root = Path(__file__).resolve().parents[2]
+        original_path = root / 'spur_age/models/spur_age_model.pth'
+        original_hash = hashlib.sha256(original_path.read_bytes()).hexdigest()
+        response = self.client.post(reverse('rooster_age_estimator'), {
+            'age_model': 'finetuned',
+            'photos': [SimpleUploadedFile('arbitrary-name.jpg', (root / 'spurs images/4months.jpg').read_bytes(), content_type='image/jpeg')],
+        })
+        self.assertEqual(response.status_code, 200)
+        record = RoosterAgeEstimate.objects.get()
+        self.assertEqual(record.analysis['age_model'], 'finetuned')
+        self.assertEqual(record.analysis['age_prediction']['model_variant'], 'finetuned')
+        self.assertLess(abs(record.analysis['age_prediction']['age_months']-3), 1)
+        self.assertGreater(record.analysis['original_age_prediction']['age_months'], 7)
+        self.assertNotContains(response, 'Original-model estimate:')
+        saved = self.client.get(reverse('rooster_age_estimator'), {'estimate': record.pk})
+        self.assertEqual(saved.context['selected_age_model'], 'finetuned')
+        self.assertEqual(hashlib.sha256(original_path.read_bytes()).hexdigest(), original_hash)
+
     def test_saves_only_uploaded_rooster_photos(self):
         photo = SimpleUploadedFile(
             'rooster.jpg',
@@ -606,7 +695,7 @@ class RoosterAgeEstimatorTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         result = response.context['results'][0]
-        self.assertEqual(result['chicken_detected'], 'Unable to determine')
+        self.assertEqual(result['chicken_detected'], 'Chicken not detected')
         self.assertIn('no chicken detector is configured', result['chicken_location_assessment'])
         self.assertIn('unavailable', result['leg_detection_status'])
         self.assertIn('unavailable', result['spur_detection_status'])

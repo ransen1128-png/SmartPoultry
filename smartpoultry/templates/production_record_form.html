@@ -52,22 +52,23 @@
             return;
         }
 
-        const selectedFlock = flockSelect.options[flockSelect.selectedIndex];
-        const breed = selectedFlock ? selectedFlock.textContent.toLowerCase() : '';
-        const productType = breed.includes('layers') ? 'eggs' : breed.includes('broilers') ? 'meat_ready' : '';
+        const selectedFlock = allFlockOptions.find(option => option.value === flockSelect.value);
+        const branchOptions = allFlockOptions.filter(option => option.dataset.branchId === branchSelect.value);
+        const sources = selectedFlock ? [selectedFlock] : branchOptions;
+        const allowed = new Set();
+        sources.forEach(option => {
+            const type = option.dataset.productType;
+            if (type === 'eggs' || type === 'both') allowed.add('eggs');
+            if (type === 'meat_ready' || type === 'both') allowed.add('meat_ready');
+        });
+        const previous = productTypeSelect.value;
+        productTypeSelect.replaceChildren();
+        [['eggs','Eggs'],['meat_ready','Meat Ready']].forEach(([value,label]) => {
+            if (allowed.has(value)) productTypeSelect.add(new Option(label,value));
+        });
+        if (allowed.has(previous)) productTypeSelect.value = previous;
+        productTypeSelect.disabled = allowed.size === 0;
 
-        productTypeSelect.value = productType;
-        productTypeSelect.disabled = !productType;
-
-        let submittedProductType = document.getElementById('submittedProductType');
-        if (!submittedProductType) {
-            submittedProductType = document.createElement('input');
-            submittedProductType.type = 'hidden';
-            submittedProductType.name = 'product_type';
-            submittedProductType.id = 'submittedProductType';
-            productTypeSelect.form.appendChild(submittedProductType);
-        }
-        submittedProductType.value = productType;
     }
 
     function updateFlockOptions() {

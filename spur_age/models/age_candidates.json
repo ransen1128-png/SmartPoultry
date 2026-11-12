@@ -1,0 +1,12 @@
+{
+  "finetuned": {
+    "path": "spur_age/experiments/finetune_20261112T062415Z/candidate.pth",
+    "sha256": "91ec42527a3d958e75cb105bc31deffa2f96b5ce82aa3e7fd2c8b3d7015bb61c",
+    "default": false,
+    "usage": "Comparison only; minimum automatic-release improvement gate not met",
+    "metrics": {
+      "validation_mae_months": 1.2492742538452148,
+      "test_mae_months": 2.0246996879577637
+    }
+  }
+}

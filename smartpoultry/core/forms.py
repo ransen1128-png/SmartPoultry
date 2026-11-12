@@ -24,6 +24,7 @@ class BranchFlockSelect(forms.Select):
         flock = getattr(value, 'instance', None)
         if flock:
             option['attrs']['data-branch-id'] = str(flock.branch_id or '')
+            option['attrs']['data-product-type'] = {'layers': 'eggs', 'broilers': 'meat_ready'}.get(flock.breed, 'both')
         return option
 
 
@@ -35,8 +36,14 @@ class ProductionRecordForm(StyledModelForm):
             ('meat_ready', 'Meat Ready'),
         ]
         if user is not None:
-            self.fields['flock'].queryset = self.fields['flock'].queryset.filter(user=user)
-            self.fields['branch'].queryset = self.fields['branch'].queryset.filter(farm__owner=user)
+            self.fields['flock'].queryset = self.fields['flock'].queryset.filter(user=user, status='active').exclude(branch__status='inactive')
+            self.fields['branch'].queryset = self.fields['branch'].queryset.filter(farm__owner=user, status='active')
+        branch_id = self.data.get('branch') if self.is_bound else getattr(self.instance, 'branch_id', None)
+        if branch_id:
+            breeds = set(self.fields['flock'].queryset.filter(branch_id=branch_id).values_list('breed', flat=True)) if str(branch_id).isdigit() else set()
+            if breeds and 'other' not in breeds:
+                allowed = {'layers': 'eggs', 'broilers': 'meat_ready'}
+                self.fields['product_type'].choices = [(key, label) for key, label in self.fields['product_type'].choices if key in {allowed.get(breed) for breed in breeds}]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -65,8 +72,8 @@ class MortalityRecordForm(StyledModelForm):
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
         if user is not None:
-            self.fields['flock'].queryset = self.fields['flock'].queryset.filter(user=user)
-            self.fields['branch'].queryset = self.fields['branch'].queryset.filter(farm__owner=user)
+            self.fields['flock'].queryset = self.fields['flock'].queryset.filter(user=user, status='active').exclude(branch__status='inactive')
+            self.fields['branch'].queryset = self.fields['branch'].queryset.filter(farm__owner=user, status='active')
 
     class Meta:
         model = MortalityRecord

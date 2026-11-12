@@ -158,6 +158,15 @@ class Branch(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        from django.db import transaction, router
+        from django.utils import timezone
+        using = kwargs.get('using') or router.db_for_write(type(self), instance=self)
+        with transaction.atomic(using=using):
+            super().save(*args, **kwargs)
+            if self.status == 'inactive' and (not kwargs.get('update_fields') or 'status' in kwargs['update_fields']):
+                self.flocks.using(using).filter(status='active').update(status='inactive', updated_at=timezone.now())
+
     def __str__(self):
         return f"{self.name} ({self.farm})"
 

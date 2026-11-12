@@ -23,6 +23,32 @@ class ProductionRecord(models.Model):
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def sold_quantity(self):
+        return self.__dict__.get('_sold_quantity') if '_sold_quantity' in self.__dict__ else (self.revenue_sales.aggregate(total=models.Sum('quantity'))['total'] or 0)
+
+    @property
+    def available_quantity(self):
+        return self.quantity - self.sold_quantity
+
+    def clean(self):
+        if self.pk and self.quantity is not None and self.quantity < self.sold_quantity:
+            raise ValidationError({'quantity': 'Production quantity cannot be less than the quantity already sold.'})
+        if self.pk and self.revenue_sales.exists():
+            previous = type(self).objects.get(pk=self.pk)
+            if any(getattr(self, field) != getattr(previous, field) for field in ('user_id','branch_id','flock_id','product_type','unit','date')):
+                raise ValidationError('Production details with recorded sales cannot be changed; create a new entry.')
+
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            if self.pk:
+                type(self).objects.select_for_update().get(pk=self.pk)
+                self.clean()
+                previous = type(self).objects.get(pk=self.pk)
+                if self.revenue_sales.exists() and any(getattr(self, field) != getattr(previous, field) for field in ('user_id','branch_id','flock_id','product_type','unit','date')):
+                    raise ValidationError('Production details with recorded sales cannot be changed; create a new entry.')
+            super().save(*args, **kwargs)
     
     def __str__(self):
         return f"{self.flock} - {self.product_type} ({self.date})"

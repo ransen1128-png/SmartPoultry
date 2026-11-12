@@ -15,7 +15,7 @@ class ChickenEvidenceTests(TestCase):
         result = assess_chicken_evidence({'status': 'not_detected', 'boxes': []},
                                          {'status': 'completed', 'legs': [{}], 'spurs': [{}]})
         self.assertEqual(result['status'], 'anatomy_candidate')
-        self.assertIn('Possible chicken anatomy: leg/spur', result['label'])
+        self.assertEqual(result['label'], 'Leg/spur regions detected')
         self.assertNotIn('close-up', result['label'])
         self.assertIn('do not independently verify the species', result['explanation'])
 
@@ -31,7 +31,7 @@ class ChickenEvidenceTests(TestCase):
     def test_lower_score_body_candidate_is_not_a_confirmed_yes(self):
         result = assess_chicken_evidence({'status': 'candidate', 'boxes': [{}]}, {})
         self.assertEqual(result['label'], 'Chicken detected')
-        self.assertIn('does not confirm chicken presence', result['explanation'])
+        self.assertIn('lower-score candidate', result['explanation'])
 
     def test_outside_body_leg_proposals_are_retained_separately(self):
         anatomy = {'status': 'completed', 'legs': [{'xyxy': [10, 10, 30, 30]}, {'xyxy': [150, 150, 170, 170]}], 'message': 'Ran models.'}
@@ -100,7 +100,7 @@ class AnatomyInferenceTests(TestCase):
         self.assertTrue(result['spurs'])
         self.assertFalse(result['masks'])
         self.assertFalse(result['measurements'])
-        self.assertIn('No spur mask', summarize_anatomy(result)['spur_segmentation_status'])
+        self.assertIn('Spur outline not detected', summarize_anatomy(result)['spur_segmentation_status'])
 
     def test_unavailable_model_is_not_a_negative_detection(self):
         with patch('core.poultry_vision.load_vision_models', return_value=None):

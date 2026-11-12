@@ -127,7 +127,21 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-outline-primary me-2"><i class="bi bi-pencil-fill"></i></button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#editBranch{{ branch.pk }}" aria-label="Edit {{ branch.name }}">Edit</button>
+<div class="modal fade" id="editBranch{{ branch.pk }}" tabindex="-1" aria-labelledby="editBranchTitle{{ branch.pk }}" aria-hidden="true">
+ <div class="modal-dialog"><div class="modal-content">
+ <form method="post">{% csrf_token %}
+ <input type="hidden" name="branch_id" value="{{ branch.pk }}">
+ <div class="modal-header"><h5 class="modal-title" id="editBranchTitle{{ branch.pk }}">Edit Branch</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+ <div class="modal-body">
+<label class="form-label">Branch Name</label><input class="form-control mb-2" name="branch_name" value="{{ branch.name }}" required>
+<label class="form-label">Location</label><input class="form-control mb-2" name="location" value="{{ branch.location }}">
+<label class="form-label">Address</label><textarea class="form-control mb-2" name="address">{{ branch.address }}</textarea>
+<label class="form-label">Contact Number</label><input class="form-control mb-2" name="contact_number" value="{{ branch.contact_number }}">
+<label class="form-label">Status</label><select class="form-select" name="status"><option value="active" {% if branch.status == 'active' %}selected{% endif %}>Active</option><option value="inactive" {% if branch.status == 'inactive' %}selected{% endif %}>Inactive</option></select>
+<p class="mt-2">Deactivating this branch deactivates its active flocks and hides their production and mortality records. Records are retained. Activate the branch, then its flocks, to show them again.</p>
+</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" type="submit">Save Changes</button></div>
+</form></div></div></div>
                                         <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash-fill"></i></button>
                                     </td>
                                 </tr>

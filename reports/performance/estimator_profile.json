@@ -1,0 +1,14 @@
+{
+  "age_runtime_import": 6.998,
+  "age_model_load": 0.426,
+  "chicken_model_load": 6.433,
+  "anatomy_models_load": 0.8,
+  "initial_torch_threads": 4,
+  "initial_age_prediction": 0.129,
+  "initial_chicken_detection": 2.247,
+  "initial_anatomy_analysis": 0.516,
+  "four_threads_age_prediction": 0.085,
+  "four_threads_chicken_detection": 1.784,
+  "four_threads_anatomy_analysis": 0.251,
+  "final_torch_threads": 4
+}

@@ -13,6 +13,7 @@ class Flock(models.Model):
     ]
     STATUS_CHOICES = [
         ('active', 'Active'),
+        ('inactive', 'Inactive'),
         ('sold', 'Sold'),
         ('deceased', 'Deceased'),
         ('retired', 'Retired'),

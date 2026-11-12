@@ -74,6 +74,13 @@
                         <label class="form-label">Quantity</label>
                         <input type="number" class="form-control" name="quantity" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status">
+                            <option value="active">Active</option><option value="inactive">Inactive</option>
+                            <option value="sold">Sold</option><option value="deceased">Deceased</option><option value="retired">Retired</option>
+                        </select>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -165,7 +172,7 @@
                         <td>${flock.flock_id}</td>
                         <td>${flock.breed}</td>
                         <td>${flock.quantity}</td>
-                        <td><span class="badge bg-success">${flock.status}</span></td>
+                        <td><span class="badge ${flock.status === 'active' ? 'bg-success' : 'bg-secondary'}">${flock.status}</span></td>
                         <td>${new Date(flock.date_added).toLocaleDateString()}</td>
                         <td>
                             <button class="btn btn-sm btn-info" onclick="editFlock(${flock.id})">Edit</button>
@@ -201,11 +208,12 @@
             branch: formData.get('branch') ? parseInt(formData.get('branch')) : null,
             flock_id: formData.get('flock_id'),
             breed: formData.get('breed'),
-            quantity: parseInt(formData.get('quantity'))
+            quantity: parseInt(formData.get('quantity')),
+            status: formData.get('status')
         };
 
         if (!editingFlockId) {
-            payload.status = 'active';
+            payload.status = formData.get('status');
         }
         
         fetch(url, {
@@ -249,6 +257,7 @@
                 form.elements.flock_id.value = flock.flock_id;
                 form.elements.breed.value = flock.breed;
                 form.elements.quantity.value = flock.quantity;
+                form.elements.status.value = flock.status;
                 document.querySelector('#addFlockModal .modal-title').textContent = 'Edit Flock';
                 document.getElementById('saveFlockBtn').textContent = 'Update Flock';
                 new bootstrap.Modal(document.getElementById('addFlockModal')).show();

@@ -44,7 +44,6 @@
                     <th>Date</th>
                     <th>Type</th>
                     <th>Quantity</th>
-                    <th>Unit</th>
                     <th>Price/Unit</th>
                     <th>Total Amount</th>
                 </tr>
@@ -67,39 +66,32 @@
                 <form id="addRevenueForm">
                     <div class="mb-3">
                         <label class="form-label">Branch</label>
-                        <select class="form-select" name="branch" required>
-                            <option value="">Choose branch...</option>
+                        <select class="form-select" name="branch">
+                            <option value="">Unassigned</option>
                             {% for branch in branches %}
                                 <option value="{{ branch.id }}">{{ branch.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Revenue Type</label>
-                        <select class="form-select" name="revenue_type" required>
-                            <option value="eggs">Eggs</option>
-                            <option value="meat">Meat</option>
-                            <option value="birds">Birds</option>
-                            <option value="other">Other</option>
-                        </select>
+                        <label class="form-label">Available production</label>
+                        <select class="form-select" name="production" required></select>
+                        <small id="productionAvailable" class="text-muted"></small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Quantity</label>
-                        <input type="number" class="form-control" name="quantity" step="0.01" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Unit</label>
-                        <input type="text" class="form-control" name="unit" required>
+                        <input type="number" class="form-control" name="quantity" min="0.01" step="0.01" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Price per Unit</label>
-                        <input type="number" class="form-control" name="price_per_unit" step="0.01" required>
+                        <input type="number" class="form-control" name="price_per_unit" min="0" step="0.01" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Date</label>
                         <input type="date" class="form-control" name="date" required>
                     </div>
                 </form>
+                <p id="revenueError" class="text-danger" role="alert"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -113,6 +105,33 @@
 
 {% block extra_js %}
 <script>
+    const revenueForm = document.getElementById('addRevenueForm');
+    let productionStock = [];
+    function updateProductionChoices() {
+        const selected = revenueForm.elements.production.value;
+        const options = productionStock.filter(item => String(item.branch || '') === revenueForm.elements.branch.value);
+        revenueForm.elements.production.replaceChildren(new Option(options.length ? 'Choose production stock...' : 'No available production for this branch', ''));
+        options.forEach(item => revenueForm.elements.production.add(new Option(`${item.product} - ${item.flock} - ${item.date} - ${item.available_quantity} available`,item.id)));
+        if (options.some(item => String(item.id) === selected)) revenueForm.elements.production.value = selected;
+        updateAvailableQuantity();
+    }
+    function updateAvailableQuantity() {
+        const item = productionStock.find(item => String(item.id) === revenueForm.elements.production.value);
+        revenueForm.elements.quantity.max = item ? item.available_quantity : '';
+        revenueForm.elements.date.min = item ? item.date : '';
+        document.getElementById('productionAvailable').textContent = item ? `Available to sell: ${item.available_quantity}` : '';
+    }
+    async function loadProductionStock() {
+        try {
+            const response = await fetch('/api/revenue/available-production/');
+            if (!response.ok) throw new Error('Unable to load production stock.');
+            productionStock = await response.json();
+            updateProductionChoices();
+        } catch (error) { document.getElementById('revenueError').textContent = error.message; }
+    }
+    revenueForm.elements.branch.addEventListener('change', updateProductionChoices);
+    revenueForm.elements.production.addEventListener('change', updateAvailableQuantity);
+    document.getElementById('addRevenueModal').addEventListener('show.bs.modal', loadProductionStock);
     function loadRevenue() {
         fetch('/api/revenue/')
             .then(response => response.json())
@@ -136,7 +155,7 @@
                         currentBranch = branchName;
                         const header = document.createElement('tr');
                         header.className = 'table-light';
-                        header.innerHTML = `<td colspan="7"><strong>${branchName}</strong></td>`;
+                        header.innerHTML = `<td colspan="6"><strong>${branchName}</strong></td>`;
                         tbody.appendChild(header);
                     }
 
@@ -146,7 +165,6 @@
                         <td>${new Date(revenue.date).toLocaleDateString()}</td>
                         <td>${revenue.revenue_type}</td>
                         <td>${revenue.quantity}</td>
-                        <td>${revenue.unit}</td>
                         <td>₱${parseFloat(revenue.price_per_unit).toFixed(2)}</td>
                         <td>₱${parseFloat(revenue.total_amount).toFixed(2)}</td>
                     `;
@@ -161,6 +179,9 @@
 
     document.getElementById('saveRevenueBtn').addEventListener('click', function() {
         const form = document.getElementById('addRevenueForm');
+        if (!form.reportValidity()) return;
+        document.getElementById('revenueError').textContent = '';
+        this.disabled = true;
         const formData = new FormData(form);
         
         fetch('/api/revenue/', {
@@ -170,20 +191,25 @@
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
-                branch: formData.get('branch') ? parseInt(formData.get('branch')) : null,
-                revenue_type: formData.get('revenue_type'),
+                production: parseInt(formData.get('production')),
                 quantity: parseFloat(formData.get('quantity')),
-                unit: formData.get('unit'),
                 price_per_unit: parseFloat(formData.get('price_per_unit')),
                 date: formData.get('date')
             })
         })
-        .then(response => response.json())
+        .then(async response => {
+            const data = await response.json();
+            if (!response.ok) throw new Error(Object.entries(data).map(([field,value]) => `${field}: ${value}`).join('; '));
+            return data;
+        })
         .then(data => {
             bootstrap.Modal.getInstance(document.getElementById('addRevenueModal')).hide();
             loadRevenue();
             form.reset();
-        });
+            loadProductionStock();
+        })
+        .catch(error => { document.getElementById('revenueError').textContent = error.message; })
+        .finally(() => { this.disabled = false; });
     });
 
     function getCookie(name) {

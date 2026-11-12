@@ -20,6 +20,8 @@ def load_detector():
     if not path.is_dir():
         return None
     try:
+        from core.ml_runtime import configure_cpu_runtime
+        configure_cpu_runtime()
         from transformers import OwlViTProcessor, OwlViTForObjectDetection
         processor = OwlViTProcessor.from_pretrained(path, local_files_only=True)
         model = OwlViTForObjectDetection.from_pretrained(path, local_files_only=True)

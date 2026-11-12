@@ -4,11 +4,15 @@ from .models import ProductionRecord, MortalityRecord, BreedInformation, HealthR
 
 class ProductionRecordSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(source='branch.name', read_only=True)
+    sold_quantity = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    available_quantity = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     def validate_flock(self, flock):
         request = self.context.get('request')
         if request and flock.user_id != request.user.id:
             raise serializers.ValidationError('Select one of your own flocks.')
+        if flock.status != 'active' or (flock.branch_id and flock.branch.status != 'active'):
+            raise serializers.ValidationError('Select an active flock from an active branch.')
         return flock
 
     def validate_branch(self, branch):
@@ -21,6 +25,14 @@ class ProductionRecordSerializer(serializers.ModelSerializer):
         flock = attrs.get('flock', getattr(self.instance, 'flock', None))
         branch = attrs.get('branch', getattr(self.instance, 'branch', None))
         product_type = attrs.get('product_type', getattr(self.instance, 'product_type', None))
+        if self.instance and self.instance.revenue_sales.exists():
+            if attrs.get('quantity', self.instance.quantity) < self.instance.sold_quantity:
+                raise serializers.ValidationError({'quantity': 'Quantity cannot be below the amount already sold.'})
+            for field in ('flock','branch','product_type','unit','date'):
+                if field in attrs and attrs[field] != getattr(self.instance, field):
+                    raise serializers.ValidationError({field: 'Production details with sales history cannot be changed.'})
+        if flock and (flock.status != 'active' or (flock.branch_id and flock.branch.status != 'active')):
+            raise serializers.ValidationError({'flock': 'Select an active flock from an active branch.'})
         if flock and flock.branch_id != (branch.pk if branch else None):
             raise serializers.ValidationError({
                 'flock': 'Select a flock from the selected branch.'
@@ -37,7 +49,7 @@ class ProductionRecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductionRecord
-        fields = ['id', 'branch', 'branch_name', 'flock', 'product_type', 'quantity', 'unit', 'date', 'notes', 'created_at']
+        fields = ['id', 'branch', 'branch_name', 'flock', 'product_type', 'quantity', 'sold_quantity', 'available_quantity', 'unit', 'date', 'notes', 'created_at']
         read_only_fields = ['id', 'created_at']
 
 
@@ -79,6 +91,11 @@ class MortalityRecordSerializer(serializers.ModelSerializer):
         quantity = attrs.get('quantity', getattr(self.instance, 'quantity', None))
         if flock is None or quantity is None:
             return attrs
+        branch = attrs.get('branch', getattr(self.instance, 'branch', None))
+        if flock.branch_id != (branch.pk if branch else None):
+            raise serializers.ValidationError({'flock': 'Select a flock from the selected branch.'})
+        if flock.user_id != self.context['request'].user.pk or flock.status != 'active' or (flock.branch_id and flock.branch.status != 'active'):
+            raise serializers.ValidationError({'flock': 'Select an active flock from your active branches.'})
 
         if quantity <= 0:
             raise serializers.ValidationError({'quantity': 'Mortality quantity must be greater than zero.'})

@@ -10,6 +10,9 @@
 
 <form class="panel-card rooster-estimator" method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    {% if not models_checked %}
+        <div class="alert alert-info" role="status">Upload a photo to start analysis. Model availability is checked when you submit; the first analysis after a server restart also loads the models. Age predictions are estimates; accuracy on unseen chickens is not established.</div>
+    {% else %}
     <div class="alert alert-warning" role="status">
         {% if chicken_detector_ready %}
             Chicken detection is available. Detector scores are not calibrated confidence.
@@ -34,7 +37,16 @@
             The age model is unavailable. No age estimate can be produced.
         </div>
     {% endif %}
+    {% endif %}
     <div class="rooster-upload">
+        {% if candidate_available %}
+            <label for="ageModel">Age model</label>
+            <select class="form-control mb-2" id="ageModel" name="age_model">
+                <option value="original" {% if selected_age_model == 'original' %}selected{% endif %}>Original ResNet-18</option>
+                <option value="finetuned" {% if selected_age_model == 'finetuned' %}selected{% endif %}>Fine-tuned ResNet-18 — compare results</option>
+            </select>
+            <p>The fine-tuned model improved the measured average error slightly. It is a comparison option; accuracy on independent chickens remains unverified.</p>
+        {% endif %}
         <label for="photos">Chicken images</label>
         <input class="form-control" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required>
     </div>
@@ -72,8 +84,17 @@
                 <form method="post" action="{% url 'rooster_age_estimator' %}">
                     {% csrf_token %}
                     <input type="hidden" name="reanalyze_estimate_id" value="{{ result.id }}">
+                    <input type="hidden" name="age_model" value="{{ result.age_model }}">
                     <button type="submit" class="btn btn-secondary mb-3">Analyze again with current models</button>
                 </form>
+                {% if candidate_available and result.age_model != 'finetuned' %}
+                    <form method="post" action="{% url 'rooster_age_estimator' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="reanalyze_estimate_id" value="{{ result.id }}">
+                        <input type="hidden" name="age_model" value="finetuned">
+                        <button type="submit" class="btn btn-secondary mb-3">Compare fine-tuned age model</button>
+                    </form>
+                {% endif %}
             {% endif %}
             {% if result.photo_url %}
                 <div class="poultry-preview">
@@ -86,6 +107,7 @@
                     <label class="poultry-overlay-toggle"><input type="checkbox" checked data-overlay-target="anatomyOverlay{{ result.id }}"> Show predicted boxes, spur outlines and visible centerlines</label>
                 {% endif %}
             {% endif %}
+            <p>These are model predictions. Detections can be incorrect; length describes the visible outline in the photo. Age accuracy on independent chickens is not established.</p>
             <dl>
                 <dt>Chicken assessment:</dt>
                 <dd>{{ result.chicken_detected }}<br><small>{{ result.chicken_evidence }}</small></dd>
@@ -107,6 +129,12 @@
                 <dd>{{ result.spur_length_assessment }}</dd>
                 <dt>Estimated age:</dt>
                 <dd class="rooster-age-estimate">{{ result.estimated_age_range }}</dd>
+                <dt>Image quality:</dt>
+                <dd>{{ result.image_assessment }}</dd>
+            </dl>
+            <details>
+                <summary>Model details and limitations</summary>
+                <dl>
                 <dt>Evidence:</dt>
                 <dd>{{ result.spur_observations }}</dd>
                 <dt>Confidence:</dt>
@@ -115,9 +143,8 @@
                 <dd>{{ result.model_evaluation }}</dd>
                 <dt>Limitations:</dt>
                 <dd>{{ result.limitations }}</dd>
-                <dt>Image quality:</dt>
-                <dd>{{ result.image_assessment }}</dd>
-            </dl>
+                </dl>
+            </details>
         </article>
     {% endfor %}
 </section>
@@ -133,7 +160,7 @@
             <article class="rooster-saved-item">
                 <div class="rooster-saved-photo">
                     {% if estimate.photo and estimate.analysis.image_quality.quality != 'unreadable' %}
-                        <img src="{% url 'rooster_estimate_photo' estimate.pk %}" alt="{{ estimate.photo_name|default:'Rooster photo' }}">
+                        <img src="{% url 'rooster_estimate_photo' estimate.pk %}" alt="{{ estimate.photo_name|default:'Rooster photo' }}" loading="lazy" decoding="async">
                     {% else %}
                         <i class="bi bi-image"></i>
                     {% endif %}

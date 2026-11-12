@@ -22,14 +22,27 @@ MODEL_PATH = (
 DEVICE = torch.device("cpu")
 
 
-@lru_cache(maxsize=1)
-def _load_ready_model():
-    if not MODEL_PATH.is_file():
+@lru_cache(maxsize=2)
+def _load_ready_model(model_variant='original'):
+    path, candidate = MODEL_PATH, None
+    if model_variant == 'finetuned':
+        from core.age_model_registry import candidate_entry
+        candidate = candidate_entry()
+        if candidate is None:
+            return None
+        path = candidate['resolved_path']
+        if hashlib.sha256(path.read_bytes()).hexdigest() != candidate['sha256']:
+            return None
+    elif model_variant != 'original':
+        return None
+    if not path.is_file():
         return None
 
     try:
+        from core.ml_runtime import configure_cpu_runtime
+        configure_cpu_runtime()
         checkpoint = torch.load(
-            MODEL_PATH,
+            path,
             map_location=DEVICE,
             weights_only=True,
         )
@@ -65,7 +78,9 @@ def _load_ready_model():
             "test_mae": float(
                 checkpoint.get("test_mae_months", 0)
             ),
-            "sha256": hashlib.sha256(MODEL_PATH.read_bytes()).hexdigest(),
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "model_variant": model_variant,
+            "comparison_metrics": candidate.get('metrics') if candidate else None,
             "evaluation_status": checkpoint.get(
                 "evaluation_status",
                 "Independent validation pending; reconstructed historical split contains duplicate leakage.",
@@ -76,8 +91,8 @@ def _load_ready_model():
         return None
 
 
-def model_is_ready():
-    return _load_ready_model() is not None
+def model_is_ready(model_variant='original'):
+    return _load_ready_model(model_variant) is not None
 
 
 def model_test_mae():
@@ -85,8 +100,8 @@ def model_test_mae():
     return artifact['test_mae'] if artifact else None
 
 
-def predict_rooster_age(image_source):
-    artifact = _load_ready_model()
+def predict_rooster_age(image_source, model_variant='original'):
+    artifact = _load_ready_model(model_variant)
 
     if artifact is None:
         return None
@@ -115,6 +130,8 @@ def predict_rooster_age(image_source):
             "test_mae_months": artifact["test_mae"],
             "model_sha256": artifact["sha256"],
             "evaluation_status": artifact["evaluation_status"],
+            "model_variant": artifact['model_variant'],
+            "comparison_metrics": artifact['comparison_metrics'],
         }
 
     except (OSError, ValueError, RuntimeError):

@@ -255,6 +255,12 @@ def dashboard(request):
         records_for_period(Expense, current_month_start, next_month_start, expense_type='feed'),
         'amount',
     )
+    # Inventory is farm-wide. Purchase expenses preserve the original cost even
+    # after feed distribution reduces the remaining quantity/stock value.
+    inventory_feed_cost = decimal_sum(Expense.objects.filter(
+        user=request.user, expense_type='feed', category='inventory',
+        date__gte=current_month_start, date__lt=next_month_start,
+    ), 'amount')
     production_total = decimal_sum(
         records_for_period(ProductionRecord, current_month_start, next_month_start, product_type='eggs'),
         'quantity',
@@ -339,6 +345,7 @@ def dashboard(request):
             'profit_change': percent_change(current_profit, previous_profit),
             'cash_flow': current_profit,
             'feed_cost': feed_cost,
+            'inventory_feed_cost': inventory_feed_cost,
             'feed_expense_share': feed_expense_share,
             'mortality_rate': mortality_rate,
             'total_birds': total_birds,
@@ -501,9 +508,21 @@ def farm_branches(request):
             description = request.POST.get('description', '').strip()
             status = request.POST.get('status', 'active')
 
-            if not name:
+            branch_id = request.POST.get('branch_id', '').strip()
+            edited_branch = get_object_or_404(Branch, pk=branch_id, farm=farm) if branch_id.isdigit() else None
+            if branch_id and edited_branch is None:
+                raise Http404('Branch not found.')
+            if status not in ('active', 'inactive'):
+                messages.error(request, 'Choose a valid branch status.')
+            elif not name:
                 messages.error(request, 'Branch name is required.')
             else:
+                if edited_branch:
+                    for field, value in dict(name=name, location=location, address=address, contact_number=contact_number, status=status).items():
+                        setattr(edited_branch, field, value)
+                    edited_branch.save()
+                    messages.success(request, 'Branch updated. Deactivated branches also deactivate their active flocks.')
+                    return redirect('farm_branches')
                 Branch.objects.create(
                     farm=farm,
                     name=name,
@@ -920,12 +939,24 @@ def _present_rooster_estimate(record, number=1):
         'status': 'unavailable', 'message': 'Anatomy was not analyzed for this saved estimate.',
         'legs': [], 'spurs': [], 'masks': [], 'measurements': [],
     }
-    assessment = analysis.get('anatomy_assessment') or summarize_anatomy(anatomy)
+    assessment = summarize_anatomy(anatomy)
     detection = analysis.get('chicken_detection') or {
         'status': 'unavailable', 'boxes': [], 'message': 'Chicken location was not analyzed for this saved estimate.',
     }
     quality = analysis.get('image_quality') or {}
     prediction = analysis.get('age_prediction')
+    evaluation = (
+        f"Historical checkpoint MAE: {prediction['test_mae_months']:.2f} months. "
+        'Duplicate leakage was found; this is not independent validation or per-image confidence.'
+        if prediction else 'No saved age-model evaluation is available.'
+    )
+    if prediction and prediction.get('model_variant') == 'finetuned':
+        metrics = prediction.get('comparison_metrics') or {}
+        evaluation = (
+            f"Fine-tuned comparison model: validation MAE {metrics.get('validation_mae_months', 0):.2f} months; "
+            f"held-out source-family MAE {prediction['test_mae_months']:.2f} months. "
+            'The improvement is small; prior checkpoint training overlap prevents independent-chicken accuracy claims.'
+        )
     subject = assess_chicken_evidence(detection, anatomy)
     # Update display wording for historical results while preserving raw analysis.
     old_body_label = 'Possible chicken body; lower-score experimental candidate.'
@@ -941,11 +972,9 @@ def _present_rooster_estimate(record, number=1):
         'spur_observations': record.spur_observations.replace(old_body_label, body_label),
         'image_assessment': quality.get('summary', 'Image quality was not recorded.'),
         'reasoning': record.reasoning, 'confidence': record.confidence, 'limitations': record.limitations,
-        'model_evaluation': (
-            f"Historical checkpoint MAE: {prediction['test_mae_months']:.2f} months. "
-            'Duplicate leakage was found; this is not independent validation or per-image confidence.'
-            if prediction else 'No saved age-model evaluation is available.'
-        ),
+        'model_evaluation': evaluation,
+        'age_model': analysis.get('age_model', 'original'),
+        'original_age_prediction': analysis.get('original_age_prediction'),
         'photo_url': (reverse('rooster_estimate_photo', args=[record.pk])
                       if record.photo and quality.get('quality') != 'unreadable' else ''),
         'overlay': {
@@ -962,20 +991,24 @@ def _present_rooster_estimate(record, number=1):
 @login_required(login_url='login')
 def rooster_age_estimator_view(request):
     """Estimate chicken age from an uploaded spur image using the trained model."""
-    from core.rooster_age_classifier import (
-        model_is_ready,
-        model_test_mae,
-        predict_rooster_age,
-    )
-
-    age_model_ready = model_is_ready()
-    from core.chicken_detection import detect_chicken, load_detector
-    from core.poultry_vision import analyze_poultry, assess_chicken_evidence, constrain_legs_to_body, summarize_anatomy, vision_is_ready
-    chicken_detector_ready = load_detector() is not None
-    anatomy_ready = vision_is_ready()
+    # Opening the form or saved analysis must not load neural-network weights.
+    # Real readiness is checked on submission, immediately before inference.
+    age_model_ready = chicken_detector_ready = anatomy_ready = False
+    from core.age_model_registry import candidate_entry
+    candidate_available = candidate_entry() is not None
+    selected_age_model = 'original'
     results = []
 
     if request.method == 'POST':
+        from core.rooster_age_classifier import model_is_ready, predict_rooster_age
+        from core.chicken_detection import detect_chicken, load_detector
+        from core.poultry_vision import analyze_poultry, assess_chicken_evidence, constrain_legs_to_body, summarize_anatomy, vision_is_ready
+        selected_age_model = request.POST.get('age_model', 'original')
+        if selected_age_model not in ('original', 'finetuned'):
+            selected_age_model = 'original'
+        age_model_ready = model_is_ready(selected_age_model)
+        chicken_detector_ready = load_detector() is not None
+        anatomy_ready = vision_is_ready()
         photos = request.FILES.getlist('photos')
         reanalysis_id = request.POST.get('reanalyze_estimate_id', '').strip()
         if reanalysis_id:
@@ -1010,6 +1043,7 @@ def rooster_age_estimator_view(request):
             photo_name = photo.name
             photo_analysis = analyze_rooster_photo(photo)
             prediction = None
+            original_prediction = None
             detection = detect_chicken(photo)
             anatomy = analyze_poultry(photo, calibration)
             anatomy = constrain_legs_to_body(detection, anatomy)
@@ -1021,7 +1055,12 @@ def rooster_age_estimator_view(request):
             if age_model_ready and photo_analysis['quality'] in {'good', 'limited'}:
                 try:
                     photo.seek(0)
-                    prediction = predict_rooster_age(photo)
+                    if selected_age_model == 'finetuned':
+                        prediction = predict_rooster_age(photo, model_variant='finetuned')
+                        photo.seek(0)
+                        original_prediction = predict_rooster_age(photo)
+                    else:
+                        prediction = predict_rooster_age(photo)
                 except (OSError, ValueError, RuntimeError):
                     prediction = None
 
@@ -1030,7 +1069,7 @@ def rooster_age_estimator_view(request):
                 age_range = f'Experimental estimate: {age_months:.1f} months'
 
                 evidence = (
-                    f'The existing ResNet-18 produced an experimental age estimate '
+                    f'The {"fine-tuned comparison" if selected_age_model == "finetuned" else "existing"} ResNet-18 produced an experimental age estimate '
                     f'of {age_months:.1f} months from the uploaded pixels. '
                     'Anatomy model outputs, when available, are separate experimental predictions.'
                 )
@@ -1121,6 +1160,8 @@ def rooster_age_estimator_view(request):
                                          'measurements': anatomy['measurements'],
                                          'reason': 'Centimeter values require a supplied known in-plane scale; all geometry remains experimental.'},
                     'age_prediction': prediction,
+                    'age_model': selected_age_model,
+                    'original_age_prediction': original_prediction,
                     'age_prediction_status': 'experimental' if prediction else 'not_produced',
                 },
             }
@@ -1153,6 +1194,7 @@ def rooster_age_estimator_view(request):
             raise Http404('Estimate not found.')
         record = get_object_or_404(RoosterAgeEstimate, pk=selected_estimate, user=request.user)
         results = [_present_rooster_estimate(record)]
+        selected_age_model = (record.analysis or {}).get('age_model', 'original')
 
     saved_estimates = (
         RoosterAgeEstimate.objects
@@ -1167,8 +1209,10 @@ def rooster_age_estimator_view(request):
         'age_model_ready': age_model_ready,
         'chicken_detector_ready': chicken_detector_ready,
         'anatomy_ready': anatomy_ready,
+        'models_checked': request.method == 'POST',
+        'candidate_available': candidate_available,
+        'selected_age_model': selected_age_model,
         'viewing_saved': bool(request.method == 'GET' and selected_estimate),
-        'model_test_mae': model_test_mae(),
     })
 
 
@@ -1204,8 +1248,10 @@ def reports_view(request):
 def production_records_view(request):
     """Production records page."""
     from production.models import ProductionRecord
-    records = ProductionRecord.objects.select_related('flock').filter(user=request.user)[:50]
-    return render(request, 'production_records.html', {'records': records})
+    records = ProductionRecord.objects.select_related('flock').filter(user=request.user).exclude(flock__status='inactive').exclude(branch__status='inactive').exclude(flock__branch__status='inactive')[:50]
+    from revenue.models import Revenue
+    history = Revenue.objects.filter(user=request.user, production__isnull=False).select_related('production','branch','flock').exclude(flock__status='inactive').exclude(branch__status='inactive')[:100]
+    return render(request, 'production_records.html', {'records': records, 'sales_history': history})
 
 
 @login_required(login_url='login')
@@ -1254,6 +1300,9 @@ def production_record_delete(request, record_id):
     from production.models import ProductionRecord
     record = get_object_or_404(ProductionRecord, pk=record_id, user=request.user)
     if request.method == 'POST':
+        if record.revenue_sales.exists():
+            messages.error(request, 'This production entry has sales history and cannot be deleted.')
+            return redirect('production_records')
         record.delete()
         messages.success(request, 'Production record deleted.')
     return redirect('production_records')
@@ -1263,7 +1312,7 @@ def production_record_delete(request, record_id):
 def mortality_records_view(request):
     """Mortality records page."""
     from production.models import MortalityRecord
-    records = MortalityRecord.objects.select_related('flock').filter(user=request.user)[:50]
+    records = MortalityRecord.objects.select_related('flock').filter(user=request.user).exclude(flock__status='inactive').exclude(branch__status='inactive').exclude(flock__branch__status='inactive')[:50]
     return render(request, 'mortality_records.html', {'records': records})
 
 

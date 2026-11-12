@@ -33,6 +33,9 @@ def _load_bundle(manifest_text):
     manifest = json.loads(manifest_text)
     try:
         from ultralytics import YOLO
+        from ultralytics.utils import torch_utils
+        from core.ml_runtime import configure_cpu_runtime
+        torch_utils.NUM_THREADS = configure_cpu_runtime()
         models = {}
         for task in ('detect', 'segment'):
             entry = manifest[task]
@@ -251,7 +254,7 @@ def assess_chicken_evidence(detection, anatomy):
                 'explanation': 'The chicken detector found a body candidate. This is a model prediction.'}
     if detection.get('status') == 'candidate' and detection.get('boxes'):
         return {'status': 'body_candidate', 'label': 'Chicken detected',
-                'explanation': 'A chicken-related body query found a lower-score candidate. This does not confirm chicken presence.'}
+                'explanation': 'A chicken-related body query found a lower-score candidate.'}
     if anatomy.get('status') == 'completed':
         regions = []
         if anatomy.get('legs'):
@@ -261,12 +264,11 @@ def assess_chicken_evidence(detection, anatomy):
         if regions:
             names = '/'.join(regions)
             return {'status': 'anatomy_candidate',
-                    'label': f'Possible chicken anatomy: {names} (experimental)',
+                    'label': f'{names.capitalize()} regions detected',
                     'explanation': (
-                        f'The anatomy models found {names} candidates, even though the body detector did not confirm a chicken. '
-                        'A whole-chicken photo is not required for age estimation. '
-                        'These region predictions do not independently verify the species and can be wrong.')}
-    return {'status': 'unconfirmed', 'label': 'Unable to determine',
+                        f'The anatomy models detected {names} regions. Whole-chicken body not detected. '
+                        'Age estimation can use a leg or spur photo; anatomy detections alone do not independently verify the species.')}
+    return {'status': 'unconfirmed', 'label': 'Chicken not detected',
             'explanation': 'The models did not establish chicken presence. A readable close-up can still receive an experimental age estimate.'}
 
 
@@ -280,28 +282,28 @@ def summarize_anatomy(result):
                 'spur_length_assessment': 'Not measured; no usable spur mask.', 'spur_visibility_value': 'unassessed'}
 
     def locations(boxes):
-        return '; '.join(f"Box {box['xyxy']} pixels; score {box['score']:.3f}" for box in boxes) if boxes else 'No location above the model threshold.'
+        return '; '.join(f"Box {box['xyxy']} pixels; model score {box['score']:.3f}" for box in boxes) if boxes else 'No region located.'
     spurs = result['spurs'] or result['masks']
     measurements = result['measurements']
-    length = '; '.join(f"Spur {i+1}: {m['length_px']:.1f} pixels of predicted visible centerline"
+    length = '; '.join(f"Spur {m.get('mask_index', i)+1}: {m['length_px']:.1f} pixels of visible spur centerline"
                        + (f"; {m['physical_length_cm']:.2f} cm using your supplied scale" if m['physical_length_cm'] is not None else '')
                        + (' (frame-truncated)' if m['truncated_at_frame'] else '')
                        for i, m in enumerate(measurements))
     if length and not any(m['physical_length_cm'] is not None for m in measurements):
-        length += '. Centimeter measurement unavailable without a known scale.'
+        length += '. Add a known image scale to convert pixels to centimeters.'
     partial = any(m['truncated_at_frame'] for m in measurements)
     return {
-        'leg_detection_status': f"{len(result['legs'])} experimental leg candidate(s)." if result['legs'] else 'No leg candidate above threshold; visibility remains unknown.',
+        'leg_detection_status': f"Leg detected — {len(result['legs'])} region(s)." if result['legs'] else 'Leg not detected. Upload a closer view of the leg.',
         'leg_location_assessment': locations(result['legs']),
-        'spur_detection_status': f"{len(spurs)} experimental spur candidate(s)." if spurs else 'No spur candidate above threshold; absence is not established.',
+        'spur_detection_status': f"Spur detected — {len(spurs)} region(s)." if spurs else 'Spur not detected. Upload a closer view of the leg and spur.',
         'spur_location_assessment': locations(spurs),
         'spur_segmentation_status': (
-            f"{len(result['masks'])} predicted spur outline(s) overlapping spur detections."
+            f"Spur outline detected — {len(result['masks'])} outline(s)."
             if result['masks'] else
-            (f"{len(result.get('unconfirmed_masks', []))} unconfirmed outline proposal(s); no matching spur box, so no length is reported."
-             if result.get('unconfirmed_masks') else 'No spur mask above threshold.')
+            ('Outline could not be matched to a detected spur. Upload a closer photo for measurement.'
+             if result.get('unconfirmed_masks') else 'Spur outline not detected. A closer photo is needed for measurement.')
         ),
-        'spur_visibility': ('Model-assessed visible region, partly frame-truncated.' if partial else 'Model-assessed visible spur candidate; not independently verified.') if spurs else 'Not established from this image.',
+        'spur_visibility': ('Detected region reaches the image edge.' if partial else 'Spur region detected in the photo.') if spurs else 'No spur region detected.',
         'spur_visibility_value': ('partial' if partial else 'clear') if spurs else 'unassessed',
-        'spur_length_assessment': length or 'No usable spur-mask centerline; physical length not measured.',
+        'spur_length_assessment': length or 'Not measured — a detected spur outline is required.',
     }
