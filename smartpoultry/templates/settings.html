@@ -1,78 +1,56 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/settings.css' %}?v=3">{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-9">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0">Settings</h1>
-            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-person-lines-fill"></i> Manage Profile
-            </a>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="mb-0"><i class="bi bi-lock me-2"></i>Password</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="password">
-                            <div class="mb-3">
-                                <label for="current_password" class="form-label">Current Password</label>
-                                <input type="password" class="form-control" id="current_password" name="current_password" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="new_password" class="form-label">New Password</label>
-                                <input type="password" class="form-control" id="new_password" name="new_password" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-key me-1"></i> Update Password
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0"><i class="bi bi-bell me-2"></i>Notifications</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="notifications">
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="email_alerts" name="email_alerts" {% if preference.email_alerts %}checked{% endif %}>
-                                <label class="form-check-label" for="email_alerts">Email alerts</label>
-                            </div>
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="email_notifications" name="email_notifications" {% if preference.email_notifications %}checked{% endif %}>
-                                <label class="form-check-label" for="email_notifications">Email notifications</label>
-                            </div>
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="in_app_notifications" name="in_app_notifications" {% if preference.in_app_notifications %}checked{% endif %}>
-                                <label class="form-check-label" for="in_app_notifications">In-app notifications</label>
-                            </div>
-                            <div class="form-check form-switch mb-4">
-                                <input class="form-check-input" type="checkbox" id="push_notifications" name="push_notifications" {% if preference.push_notifications %}checked{% endif %}>
-                                <label class="form-check-label" for="push_notifications">Push notifications</label>
-                            </div>
-                            <button type="submit" class="btn btn-success" {% if not preference %}disabled{% endif %}>
-                                <i class="bi bi-check2-circle me-1"></i> Save Settings
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="settings-layout">
+ <aside class="settings-navigation">
+  <h1>Settings</h1>
+  <div class="nav flex-column settings-nav" role="tablist" aria-label="Settings sections" aria-orientation="vertical">
+   <button class="nav-link {% if request.POST.action == 'password' %}active{% endif %}" id="security-tab" data-bs-toggle="pill" data-bs-target="#security-panel" type="button" role="tab" aria-controls="security-panel" aria-selected="{% if request.POST.action == 'password' %}true{% else %}false{% endif %}"><i class="bi bi-lock" aria-hidden="true"></i>Account Security</button>
+   <button class="nav-link {% if request.POST.action != 'password' %}active{% endif %}" id="notifications-tab" data-bs-toggle="pill" data-bs-target="#notifications-panel" type="button" role="tab" aria-controls="notifications-panel" aria-selected="{% if request.POST.action != 'password' %}true{% else %}false{% endif %}"><i class="bi bi-bell" aria-hidden="true"></i>Notifications</button>
+  </div>
+  <a href="{% url 'profile' %}" class="settings-profile-link"><i class="bi bi-person-lines-fill"></i> Manage Profile</a>
+ </aside>
+ <div class="tab-content settings-panels">
+  <section class="tab-pane fade {% if request.POST.action != 'password' %}show active{% endif %} panel-card settings-panel" id="notifications-panel" role="tabpanel" aria-labelledby="notifications-tab" tabindex="0">
+   <header class="settings-panel-heading"><span class="settings-section-icon"><i class="bi bi-bell" aria-hidden="true"></i></span><div><h2>Notifications</h2><p>Choose your SMARTPOULTRY notification preferences.</p></div></header>
+   <form method="post">
+    {% csrf_token %}<input type="hidden" name="action" value="notifications">
+    <h3>Notification Preferences</h3><p class="text-muted">Turn notification preferences on or off.</p>
+    <div class="form-switch settings-preference-row"><span class="settings-option-icon"><i class="bi bi-envelope" aria-hidden="true"></i></span><label for="email_alerts"><strong>Email alerts</strong><span>Important updates and reports.</span></label><input class="form-check-input settings-switch" type="checkbox" role="switch" id="email_alerts" name="email_alerts" {% if preference.email_alerts %}checked{% endif %}></div>
+    <div class="form-switch settings-preference-row"><span class="settings-option-icon"><i class="bi bi-bell" aria-hidden="true"></i></span><label for="email_notifications"><strong>Email notifications</strong><span>Farm activities, flock updates, and system alerts.</span></label><input class="form-check-input settings-switch" type="checkbox" role="switch" id="email_notifications" name="email_notifications" {% if preference.email_notifications %}checked{% endif %}></div>
+    <div class="form-switch settings-preference-row"><span class="settings-option-icon"><i class="bi bi-phone" aria-hidden="true"></i></span><label for="in_app_notifications"><strong>In-app notifications</strong><span>Notification preferences within the application.</span></label><input class="form-check-input settings-switch" type="checkbox" role="switch" id="in_app_notifications" name="in_app_notifications" {% if preference.in_app_notifications %}checked{% endif %}></div>
+    <div class="form-switch settings-preference-row"><span class="settings-option-icon"><i class="bi bi-bell-slash" aria-hidden="true"></i></span><label for="push_notifications"><strong>Push notifications</strong><span>Device notification preferences.</span></label><input class="form-check-input settings-switch" type="checkbox" role="switch" id="push_notifications" name="push_notifications" {% if preference.push_notifications %}checked{% endif %}></div>
+    <div class="settings-actions"><button type="submit" class="btn btn-success" {% if not preference %}disabled{% endif %}><i class="bi bi-save me-2"></i>Save Settings</button></div>
+   </form>
+  </section>
+  <section class="tab-pane fade {% if request.POST.action == 'password' %}show active{% endif %} panel-card settings-panel" id="security-panel" role="tabpanel" aria-labelledby="security-tab" tabindex="0">
+   <header class="settings-panel-heading"><span class="settings-section-icon"><i class="bi bi-lock" aria-hidden="true"></i></span><div><h2>Account Security</h2><p>Manage your account password.</p></div></header>
+   <form method="post" class="settings-security-form">
+    {% csrf_token %}<input type="hidden" name="action" value="password">
+    <h3>Change Password</h3>
+    <div class="settings-password-fields">
+     <div class="settings-password-row"><label for="current_password" class="form-label">Current Password</label><div class="settings-password-input"><input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password" placeholder="Enter current password" required><button type="button" class="settings-password-toggle" data-password-target="current_password" aria-label="Show current password" aria-controls="current_password" aria-pressed="false"><i class="bi bi-eye-slash" aria-hidden="true"></i></button></div></div>
+     <div class="settings-password-row"><label for="new_password" class="form-label">New Password</label><div class="settings-password-input"><input type="password" class="form-control" id="new_password" name="new_password" autocomplete="new-password" placeholder="Enter new password" required><button type="button" class="settings-password-toggle" data-password-target="new_password" aria-label="Show new password" aria-controls="new_password" aria-pressed="false"><i class="bi bi-eye-slash" aria-hidden="true"></i></button></div></div>
+     <div class="settings-password-row"><label for="confirm_password" class="form-label">Confirm Password</label><div class="settings-password-input"><input type="password" class="form-control" id="confirm_password" name="confirm_password" autocomplete="new-password" placeholder="Confirm new password" required><button type="button" class="settings-password-toggle" data-password-target="confirm_password" aria-label="Show confirm password" aria-controls="confirm_password" aria-pressed="false"><i class="bi bi-eye-slash" aria-hidden="true"></i></button></div></div>
     </div>
+    <div class="settings-actions"><button type="submit" class="btn btn-primary"><i class="bi bi-key me-2"></i>Update Password</button></div>
+   </form>
+  </section>
+ </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-password-target]').forEach(button => {
+    button.addEventListener('click', () => {
+        const field = document.getElementById(button.dataset.passwordTarget);
+        const show = field.type === 'password';
+        field.type = show ? 'text' : 'password';
+        button.setAttribute('aria-pressed', String(show));
+        button.setAttribute('aria-label', `${show ? 'Hide' : 'Show'} ${field.labels[0].textContent.toLowerCase()}`);
+        button.querySelector('i').className = show ? 'bi bi-eye' : 'bi bi-eye-slash';
+    });
+});
+</script>
 {% endblock %}
