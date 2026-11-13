@@ -13,7 +13,7 @@ class UserProfile(AbstractUser):
     
     phone = models.CharField(max_length=20, blank=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='staff')
-    farm = models.ForeignKey('core.Farm', on_delete=models.CASCADE, null=True, blank=True)
+    farm = models.ForeignKey('core.Farm', on_delete=models.SET_NULL, null=True, blank=True)
     is_active_user = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
