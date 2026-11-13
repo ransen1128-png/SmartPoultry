@@ -17,7 +17,7 @@
         <h5>Inventory Items</h5>
     </div>
     <div class="card-body">
-        <table class="table table-hover" id="inventoryTable">
+        <div class="table-responsive"><table class="table table-hover" id="inventoryTable">
             <thead>
                 <tr>
                     <th>Item Type</th>
@@ -26,12 +26,13 @@
                     <th>Quantity</th>
                     <th>Cost/Unit</th>
                     <th>Total Value</th>
+                    <th>Minimum Stock</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody id="inventoryBody">
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>
 
@@ -71,6 +72,11 @@
                         <input type="text" class="form-control" name="unit" placeholder="kg, liters, etc." required>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label" for="newMinimumStock">Minimum stock alert (optional)</label>
+                        <input type="number" id="newMinimumStock" name="minimum_stock" class="form-control" min="0" step="0.01">
+                        <small class="text-muted">Leave blank to disable alerts.</small>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Cost per Unit</label>
                         <input type="number" class="form-control" name="cost_per_unit" step="0.01" required>
                         <small class="text-muted">Feed purchase cost is included in Dashboard Feed Cost for the purchase month under All branches.</small>
@@ -98,6 +104,7 @@
                         <div class="modal-body">
                             <div id="distributionEntrySection">
                             <form id="distributionForm" class="row g-3">
+                                <p class="text-muted mb-0">The cost will be assigned to this branch in Expenses, using the original purchase price. This does not add a second purchase expense.</p>
                                 <div class="col-md-4">
                                     <label class="form-label" for="distributionBranch">Branch</label>
                                     <select class="form-select" id="distributionBranch" name="branch" required>
@@ -115,6 +122,7 @@
                                     <label class="form-label" for="distributionDate">Date distributed</label>
                                     <input class="form-control" id="distributionDate" name="date" type="date" value="{{ today|date:'Y-m-d' }}" required>
                                 </div>
+                                <div class="col-12"><label class="form-label" for="distributionFlock">Receiving flock (optional)</label><select id="distributionFlock" name="flock" class="form-select"><option value="">Branch stock — no flock assigned</option></select></div>
                             </form>
                             <hr>
                             </div>
@@ -122,10 +130,10 @@
                             <div class="table-responsive">
                                 <table class="table table-sm align-middle mb-0">
                                     <thead>
-                                        <tr><th>Item</th><th>Date</th><th>Branch</th><th>Quantity</th></tr>
+                                        <tr><th>Item</th><th>Date</th><th>Branch</th><th>Flock</th><th>Quantity</th><th>Unit Cost</th><th>Assigned Cost</th><th>Status / Actions</th></tr>
                                     </thead>
                                     <tbody id="distributionHistoryBody">
-                                        <tr><td colspan="4" class="text-center text-muted">No distributions recorded.</td></tr>
+                                        <tr><td colspan="6" class="text-center text-muted">No distributions recorded.</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -159,33 +167,6 @@
         return `${formatWholeQuantity(value)} ${pieceLabel} ${normalizedUnit}`.trim();
     }
 
-        function loadInventory() {
-            return fetch('/api/inventory/items/')
-                .then(response => response.json())
-            .then(data => {
-                const tbody = document.getElementById('inventoryBody');
-                tbody.innerHTML = '';
-                    inventoryItems.clear();
-                (data.results || []).forEach(item => {
-                        inventoryItems.set(Number(item.id), item);
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.item_type}</td>
-                        <td>${item.name}</td>
-                        <td>${new Date(`${item.date_added}T00:00:00`).toLocaleDateString()}</td>
-                        <td>${formatQuantity(item.quantity, item.unit)}</td>
-                        <td>₱${parseFloat(item.cost_per_unit).toFixed(2)}</td>
-                        <td>₱${parseFloat(item.total_value).toFixed(2)}</td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-outline-primary me-1" type="button" data-distribute-id="${item.id}">Distribute</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteItem(${item.id})">Delete</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            });
-    }
-
     function openDistribution(inventoryId) {
         showDistributionModal(inventoryId, true);
     }
@@ -216,57 +197,6 @@
             `Available: ${formatQuantity(item.quantity, item.unit)}`;
     }
 
-    async function loadDistributionHistory(inventoryId = null) {
-        const body = document.getElementById('distributionHistoryBody');
-        body.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Loading history...</td></tr>';
-        let url = '/api/inventory/distributions/';
-        if (inventoryId) {
-            url += `?inventory=${inventoryId}`;
-        }
-
-        try {
-            const distributions = [];
-            while (url) {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Unable to load distribution history.');
-                }
-                const data = await response.json();
-                distributions.push(...(data.results || []));
-                url = data.next;
-            }
-
-            body.innerHTML = '';
-            if (!distributions.length) {
-                body.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No distributions recorded.</td></tr>';
-                return;
-            }
-            distributions.forEach(distribution => {
-                const row = document.createElement('tr');
-                const itemCell = document.createElement('td');
-                const dateCell = document.createElement('td');
-                const branchCell = document.createElement('td');
-                const quantityCell = document.createElement('td');
-                itemCell.textContent = distribution.item_name;
-                dateCell.textContent = new Date(`${distribution.date}T00:00:00`).toLocaleDateString();
-                branchCell.textContent = distribution.branch_name;
-                quantityCell.textContent = formatQuantity(distribution.quantity, distribution.unit);
-                row.append(itemCell, dateCell, branchCell, quantityCell);
-                body.appendChild(row);
-            });
-        } catch (error) {
-            body.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Unable to load history.</td></tr>';
-            console.error(error);
-        }
-    }
-
-    document.getElementById('inventoryBody').addEventListener('click', event => {
-        const distributeButton = event.target.closest('[data-distribute-id]');
-        if (distributeButton) {
-            openDistribution(distributeButton.dataset.distributeId);
-        }
-    });
-
     document.getElementById('allDistributionHistoryBtn').addEventListener('click', () => {
         showDistributionModal(null, false);
     });
@@ -278,6 +208,9 @@
         }
 
         const formData = new FormData(form);
+        const saveButton=document.getElementById('saveDistributionBtn');
+        saveButton.disabled=true;
+        try {
         const response = await fetch('/api/inventory/distributions/', {
             method: 'POST',
             headers: {
@@ -288,6 +221,7 @@
                 inventory: selectedInventoryId,
                 branch: Number(formData.get('branch')),
                 quantity: Number(formData.get('quantity')),
+                flock:formData.get('flock') ? Number(formData.get('flock')) : null,
                 date: formData.get('date')
             })
         });
@@ -307,13 +241,19 @@
         }
         document.getElementById('distributionQuantity').value = '';
         loadDistributionHistory(selectedInventoryId);
+        } catch(error) {
+            showAppDialog('Unable to save distribution. Please check your connection.', 'Distribution Error');
+        } finally {saveButton.disabled=false;}
     });
 
-    document.getElementById('saveInventoryBtn').addEventListener('click', function() {
+    document.getElementById('saveInventoryBtn').addEventListener('click', async function() {
         const form = document.getElementById('addInventoryForm');
+        if(!form.reportValidity())return;
         const formData = new FormData(form);
+        this.disabled=true;
+        try {
         
-        fetch('/api/inventory/items/', {
+        const response=await fetch('/api/inventory/items/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -325,15 +265,16 @@
                 date_added: formData.get('date_added'),
                 quantity: parseFloat(formData.get('quantity')),
                 unit: formData.get('unit'),
-                cost_per_unit: parseFloat(formData.get('cost_per_unit'))
+                cost_per_unit: parseFloat(formData.get('cost_per_unit')),
+                minimum_stock:formData.get('minimum_stock')===''?null:formData.get('minimum_stock')
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            bootstrap.Modal.getInstance(document.getElementById('addInventoryModal')).hide();
-            loadInventory();
-            form.reset();
         });
+        const data=await response.json();
+        if(!response.ok)throw new Error(Object.entries(data).map(([field,value])=>field+': '+value).join('; '));
+            bootstrap.Modal.getInstance(document.getElementById('addInventoryModal')).hide();
+            await loadInventory();
+            form.reset();
+        }catch(error){showAppDialog(error.message,'Unable to Add Inventory');}finally{this.disabled=false;}
     });
 
     function deleteItem(id) {
@@ -372,6 +313,10 @@
         return cookieValue;
     }
 
-    document.addEventListener('DOMContentLoaded', loadInventory);
+    document.addEventListener('DOMContentLoaded', () => loadInventory());
 </script>
+{% load static %}
+<script src="{% static 'js/inventory_management.js' %}?v=1"></script>
+<div class="modal fade" id="minimumStockModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Minimum stock alert</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><form id="minimumStockForm"><p id="minimumItemName"></p><input type="hidden" id="minimumItemId"><label for="minimumValue" class="form-label">Minimum quantity</label><input type="number" min="0" step="0.01" id="minimumValue" class="form-control"><small>Leave blank to disable alerts.</small></form></div><div class="modal-footer"><button class="btn btn-primary" id="saveMinimumBtn" onclick="saveMinimum()">Save minimum</button></div></div></div></div>
+<div class="modal fade" id="reverseDistributionModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Reverse distribution</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><p id="reverseDistributionLabel"></p><p>This restores inventory and returns the assigned expense to the purchase balance. The original record stays in history.</p><form id="reverseDistributionForm"><input type="hidden" id="reverseDistributionId"><label for="reverseReason" class="form-label">Reason</label><textarea id="reverseReason" class="form-control" maxlength="500" required></textarea></form></div><div class="modal-footer"><button class="btn btn-danger" id="confirmReverseBtn" onclick="confirmReversal()">Reverse distribution</button></div></div></div></div>
 {% endblock %}

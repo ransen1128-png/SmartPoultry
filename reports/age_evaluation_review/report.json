@@ -1,0 +1,1425 @@
+{
+  "status": "diagnostic_only",
+  "seed": 2026,
+  "new_training_performed": false,
+  "independent_chicken_evaluation": false,
+  "limitation": "Known source families only. Prior original-model corpus exposure and unresolved bird identities prevent unseen-chicken accuracy claims.",
+  "partitions": {
+    "validation": {
+      "original": {
+        "metrics": {
+          "n": 11,
+          "mae_months": 1.25816011428833,
+          "median_absolute_error_months": 1.1051197052001953,
+          "rmse_months": 1.4859865313170884,
+          "bias_months": 0.430505709214644,
+          "within_1_month_fraction": 0.45454545454545453,
+          "within_3_months_fraction": 0.9090909090909091,
+          "p90_absolute_error_months": 2.0325775146484375
+        },
+        "source_families": 10,
+        "descriptive_cluster_bootstrap_mae_interval_95": [
+          0.791181751092275,
+          1.8207259690761564
+        ],
+        "per_age": {
+          "1": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "2": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "3": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "4": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "5": {
+            "n": 2,
+            "mae_months": 2.3006293773651123,
+            "median_absolute_error_months": 2.3006293773651123,
+            "rmse_months": 2.4071878143071053,
+            "bias_months": 2.3006293773651123,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 0.5,
+            "p90_absolute_error_months": 2.86725172996521
+          },
+          "6": {
+            "n": 2,
+            "mae_months": 1.587327480316162,
+            "median_absolute_error_months": 1.587327480316162,
+            "rmse_months": 1.6485921638900716,
+            "bias_months": 1.587327480316162,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.9435275077819825
+          },
+          "7": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "8": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "9": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "10": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "11": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "12": {
+            "n": 1,
+            "mae_months": 0.4066286087036133,
+            "median_absolute_error_months": 0.4066286087036133,
+            "rmse_months": 0.4066286087036133,
+            "bias_months": 0.4066286087036133,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.4066286087036133
+          },
+          "13": {
+            "n": 2,
+            "mae_months": 0.566072940826416,
+            "median_absolute_error_months": 0.566072940826416,
+            "rmse_months": 0.6755783181602177,
+            "bias_months": -0.566072940826416,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.8610630989074707
+          },
+          "14": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "15": {
+            "n": 2,
+            "mae_months": 0.8599982261657715,
+            "median_absolute_error_months": 0.8599982261657715,
+            "rmse_months": 0.8942491199281646,
+            "bias_months": 0.24512147903442383,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.0560954093933106
+          },
+          "16": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "17": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "18": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "19": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "20": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "21": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "22": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "23": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "24": {
+            "n": 2,
+            "mae_months": 1.4025382995605469,
+            "median_absolute_error_months": 1.4025382995605469,
+            "rmse_months": 1.5144925158447915,
+            "bias_months": -1.4025382995605469,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.8597114562988282
+          }
+        },
+        "age_groups": {
+          "1-6": {
+            "n": 4,
+            "mae_months": 1.9439784288406372,
+            "median_absolute_error_months": 1.8124644756317139,
+            "rmse_months": 2.063057112174596,
+            "bias_months": 1.9439784288406372,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 0.75,
+            "p90_absolute_error_months": 2.7160083770751955
+          },
+          "7-12": {
+            "n": 1,
+            "mae_months": 0.4066286087036133,
+            "median_absolute_error_months": 0.4066286087036133,
+            "rmse_months": 0.4066286087036133,
+            "bias_months": 0.4066286087036133,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.4066286087036133
+          },
+          "13-18": {
+            "n": 4,
+            "mae_months": 0.7130355834960938,
+            "median_absolute_error_months": 0.774843692779541,
+            "rmse_months": 0.7924921300746416,
+            "bias_months": -0.1604757308959961,
+            "within_1_month_fraction": 0.75,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.0540269851684572
+          },
+          "19-24": {
+            "n": 2,
+            "mae_months": 1.4025382995605469,
+            "median_absolute_error_months": 1.4025382995605469,
+            "rmse_months": 1.5144925158447915,
+            "bias_months": -1.4025382995605469,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.8597114562988282
+          }
+        },
+        "largest_errors": [
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (1).jpg",
+            "sha256": "fa4e5f36b8deb48fbadbcf45232e0d4c3659d00efd0ca198b0a268f80bb0a207",
+            "source_family": "visual_family_056",
+            "split": "validation",
+            "age_months": "5",
+            "original_prediction": "8.008907318115234",
+            "candidate_prediction": "7.10610294342041",
+            "prediction_months": 8.008907318115234
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (10).jpg",
+            "sha256": "4364af5f8d99c7783405e06589759be9dfbad9a3dd065c3a435b8e4f3ddd8449",
+            "source_family": "visual_family_043",
+            "split": "validation",
+            "age_months": "6",
+            "original_prediction": "8.032577514648438",
+            "candidate_prediction": "8.525793075561523",
+            "prediction_months": 8.032577514648438
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\24months (361).jpg",
+            "sha256": "4db28ca071d93e88a44e312009cdd9552e49dcb5871252adc303b1f136aba809",
+            "source_family": "visual_family_053",
+            "split": "validation",
+            "age_months": "24",
+            "original_prediction": "22.0259952545166",
+            "candidate_prediction": "21.21017837524414",
+            "prediction_months": 22.0259952545166
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (116).jpg",
+            "sha256": "de0c71b44ecee5788fa41d60c128db39931da00b427a0b22c3d3c89f14070091",
+            "source_family": "visual_family_019",
+            "split": "validation",
+            "age_months": "5",
+            "original_prediction": "6.59235143661499",
+            "candidate_prediction": "6.600097179412842",
+            "prediction_months": 6.59235143661499
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (1).jpg",
+            "sha256": "e6944d3144c2adbdc86b23dec3e679f0aa2a9985a35c832abe23e81b8c823a66",
+            "source_family": "visual_family_038",
+            "split": "validation",
+            "age_months": "6",
+            "original_prediction": "7.142077445983887",
+            "candidate_prediction": "6.974320411682129",
+            "prediction_months": 7.142077445983887
+          }
+        ]
+      },
+      "candidate": {
+        "metrics": {
+          "n": 11,
+          "mae_months": 1.2492742971940474,
+          "median_absolute_error_months": 0.9743204116821289,
+          "rmse_months": 1.5120439367235154,
+          "bias_months": 0.10588676279241388,
+          "within_1_month_fraction": 0.5454545454545454,
+          "within_3_months_fraction": 1.0,
+          "p90_absolute_error_months": 2.5257930755615234
+        },
+        "source_families": 10,
+        "descriptive_cluster_bootstrap_mae_interval_95": [
+          0.7654689002037048,
+          1.7928367328643795
+        ],
+        "per_age": {
+          "1": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "2": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "3": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "4": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "5": {
+            "n": 2,
+            "mae_months": 1.853100061416626,
+            "median_absolute_error_months": 1.853100061416626,
+            "rmse_months": 1.870291500254579,
+            "bias_months": 1.853100061416626,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 2.0555023670196535
+          },
+          "6": {
+            "n": 2,
+            "mae_months": 1.7500567436218262,
+            "median_absolute_error_months": 1.7500567436218262,
+            "rmse_months": 1.914279358554411,
+            "bias_months": 1.7500567436218262,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 2.370645809173584
+          },
+          "7": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "8": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "9": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "10": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "11": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "12": {
+            "n": 1,
+            "mae_months": 0.2470722198486328,
+            "median_absolute_error_months": 0.2470722198486328,
+            "rmse_months": 0.2470722198486328,
+            "bias_months": 0.2470722198486328,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.2470722198486328
+          },
+          "13": {
+            "n": 2,
+            "mae_months": 0.6276459693908691,
+            "median_absolute_error_months": 0.6276459693908691,
+            "rmse_months": 0.6311091803080701,
+            "bias_months": -0.6276459693908691,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.6804661750793457
+          },
+          "14": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "15": {
+            "n": 2,
+            "mae_months": 0.6636977195739746,
+            "median_absolute_error_months": 0.6636977195739746,
+            "rmse_months": 0.8197886074975503,
+            "bias_months": -0.6636977195739746,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.0486620903015136
+          },
+          "16": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "17": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "18": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "19": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "20": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "21": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "22": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "23": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "24": {
+            "n": 2,
+            "mae_months": 1.8529720306396484,
+            "median_absolute_error_months": 1.8529720306396484,
+            "rmse_months": 2.07634113486405,
+            "bias_months": -1.8529720306396484,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 2.602451705932617
+          }
+        },
+        "age_groups": {
+          "1-6": {
+            "n": 4,
+            "mae_months": 1.801578402519226,
+            "median_absolute_error_months": 1.853100061416626,
+            "rmse_months": 1.892413242200552,
+            "bias_months": 1.801578402519226,
+            "within_1_month_fraction": 0.25,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 2.3998860359191894
+          },
+          "7-12": {
+            "n": 1,
+            "mae_months": 0.2470722198486328,
+            "median_absolute_error_months": 0.2470722198486328,
+            "rmse_months": 0.2470722198486328,
+            "bias_months": 0.2470722198486328,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.2470722198486328
+          },
+          "13-18": {
+            "n": 4,
+            "mae_months": 0.6456718444824219,
+            "median_absolute_error_months": 0.6276459693908691,
+            "rmse_months": 0.731557297295262,
+            "bias_months": -0.6456718444824219,
+            "within_1_month_fraction": 0.75,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.0095335960388185
+          },
+          "19-24": {
+            "n": 2,
+            "mae_months": 1.8529720306396484,
+            "median_absolute_error_months": 1.8529720306396484,
+            "rmse_months": 2.07634113486405,
+            "bias_months": -1.8529720306396484,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 2.602451705932617
+          }
+        },
+        "largest_errors": [
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\24months (361).jpg",
+            "sha256": "4db28ca071d93e88a44e312009cdd9552e49dcb5871252adc303b1f136aba809",
+            "source_family": "visual_family_053",
+            "split": "validation",
+            "age_months": "24",
+            "original_prediction": "22.0259952545166",
+            "candidate_prediction": "21.21017837524414",
+            "prediction_months": 21.21017837524414
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (10).jpg",
+            "sha256": "4364af5f8d99c7783405e06589759be9dfbad9a3dd065c3a435b8e4f3ddd8449",
+            "source_family": "visual_family_043",
+            "split": "validation",
+            "age_months": "6",
+            "original_prediction": "8.032577514648438",
+            "candidate_prediction": "8.525793075561523",
+            "prediction_months": 8.525793075561523
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (1).jpg",
+            "sha256": "fa4e5f36b8deb48fbadbcf45232e0d4c3659d00efd0ca198b0a268f80bb0a207",
+            "source_family": "visual_family_056",
+            "split": "validation",
+            "age_months": "5",
+            "original_prediction": "8.008907318115234",
+            "candidate_prediction": "7.10610294342041",
+            "prediction_months": 7.10610294342041
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (116).jpg",
+            "sha256": "de0c71b44ecee5788fa41d60c128db39931da00b427a0b22c3d3c89f14070091",
+            "source_family": "visual_family_019",
+            "split": "validation",
+            "age_months": "5",
+            "original_prediction": "6.59235143661499",
+            "candidate_prediction": "6.600097179412842",
+            "prediction_months": 6.600097179412842
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\15months (1).jpg",
+            "sha256": "22870cdf599b88a76b442fa01bc8cf26eb4eac4a824516b268866be112b08abb",
+            "source_family": "visual_family_054",
+            "split": "validation",
+            "age_months": "15",
+            "original_prediction": "14.385123252868652",
+            "candidate_prediction": "13.855096817016602",
+            "prediction_months": 13.855096817016602
+          }
+        ]
+      }
+    },
+    "test": {
+      "original": {
+        "metrics": {
+          "n": 10,
+          "mae_months": 2.0970792889595034,
+          "median_absolute_error_months": 1.6094818115234375,
+          "rmse_months": 2.78534514153948,
+          "bias_months": 0.947540032863617,
+          "within_1_month_fraction": 0.4,
+          "within_3_months_fraction": 0.8,
+          "p90_absolute_error_months": 4.161905574798583
+        },
+        "source_families": 10,
+        "descriptive_cluster_bootstrap_mae_interval_95": [
+          1.083529832661152,
+          3.3340390631556507
+        ],
+        "per_age": {
+          "1": {
+            "n": 2,
+            "mae_months": 3.381081461906433,
+            "median_absolute_error_months": 3.381081461906433,
+            "rmse_months": 3.419474997014102,
+            "bias_months": 3.381081461906433,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 0.5,
+            "p90_absolute_error_months": 3.7898629903793335
+          },
+          "2": {
+            "n": 2,
+            "mae_months": 3.655164897441864,
+            "median_absolute_error_months": 3.655164897441864,
+            "rmse_months": 4.68792075815357,
+            "bias_months": 2.9353654980659485,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 0.5,
+            "p90_absolute_error_months": 6.003457295894623
+          },
+          "3": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "4": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "5": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "6": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "7": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "8": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "9": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "10": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "11": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "12": {
+            "n": 1,
+            "mae_months": 1.4102630615234375,
+            "median_absolute_error_months": 1.4102630615234375,
+            "rmse_months": 1.4102630615234375,
+            "bias_months": -1.4102630615234375,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.4102630615234375
+          },
+          "13": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "14": {
+            "n": 2,
+            "mae_months": 1.3106966018676758,
+            "median_absolute_error_months": 1.3106966018676758,
+            "rmse_months": 1.40211751503941,
+            "bias_months": -1.3106966018676758,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.7090997695922852
+          },
+          "15": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "16": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "17": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "18": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "19": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "20": {
+            "n": 1,
+            "mae_months": 0.09358978271484375,
+            "median_absolute_error_months": 0.09358978271484375,
+            "rmse_months": 0.09358978271484375,
+            "bias_months": -0.09358978271484375,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.09358978271484375
+          },
+          "21": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "22": {
+            "n": 1,
+            "mae_months": 1.8704032897949219,
+            "median_absolute_error_months": 1.8704032897949219,
+            "rmse_months": 1.8704032897949219,
+            "bias_months": 1.8704032897949219,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.8704032897949219
+          },
+          "23": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "24": {
+            "n": 1,
+            "mae_months": 0.9026508331298828,
+            "median_absolute_error_months": 0.9026508331298828,
+            "rmse_months": 0.9026508331298828,
+            "bias_months": -0.9026508331298828,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.9026508331298828
+          }
+        },
+        "age_groups": {
+          "1-6": {
+            "n": 4,
+            "mae_months": 3.5181231796741486,
+            "median_absolute_error_months": 3.381081461906433,
+            "rmse_months": 4.103011716406117,
+            "bias_months": 3.158223479986191,
+            "within_1_month_fraction": 0.25,
+            "within_3_months_fraction": 0.5,
+            "p90_absolute_error_months": 5.780988788604737
+          },
+          "7-12": {
+            "n": 1,
+            "mae_months": 1.4102630615234375,
+            "median_absolute_error_months": 1.4102630615234375,
+            "rmse_months": 1.4102630615234375,
+            "bias_months": -1.4102630615234375,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.4102630615234375
+          },
+          "13-18": {
+            "n": 2,
+            "mae_months": 1.3106966018676758,
+            "median_absolute_error_months": 1.3106966018676758,
+            "rmse_months": 1.40211751503941,
+            "bias_months": -1.3106966018676758,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.7090997695922852
+          },
+          "19-24": {
+            "n": 3,
+            "mae_months": 0.9555479685465494,
+            "median_absolute_error_months": 0.9026508331298828,
+            "rmse_months": 1.2002702529644937,
+            "bias_months": 0.29138755798339844,
+            "within_1_month_fraction": 0.6666666666666666,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.6768527984619142
+          }
+        },
+        "largest_errors": [
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\2months (151).jpg",
+            "sha256": "8c7fbb63c838ba51d98c042b3f3963fbbc6cf52349dc15ef3af5f6d640df12e1",
+            "source_family": "visual_family_051",
+            "split": "test",
+            "age_months": "2",
+            "original_prediction": "8.590530395507812",
+            "candidate_prediction": "8.497692108154297",
+            "prediction_months": 8.590530395507812
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\1months (1).jpg",
+            "sha256": "ccd018bd6435eeb0f6d045d8cd52cc37b6ffc6bdf35b0f2cca5aed93e5ac77d8",
+            "source_family": "visual_family_049",
+            "split": "test",
+            "age_months": "1",
+            "original_prediction": "4.892058372497559",
+            "candidate_prediction": "5.320333003997803",
+            "prediction_months": 4.892058372497559
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\1months (110).jpg",
+            "sha256": "0a842de3edafe2c5e46d251c8e9a025a2fca738952fbf8a1d07db57183a4f590",
+            "source_family": "visual_family_001",
+            "split": "test",
+            "age_months": "1",
+            "original_prediction": "3.8701045513153076",
+            "candidate_prediction": "3.363717555999756",
+            "prediction_months": 3.8701045513153076
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\22months (263).jpg",
+            "sha256": "31f0468f616ff1119622e32fb8f771665041f47f422f6d58c53f89a0cea662e1",
+            "source_family": "visual_family_006",
+            "split": "test",
+            "age_months": "22",
+            "original_prediction": "23.870403289794922",
+            "candidate_prediction": "23.441280364990234",
+            "prediction_months": 23.870403289794922
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\14months (275).jpg",
+            "sha256": "627d30e0753e0a8fddd97c222e9e581e60aa41d09b91e215af7231a6411fa213",
+            "source_family": "visual_family_026",
+            "split": "test",
+            "age_months": "14",
+            "original_prediction": "12.191299438476562",
+            "candidate_prediction": "11.997062683105469",
+            "prediction_months": 12.191299438476562
+          }
+        ]
+      },
+      "candidate": {
+        "metrics": {
+          "n": 10,
+          "mae_months": 2.0246997117996215,
+          "median_absolute_error_months": 1.3354816436767578,
+          "rmse_months": 2.756847010065589,
+          "bias_months": 0.8999048948287964,
+          "within_1_month_fraction": 0.3,
+          "within_3_months_fraction": 0.8,
+          "p90_absolute_error_months": 4.538068914413452
+        },
+        "source_families": 10,
+        "descriptive_cluster_bootstrap_mae_interval_95": [
+          0.9920173102617263,
+          3.2632615572214125
+        ],
+        "per_age": {
+          "1": {
+            "n": 2,
+            "mae_months": 3.3420252799987793,
+            "median_absolute_error_months": 3.3420252799987793,
+            "rmse_months": 3.482272099504441,
+            "bias_months": 3.3420252799987793,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 0.5,
+            "p90_absolute_error_months": 4.124671459197998
+          },
+          "2": {
+            "n": 2,
+            "mae_months": 3.65945827960968,
+            "median_absolute_error_months": 3.65945827960968,
+            "rmse_months": 4.631112843118689,
+            "bias_months": 2.8382338285446167,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 0.5,
+            "p90_absolute_error_months": 5.930045342445373
+          },
+          "3": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "4": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "5": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "6": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "7": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "8": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "9": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "10": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "11": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "12": {
+            "n": 1,
+            "mae_months": 1.2296829223632812,
+            "median_absolute_error_months": 1.2296829223632812,
+            "rmse_months": 1.2296829223632812,
+            "bias_months": -1.2296829223632812,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.2296829223632812
+          },
+          "13": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "14": {
+            "n": 2,
+            "mae_months": 1.152226448059082,
+            "median_absolute_error_months": 1.152226448059082,
+            "rmse_months": 1.4322481523680222,
+            "bias_months": -1.152226448059082,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.8327951431274414
+          },
+          "15": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "16": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "17": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "18": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "19": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "20": {
+            "n": 1,
+            "mae_months": 0.2109661102294922,
+            "median_absolute_error_months": 0.2109661102294922,
+            "rmse_months": 0.2109661102294922,
+            "bias_months": -0.2109661102294922,
+            "within_1_month_fraction": 1.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 0.2109661102294922
+          },
+          "21": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "22": {
+            "n": 1,
+            "mae_months": 1.4412803649902344,
+            "median_absolute_error_months": 1.4412803649902344,
+            "rmse_months": 1.4412803649902344,
+            "bias_months": 1.4412803649902344,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.4412803649902344
+          },
+          "23": {
+            "n": 0,
+            "mae_months": null,
+            "median_absolute_error_months": null,
+            "rmse_months": null,
+            "bias_months": null,
+            "within_1_month_fraction": null,
+            "within_3_months_fraction": null,
+            "p90_absolute_error_months": null
+          },
+          "24": {
+            "n": 1,
+            "mae_months": 1.057647705078125,
+            "median_absolute_error_months": 1.057647705078125,
+            "rmse_months": 1.057647705078125,
+            "bias_months": -1.057647705078125,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.057647705078125
+          }
+        },
+        "age_groups": {
+          "1-6": {
+            "n": 4,
+            "mae_months": 3.5007417798042297,
+            "median_absolute_error_months": 3.3420252799987793,
+            "rmse_months": 4.097159085310573,
+            "bias_months": 3.090129554271698,
+            "within_1_month_fraction": 0.25,
+            "within_3_months_fraction": 0.5,
+            "p90_absolute_error_months": 5.844484376907349
+          },
+          "7-12": {
+            "n": 1,
+            "mae_months": 1.2296829223632812,
+            "median_absolute_error_months": 1.2296829223632812,
+            "rmse_months": 1.2296829223632812,
+            "bias_months": -1.2296829223632812,
+            "within_1_month_fraction": 0.0,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.2296829223632812
+          },
+          "13-18": {
+            "n": 2,
+            "mae_months": 1.152226448059082,
+            "median_absolute_error_months": 1.152226448059082,
+            "rmse_months": 1.4322481523680222,
+            "bias_months": -1.152226448059082,
+            "within_1_month_fraction": 0.5,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.8327951431274414
+          },
+          "19-24": {
+            "n": 3,
+            "mae_months": 0.9032980600992838,
+            "median_absolute_error_months": 1.057647705078125,
+            "rmse_months": 1.0392969511852344,
+            "bias_months": 0.0575555165608724,
+            "within_1_month_fraction": 0.3333333333333333,
+            "within_3_months_fraction": 1.0,
+            "p90_absolute_error_months": 1.3645538330078124
+          }
+        },
+        "largest_errors": [
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\2months (151).jpg",
+            "sha256": "8c7fbb63c838ba51d98c042b3f3963fbbc6cf52349dc15ef3af5f6d640df12e1",
+            "source_family": "visual_family_051",
+            "split": "test",
+            "age_months": "2",
+            "original_prediction": "8.590530395507812",
+            "candidate_prediction": "8.497692108154297",
+            "prediction_months": 8.497692108154297
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\1months (1).jpg",
+            "sha256": "ccd018bd6435eeb0f6d045d8cd52cc37b6ffc6bdf35b0f2cca5aed93e5ac77d8",
+            "source_family": "visual_family_049",
+            "split": "test",
+            "age_months": "1",
+            "original_prediction": "4.892058372497559",
+            "candidate_prediction": "5.320333003997803",
+            "prediction_months": 5.320333003997803
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\1months (110).jpg",
+            "sha256": "0a842de3edafe2c5e46d251c8e9a025a2fca738952fbf8a1d07db57183a4f590",
+            "source_family": "visual_family_001",
+            "split": "test",
+            "age_months": "1",
+            "original_prediction": "3.8701045513153076",
+            "candidate_prediction": "3.363717555999756",
+            "prediction_months": 3.363717555999756
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\14months (275).jpg",
+            "sha256": "627d30e0753e0a8fddd97c222e9e581e60aa41d09b91e215af7231a6411fa213",
+            "source_family": "visual_family_026",
+            "split": "test",
+            "age_months": "14",
+            "original_prediction": "12.191299438476562",
+            "candidate_prediction": "11.997062683105469",
+            "prediction_months": 11.997062683105469
+          },
+          {
+            "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\22months (263).jpg",
+            "sha256": "31f0468f616ff1119622e32fb8f771665041f47f422f6d58c53f89a0cea662e1",
+            "source_family": "visual_family_006",
+            "split": "test",
+            "age_months": "22",
+            "original_prediction": "23.870403289794922",
+            "candidate_prediction": "23.441280364990234",
+            "prediction_months": 23.441280364990234
+          }
+        ]
+      }
+    }
+  }
+}

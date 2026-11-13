@@ -146,7 +146,7 @@ def _retry_after_seconds(headers):
             return None
 
 
-def locate_spurs(image, *, api_key=None, model=None, timeout=30):
+def locate_spurs(image, *, api_key=None, model=None, timeout=30, max_attempts=3):
     """
     Return pixel-space spur boxes.
 
@@ -286,7 +286,8 @@ def locate_spurs(image, *, api_key=None, model=None, timeout=30):
     )
 
     # One initial request plus at most two retries.
-    max_attempts = 3
+    if type(max_attempts) is not int or not 1 <= max_attempts <= 3:
+        return {'status':'error','boxes':[],'message':'Invalid retry count.'}
 
     for attempt in range(1, max_attempts + 1):
         try:

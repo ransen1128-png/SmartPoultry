@@ -1,0 +1,22 @@
+{
+  "split": "validation",
+  "api_model": "gemini-3.8-flash",
+  "completed": 1,
+  "planned": 11,
+  "results": [
+    {
+      "source_sha256": "f93f3de3f0f8d640ac512c439a22f0bb0fe58ce944b51ed3918ebbdfb4ffa2d4",
+      "source_family": "visual_family_008",
+      "verified_age_months": 13.0,
+      "baseline_prediction": 12.4,
+      "api_crop_prediction": 12.4,
+      "used_crop": false,
+      "api": {
+        "status": "error",
+        "boxes": [],
+        "attempts": 1,
+        "message": "Gemini network request failed (TimeoutError)."
+      }
+    }
+  ]
+}

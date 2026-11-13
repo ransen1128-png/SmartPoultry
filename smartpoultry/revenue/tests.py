@@ -74,3 +74,28 @@ class ProductionSalesTests(TestCase):
         self.user.delete()
         self.assertEqual(Revenue.objects.count(),0)
         self.assertEqual(ProductionRecord.objects.count(),0)
+
+    def test_review_and_confirm_legacy_sale_preserves_amount_and_records_audit(self):
+        from core.models import TransactionRecord
+        sale=Revenue.objects.create(user=self.user,revenue_type='eggs',quantity=20,unit='eggs',price_per_unit=5,date=date(2026,11,12))
+        report=self.client.get(reverse('revenue-legacy-production')).json()
+        self.assertEqual(report[0]['id'],sale.pk)
+        self.assertEqual(report[0]['candidates'][0]['id'],self.production.pk)
+        result=self.client.post(reverse('revenue-reconcile',args=[sale.pk]),{'production':self.production.pk})
+        self.assertEqual(result.status_code,200,result.content)
+        sale.refresh_from_db()
+        self.assertEqual(sale.total_amount,100)
+        self.assertEqual(sale.quantity,20)
+        self.assertEqual(self.production.available_quantity,80)
+        self.assertTrue(any('reconciliation' in item.metadata for item in TransactionRecord.objects.all()))
+        self.assertEqual(self.client.post(reverse('revenue-reconcile',args=[sale.pk]),{'production':self.production.pk}).status_code,400)
+
+    def test_legacy_conversion_and_other_owner_are_not_guessed(self):
+        sale=Revenue.objects.create(user=self.user,revenue_type='eggs',quantity=1,unit='tray',price_per_unit=150,date=date(2026,11,12))
+        report=self.client.get(reverse('revenue-legacy-production')).json()
+        self.assertEqual(report[0]['candidates'],[])
+        self.assertEqual(self.client.post(reverse('revenue-reconcile',args=[sale.pk]),{'production':self.production.pk}).status_code,400)
+        other=get_user_model().objects.create_user(username='legacy-other',password='password123')
+        self.client.force_login(other)
+        self.assertEqual(self.client.get(reverse('revenue-legacy-production')).json(),[])
+        self.assertEqual(self.client.post(reverse('revenue-reconcile',args=[sale.pk]),{'production':self.production.pk}).status_code,404)

@@ -12,6 +12,32 @@ class RevenueViewSet(viewsets.ModelViewSet):
     serializer_class = RevenueSerializer
     permission_classes = [IsAuthenticated]
 
+    @action(detail=False, methods=['get'], url_path='legacy-production')
+    def legacy_production(self, request):
+        from .reconciliation import review_sale
+        return Response([review_sale(sale) for sale in self.get_queryset().filter(production__isnull=True)])
+
+    @action(detail=True, methods=['post'])
+    def reconcile(self, request, pk=None):
+        from django.db import transaction
+        from rest_framework.exceptions import ValidationError
+        from .reconciliation import matching_production
+        with transaction.atomic():
+            sale=self.get_queryset().select_for_update().get(pk=self.get_object().pk)
+            if sale.production_id:raise ValidationError('This sale is already linked.')
+            if sale.total_amount != sale.quantity*sale.price_per_unit:
+                raise ValidationError('This older sale has inconsistent totals; review it before linking stock.')
+            selected=next((p for p in matching_production(sale) if str(p.pk)==str(request.data.get('production'))),None)
+            if selected is None:raise ValidationError('Select a compatible available batch. No unit conversion or split allocation is inferred.')
+            # Model.save rechecks availability under a production-row lock.
+            sale._reconciliation_details={'actor_id':request.user.pk,'previous_branch_id':sale.branch_id,
+                                          'previous_flock_id':sale.flock_id,'production_id':selected.pk}
+            sale.production=selected
+            from django.core.exceptions import ValidationError as ModelError
+            try:sale.save()
+            except ModelError as error:raise ValidationError(error.message_dict)
+        return Response(self.get_serializer(sale).data)
+
     @action(detail=False, methods=['get'], url_path='available-production')
     def available_production(self, request):
         from production.models import ProductionRecord

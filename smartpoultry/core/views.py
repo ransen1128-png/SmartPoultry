@@ -255,8 +255,8 @@ def dashboard(request):
         records_for_period(Expense, current_month_start, next_month_start, expense_type='feed'),
         'amount',
     )
-    # Inventory is farm-wide. Purchase expenses preserve the original cost even
-    # after feed distribution reduces the remaining quantity/stock value.
+    # Undistributed purchase cost remains farm-wide; distributions allocate the
+    # original cost to branches without adding a second purchase expense.
     inventory_feed_cost = decimal_sum(Expense.objects.filter(
         user=request.user, expense_type='feed', category='inventory',
         date__gte=current_month_start, date__lt=next_month_start,
@@ -328,6 +328,7 @@ def dashboard(request):
     ]
     earliest_year = min((value.year for value in earliest_dates if value), default=today.year)
     context = {
+        'recent_notifications': Notification.objects.filter(user=request.user)[:4],
         'date_range_label': current_month_start.strftime('%B %Y'),
         'selected_period_label': current_month_start.strftime('%B %Y'),
         'branches': branches,
@@ -703,7 +704,7 @@ def inventory_view(request):
     """Inventory management view."""
     branches = []
     try:
-        branches = list(request.user.owned_farm.branches.all())
+        branches = list(request.user.owned_farm.branches.filter(status='active'))
     except Farm.DoesNotExist:
         pass
     return render(request, 'inventory.html', {
@@ -1245,7 +1246,9 @@ def rooster_estimate_photo(request, estimate_id):
 @login_required(login_url='login')
 def reports_view(request):
     """Reports view."""
-    return render(request, 'reports.html')
+    from .evaluation_status import age_evaluation_status
+    return render(request, 'reports.html',{'branches':Branch.objects.filter(farm__owner=request.user),'today':timezone.localdate(),
+        'age_evaluation_status':age_evaluation_status()})
 
 
 @login_required(login_url='login')

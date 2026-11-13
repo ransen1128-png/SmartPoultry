@@ -23,6 +23,8 @@ class Expense(models.Model):
     date = models.DateField()
     category = models.CharField(max_length=100, blank=True)
     notes = models.TextField(blank=True)
+    inventory_purchase = models.OneToOneField('inventory.Inventory', on_delete=models.CASCADE, null=True, blank=True, related_name='purchase_expense')
+    inventory_distribution = models.OneToOneField('inventory.InventoryDistribution', on_delete=models.CASCADE, null=True, blank=True, related_name='expense')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

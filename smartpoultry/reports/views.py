@@ -21,6 +21,29 @@ class ReportViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=False,methods=['get'],url_path='branch-expenses')
+    def branch_expenses(self,request):
+        from .branch_analysis import expense_report
+        from rest_framework.response import Response
+        report,rows=expense_report(request)
+        if request.query_params.get('export')!='csv': return Response(report)
+        response=HttpResponse(content_type='text/csv')
+        response['Content-Disposition']='attachment; filename="branch-expenses.csv"'
+        writer=csv.writer(response)
+        writer.writerow(['Financial date','Branch','Expense type','Description','Amount','Distribution date'])
+        def safe(value):
+            text=str(value or '')
+            return "'"+text if text.lstrip().startswith(('=','+','-','@')) else text
+        for row in rows:
+            writer.writerow([row.date,safe(row.branch.name if row.branch else 'Unassigned'),row.expense_type,safe(row.description),row.amount,row.inventory_distribution.date if row.inventory_distribution_id else ''])
+        return response
+
+    @action(detail=False,methods=['get'],url_path='feed-usage')
+    def feed_usage(self,request):
+        from .branch_analysis import feed_report
+        from rest_framework.response import Response
+        return Response(feed_report(request))
+
     @action(detail=True, methods=['get'])
     def download(self, request, pk=None):
         """Download a CSV export for this report using only the owner's records."""

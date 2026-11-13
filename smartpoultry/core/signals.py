@@ -32,6 +32,8 @@ def _record_revenue_transaction(instance, action, using):
             'unit': instance.unit,
             'price_per_unit': str(instance.price_per_unit),
             'flock_id': instance.flock_id,
+            'production_id': instance.production_id,
+            **({'reconciliation':instance._reconciliation_details} if hasattr(instance,'_reconciliation_details') else {}),
         },
     )
 
@@ -50,6 +52,9 @@ def _record_expense_transaction(instance, action, using):
         metadata={
             'expense_type': instance.expense_type,
             'category': instance.category,
+            'branch_id': instance.branch_id,
+            'inventory_id': instance.inventory_purchase_id,
+            'distribution_id': instance.inventory_distribution_id,
         },
     )
 
@@ -87,6 +92,7 @@ def create_expense_for_inventory_create(sender, instance, created, using, raw=Fa
 
     Expense.objects.using(using).create(
         user=instance.user,
+        inventory_purchase=instance,
         expense_type=instance.item_type,
         description=f"Inventory purchase: {instance.name}",
         amount=instance.total_value,

@@ -2,6 +2,23 @@
 
 {% block content %}
 <h1 class="mb-4">Reports</h1>
+<section class="card mb-4"><div class="card-body">
+ <h2 class="h5">Branch expenses and feed distribution</h2>
+ <form id="branchReportFilters" class="row g-3 align-items-end">
+  <div class="col-md-4"><label for="reportBranch" class="form-label">Branch</label><select id="reportBranch" name="branch" class="form-select"><option value="">All branches</option><option value="unassigned">Unassigned farm costs</option>{% for branch in branches %}<option value="{{ branch.pk }}">{{ branch.name }}</option>{% endfor %}</select></div>
+  <div class="col-md-3"><label for="reportStart" class="form-label">From</label><input id="reportStart" name="start" type="date" class="form-control" value="{{ today|date:'Y-m' }}-01" required></div>
+  <div class="col-md-3"><label for="reportEnd" class="form-label">To</label><input id="reportEnd" name="end" type="date" class="form-control" value="{{ today|date:'Y-m-d' }}" required></div>
+  <div class="col-md-2 text-end"><button class="btn btn-primary" type="submit">Apply</button></div>
+ </form>
+ <p id="branchReportError" class="text-danger mt-3" role="alert"></p>
+ <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3"><h3 class="h6">Expense total: <span id="branchExpenseTotal">—</span></h3><a class="btn btn-outline-primary" id="branchExpensesCsv" href="#">Export expenses CSV</a></div>
+ <p class="text-muted">Expense totals use the financial/purchase date. Unassigned costs are included only under All branches or Unassigned farm costs.</p>
+ <div class="table-responsive"><table class="table"><thead><tr><th>Branch</th><th>Expense type</th><th>Amount</th><th>Records</th></tr></thead><tbody id="branchExpensesBody"></tbody></table></div>
+ <h3 class="h6 mt-4">Feed delivered by flock</h3>
+ <p class="text-muted">Uses delivery and production dates in the selected range. Feed delivered is not confirmed feed consumed. Units remain separate; cost per egg is calculated only when individual egg counts and flock assignments are recorded.</p>
+ <div class="table-responsive"><table class="table"><thead><tr><th>Branch</th><th>Flock</th><th>Feed delivered</th><th>Assigned feed cost</th><th>Eggs produced</th><th>Distributed feed cost / egg</th></tr></thead><tbody id="feedUsageBody"></tbody></table></div>
+</div></section>
+<details class="card mb-4"><summary class="card-header">Age-model evaluation readiness</summary><div class="card-body"><p>The independent evaluation workflow checks verified ages, persistent chicken IDs, provenance and known image duplicates before running predictions. Existing photographs already exposed to the original model cannot establish unseen-chicken accuracy.</p><p>{{ age_evaluation_status }}</p><p>Use <code>tools/evaluate_unseen_chickens.py</code> with the verified manifest. Existing trained models and age labels are preserved.</p></div></details>
 
 <div class="row mb-4">
     <div class="col-md-12 d-flex flex-wrap justify-content-end gap-1">
@@ -17,7 +34,7 @@
         <h5>Generated Reports</h5>
     </div>
     <div class="card-body">
-        <table class="table table-hover">
+        <div class="table-responsive"><table class="table table-hover">
             <thead>
                 <tr>
                     <th>Report Type</th>
@@ -29,13 +46,14 @@
             </thead>
             <tbody id="reportsBody">
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
+{% load static %}<script src="{% static 'js/branch_reports.js' %}?v=1"></script>
 <script>
     function loadReports() {
         fetch('/api/reports/')

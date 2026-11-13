@@ -1,9 +1,6 @@
 {
-  "status": "blocked_missing_credentials",
+  "status": "blocked_provider_generation_timeout",
+  "credentials_configured": true,
   "accuracy_comparison_executed": false,
-  "required_environment": [
-    "GEMINI_API_KEY",
-    "GEMINI_VISION_MODEL"
-  ],
   "live_app_unchanged": true
 }

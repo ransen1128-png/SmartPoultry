@@ -20,13 +20,14 @@ from core.vision_api import locate_spurs,crop_visible_spur,PROMPT_HASH
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--split',choices=['validation','test'],default='validation')
+    parser.add_argument('--api-model',help='Explicit experiment model; does not change .env or live app.')
     args=parser.parse_args()
     out=ROOT/'reports/vision_api';out.mkdir(exist_ok=True)
     if not (os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')) or not os.environ.get('GEMINI_VISION_MODEL'):
         report={'status':'blocked_missing_credentials','accuracy_comparison_executed':False,
                 'required_environment':['GEMINI_API_KEY','GEMINI_VISION_MODEL'], 'live_app_unchanged':True}
         (out/'readiness.json').write_text(json.dumps(report,indent=2));print(json.dumps(report));return 2
-    model=os.environ['GEMINI_VISION_MODEL']
+    model=args.api_model or os.environ['GEMINI_VISION_MODEL']
     from core.age_model_registry import candidate_entry
     variant='finetuned' if candidate_entry() else 'original'
     from core.rooster_age_classifier import predict_rooster_age
@@ -54,7 +55,7 @@ def main():
         if baseline is None:raise RuntimeError('Current model could not predict')
         cache_key=hashlib.sha256((row['sha256']+model+PROMPT_HASH).encode()).hexdigest()
         cached=cache/(cache_key+'.json')
-        api=json.loads(cached.read_text()) if cached.exists() else locate_spurs(image)
+        api=json.loads(cached.read_text()) if cached.exists() else locate_spurs(image,model=model,max_attempts=1)
         if api['status']=='completed':cached.write_text(json.dumps(api,indent=2))
         crop=crop_visible_spur(image,api['boxes']) if api['status']=='completed' else None
         proposed=baseline
@@ -65,14 +66,18 @@ def main():
         results.append({'source_sha256':row['sha256'],'source_family':row['source_family'],'verified_age_months':float(row['age_months']),
                         'baseline_prediction':baseline['age_months'],'api_crop_prediction':proposed['age_months'],
                         'used_crop':crop is not None,'api':api})
+        (out/'progress.json').write_text(json.dumps({'split':args.split,'api_model':model,'completed':len(results),'planned':len(rows),'results':results},indent=2))
         print(f'{index+1}/{len(rows)}: {api["status"]}',flush=True)
+        if api['status']!='completed':
+            print('Stopping comparison on API failure; no improvement claimed.',flush=True)
+            break
     baseline=sum(abs(r['baseline_prediction']-r['verified_age_months']) for r in results)/len(results)
     measured=sum(abs(r['api_crop_prediction']-r['verified_age_months']) for r in results)/len(results)
     errors=sum(r['api']['status']!='completed' for r in results)
     crops=sum(r['used_crop'] for r in results)
-    report={'status':'complete' if not errors and crops else 'incomplete_or_no_crops','split':args.split,'n':len(results),
+    report={'status':'complete' if not errors and crops and len(results)==len(rows) else 'incomplete_or_no_crops','split':args.split,'n':len(results),
         'api_model':model,'prompt_sha256':PROMPT_HASH,'checkpoint_sha256':checkpoint_hash,'age_model':variant,
-        'baseline_mae_months':baseline,'api_crop_mae_months':measured,'relative_error_reduction_percent':100*(baseline-measured)/baseline if baseline else None,
+        'baseline_mae_months':baseline,'api_crop_mae_months':measured,'relative_error_reduction_percent':100*(baseline-measured)/baseline if baseline and not errors and crops and len(results)==len(rows) else None,
         'api_errors':errors,'crops_used':crops,'fixed_policy':'Largest spur box with 15% padding; full-image fallback when no box/error',
         'limitation':'Source-family comparison only. Prior age-model training overlap and unresolved bird identities prevent independent accuracy claims. API boxes are not ground truth.',
         'deployed':False,'results':results}

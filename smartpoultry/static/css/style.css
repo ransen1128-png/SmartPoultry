@@ -1288,6 +1288,11 @@ footer {
 }
 
 @media (max-width: 760px) {
+    .dashboard-filters { width: 100%; }
+    .dashboard-filters .date-filter,
+    .dashboard-filters select:first-child { min-width: 0; flex: 1 1 130px; }
+    .card, .card-body, .panel-card { min-width: 0; }
+    .panel-card canvas { max-width: 100%; }
     .app-shell {
         display: block;
     }
@@ -1315,7 +1320,7 @@ footer {
     .metric-grid,
     .dashboard-grid,
     .scenario-results {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .panel-wide {

@@ -41,6 +41,20 @@ split are reported with n=0 and no metric, rather than a fabricated score.
 
 Read `reports/dataset_audit/REPORT.md` for the executed results and
 `detection/ANNOTATION_WORKFLOW.md` for the missing localization/measurement work.
+
+For the latest production/mobile/evaluation review, read
+`reports/PRODUCTION_MOBILE_AGE_REVIEW.md`. `evaluate_unseen_chickens.py` runs a
+read-only readiness check by default. Use `--manifest path/to/verified.csv --provenance path/to/capture-register.csv` only
+with independently verified ages, persistent identities and training-exclusion
+records. It rejects known copies; it does not manufacture an independent test
+set from the already-exposed corpus. `summarize_age_evaluation.py` describes
+existing predictions without retraining. Neither tool promotes a model.
+
+`backup_database.py --verify-restore` creates a PostgreSQL snapshot and restores
+it into a separate temporary local cluster. It checks every public table's row
+count and content checksum; it never restores over the live application database.
+See `reports/SIX_IMPROVEMENTS.md` for the installed daily desktop schedule,
+retention, verified results and remaining independent-evaluation requirements.
 The legacy root `train_model.py` is not the audited runner; it writes directly
 to the active model path and should not be used for this experiment.
 

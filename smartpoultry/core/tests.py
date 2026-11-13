@@ -213,7 +213,7 @@ class DashboardInventoryFeedCostTests(TestCase):
                 self.assertEqual(distribution.status_code, 201)
             response = self.client.get(reverse('dashboard'), {'month': 11, 'year': 2026})
             self.assertEqual(response.context['metrics']['feed_cost'], Decimal('5250'))
-            self.assertEqual(response.context['metrics']['inventory_feed_cost'], Decimal('5000'))
+            self.assertEqual(response.context['metrics']['inventory_feed_cost'], Decimal('4000') if distributed else Decimal('5000'))
             self.assertEqual(response.context['metrics']['expenses'], Decimal('5450'))
             self.assertEqual(response.context['chart_data']['feed'][-1], 5250.)
             self.assertNotContains(response, 'in inventory feed purchases')
@@ -232,7 +232,7 @@ class DashboardInventoryFeedCostTests(TestCase):
         response = self.client.get(reverse('dashboard'), {'branch': self.branch.pk, 'month': 11, 'year': 2026})
         self.assertEqual(response.context['metrics']['feed_cost'], 0)
         self.assertEqual(response.context['metrics']['inventory_feed_cost'], Decimal('500'))
-        self.assertContains(response, 'Farm-wide inventory feed purchases:')
+        self.assertContains(response, 'Undistributed feed cost:')
         self.assertContains(response, 'View farm-wide feed cost')
         self.assertContains(response, 'month=11&amp;year=2026')
 

@@ -72,7 +72,7 @@
         <strong>&#8369;{{ metrics.feed_cost|floatformat:2 }}</strong>
         <small>{{ metrics.feed_expense_share }}% of expenses</small>
         {% if selected_branch %}
-            <small>Farm-wide inventory feed purchases: &#8369;{{ metrics.inventory_feed_cost|floatformat:2 }}</small>
+            <small>Undistributed feed cost: &#8369;{{ metrics.inventory_feed_cost|floatformat:2 }}</small>
             <a href="{% url 'dashboard' %}?month={{ selected_month }}&amp;year={{ selected_year }}">View farm-wide feed cost</a>
         {% endif %}
     </div>
@@ -186,10 +186,7 @@
     <div class="panel-card">
         <div class="panel-title">Notifications</div>
         <ul class="notification-list">
-            <li><i class="bi bi-exclamation-triangle text-danger"></i><span>Low feed stock</span><small>10 min ago</small></li>
-            <li><i class="bi bi-exclamation-triangle text-warning"></i><span>High mortality detected</span><small>1 hour ago</small></li>
-            <li><i class="bi bi-info-circle text-primary"></i><span>Revenue below target</span><small>2 hours ago</small></li>
-            <li><i class="bi bi-check-circle text-success"></i><span>Model prediction updated</span><small>3 hours ago</small></li>
+            {% for notice in recent_notifications %}<li><i class="bi bi-bell"></i><span>{{ notice.title }}</span><small>{{ notice.created_at|timesince }} ago</small></li>{% empty %}<li>No notifications yet.</li>{% endfor %}
         </ul>
     </div>
 

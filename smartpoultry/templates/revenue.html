@@ -37,7 +37,7 @@
         <h5>Revenue Records</h5>
     </div>
     <div class="card-body">
-        <table class="table table-hover">
+        <div class="table-responsive"><table class="table table-hover">
             <thead>
                 <tr>
                     <th>Branch</th>
@@ -50,11 +50,13 @@
             </thead>
             <tbody id="revenueBody">
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>
 
 <!-- Add Revenue Modal -->
+<details class="card mb-4" id="legacy-reconciliation"><summary class="card-header">Reconcile older sales with production</summary>
+<div class="card-body"><p>Confirm the actual batch used by each older sale. Only matching units and sufficient stock are offered; no conversion is assumed.</p><div id="legacySales"></div><p id="legacyError" class="text-danger" role="alert"></p></div></details>
 <div class="modal fade" id="addRevenueModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -105,6 +107,32 @@
 
 {% block extra_js %}
 <script>
+    async function loadLegacySales() {
+        const container=document.getElementById('legacySales');
+        try {
+            const response=await fetch('/api/revenue/legacy-production/');
+            if (!response.ok) throw new Error('Unable to load older sales.');
+            const sales=await response.json();container.replaceChildren();
+            if (!sales.length) container.textContent='No older sales need a production link.';
+            sales.forEach(sale=>{
+                const row=document.createElement('div');row.className='border-bottom py-3';
+                const description=document.createElement('p');description.textContent=`Revenue #${sale.id}: ${sale.date}, ${sale.product}, ${sale.quantity} ${sale.unit}. ${sale.reasons.join(' ')}`;
+                const select=document.createElement('select');select.className='form-select mb-2';select.add(new Option('Select the actual production batch',''));
+                sale.candidates.forEach(p=>select.add(new Option(p.label,p.id)));
+                const button=document.createElement('button');button.type='button';button.className='btn btn-outline-primary';button.textContent='Confirm production link';button.disabled=!sale.candidates.length;
+                button.addEventListener('click',async()=>{
+                    if (!select.value) {select.focus();return;}
+                    button.disabled=true;
+                    try {
+                        const result=await fetch(`/api/revenue/${sale.id}/reconcile/`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify({production:Number(select.value)})});
+                        if (!result.ok) {const data=await result.json();throw new Error(JSON.stringify(data));}
+                        document.getElementById('legacyError').textContent='';loadLegacySales();loadProductionStock();loadRevenue();
+                    } catch(error) {document.getElementById('legacyError').textContent=error.message;button.disabled=false;}
+                });row.append(description,select,button);container.append(row);
+            });
+        } catch(error) {document.getElementById('legacyError').textContent=error.message;}
+    }
+    document.addEventListener('DOMContentLoaded',loadLegacySales);
     const revenueForm = document.getElementById('addRevenueForm');
     let productionStock = [];
     function updateProductionChoices() {

@@ -1,0 +1,15 @@
+{
+  "independent_evaluation_executed": false,
+  "source_images_unchanged": true,
+  "generated_utc": "2026-11-13T11:12:33.498832+00:00",
+  "seed": 2026,
+  "known_distinct_photos": 151,
+  "limitation": "Hash screening cannot establish chicken identity. Provenance requires human confirmation against training history.",
+  "status": "blocked_no_verified_unseen_manifest",
+  "existing_source_files": 46,
+  "existing_source_files_already_in_corpus": 46,
+  "missing": [
+    "Verified persistent chicken identities and ages for photographs outside all prior training",
+    "Capture/register references confirming those chickens were not in prior training"
+  ]
+}
