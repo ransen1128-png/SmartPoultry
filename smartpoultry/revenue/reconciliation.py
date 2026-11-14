@@ -22,4 +22,4 @@ def review_sale(sale):
     elif len(candidates)>1:reasons.append('Several batches fit; select the actual source batch.')
     return {'id':sale.pk,'date':sale.date.isoformat(),'product':sale.get_revenue_type_display(),
         'quantity':str(sale.quantity),'unit':sale.unit,'amount':str(sale.total_amount),'reasons':reasons,
-        'candidates':[{'id':p.pk,'label':f'{p.flock.flock_id} — {p.date} — {p.available_quantity} {p.unit} available'} for p in candidates]}
+        'candidates':[{'id':p.pk,'label':f'{p.flock.flock_id} — {p.get_product_type_display()}'+(f' ({p.get_egg_size_display() or "size not recorded"})' if p.product_type=='eggs' else '')+f' — {p.date} — {p.available_quantity} {p.unit} available'} for p in candidates]}

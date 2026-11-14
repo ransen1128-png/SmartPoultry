@@ -4,7 +4,7 @@
 <div class="page-heading">
     <div>
         <h1>{{ title }}</h1>
-        <p>Record flock output, quantity, and date</p>
+        <p>Record flock output, quantity, and date. Broilers recorded as Meat Ready in chicken units leave the live flock; subsequent sales reduce production stock only.</p>
     </div>
     <a href="{% url 'production_records' %}" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left me-1"></i> Back
@@ -22,6 +22,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {{ field }}
+                    {% if field.name == 'egg_size' %}<small class="text-muted">Record each egg size separately with its own quantity.</small>{% endif %}
                     {% if field.errors %}
                         <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
                     {% endif %}
@@ -40,6 +41,21 @@
     const branchSelect = document.getElementById('id_branch');
     const flockSelect = document.getElementById('id_flock');
     const productTypeSelect = document.getElementById('id_product_type');
+    const eggSizeSelect=document.getElementById('id_egg_size');
+    const readinessNotice=document.createElement('p');readinessNotice.className='text-muted';readinessNotice.id='broilerReadiness';
+    productTypeSelect.parentElement.append(readinessNotice);
+    function updateEggSize() {
+        const eggs=productTypeSelect.value==='eggs';
+        const selected=allFlockOptions.find(o=>o.value===flockSelect.value);
+        const date=document.getElementById('id_date');
+        const broiler=!eggs && selected?.dataset.productType==='meat_ready';
+        date.min=broiler?(selected?.dataset.readyFrom || ''):'';
+        readinessNotice.textContent=broiler?(selected?.dataset.readyFrom?'Earliest harvest: '+selected.dataset.readyFrom+'. Expected readiness window: '+selected.dataset.readyFrom+' to '+selected.dataset.readyUntil+'.':'Set the broiler delivery / hatch date in Flocks before harvesting.'):'';
+        eggSizeSelect.closest('.col-md-6').hidden=!eggs;
+        eggSizeSelect.disabled=!eggs;
+        eggSizeSelect.required=eggs && {% if form.instance.pk and not form.instance.egg_size %}false{% else %}true{% endif %};
+        if(!eggs)eggSizeSelect.value='';
+    }
     const allFlockOptions = flockSelect
         ? Array.from(flockSelect.options).filter(option => option.value).map(option => option.cloneNode(true))
         : [];
@@ -68,7 +84,7 @@
         });
         if (allowed.has(previous)) productTypeSelect.value = previous;
         productTypeSelect.disabled = allowed.size === 0;
-
+        updateEggSize();
     }
 
     function updateFlockOptions() {
@@ -91,6 +107,7 @@
 
     branchSelect?.addEventListener('change', updateFlockOptions);
     flockSelect?.addEventListener('change', updateProductType);
+    productTypeSelect?.addEventListener('change',updateEggSize);
     updateFlockOptions();
 </script>
 {% endblock %}

@@ -6,24 +6,27 @@
         <h1>Production Records</h1>
         <p>Daily flock production entries and output history</p>
     </div>
+    <div class="d-flex gap-2"><a href="#productionHistoryPanel" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('productionHistoryPanel').open=true">History ({{ production_history|length }})</a>
     <a href="{% url 'production_record_create' %}" class="btn btn-primary btn-sm">
         <i class="bi bi-plus-lg me-1"></i> Add Record
-    </a>
+    </a></div>
 </div>
 
 <div class="panel-card">
     <div class="panel-title">Production Records</div>
     <p class="text-muted">Available stock deducts sales linked to each production entry. Older revenue without a production reference is not deducted.</p>
     <p><a href="{% url 'revenue' %}#legacy-reconciliation">Review older revenue and link its production stock</a></p>
+    <p class="text-muted">New broiler entries in chicken units deduct live chicken automatically. Older entries can be applied after confirming the chicken are still included in the live flock count; weight measurements are not converted into chicken counts.</p>
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
+        <table class="table table-hover align-middle mb-0" id="availableProductionTable">
             <thead>
                 <tr>
                     <th>Branch</th>
                     <th>Date</th>
                     <th>Flock</th>
-                    <th>Current Birds Remaining</th>
+                    <th>Current Chicken Remaining</th>
                     <th>Product</th>
+                    <th>Egg Size</th>
                     <th>Produced</th><th>Sold</th><th>Available</th>
                     <th class="text-end">Actions</th>
                 </tr>
@@ -32,19 +35,21 @@
                 {% regroup records by branch.name|default:"Unassigned" as branch_records %}
                 {% for branch in branch_records %}
                     <tr class="table-light">
-                        <td colspan="9"><strong>{{ branch.grouper }}</strong></td>
+                        <td colspan="10"><strong>{{ branch.grouper }}</strong></td>
                     </tr>
                     {% for record in branch.list|dictsortreversed:"date" %}
-                        <tr>
+                        <tr data-production-id="{{ record.pk }}">
                             <td>{{ record.branch.name|default:"Unassigned" }}</td>
                             <td>{{ record.date|date:"M d, Y" }}</td>
                             <td>{{ record.flock.flock_id }}</td>
                             <td>{{ record.flock.quantity }}</td>
                             <td>{{ record.get_product_type_display }}</td>
+                            <td>{% if record.product_type == 'eggs' %}{{ record.get_egg_size_display|default:'Not recorded' }}{% else %}—{% endif %}</td>
                             <td>{{ record.quantity|floatformat:0 }}</td>
                             <td>{{ record.sold_quantity|floatformat:2 }}</td>
-                            <td>{{ record.available_quantity|floatformat:2 }}</td>
+                            <td>{{ record.available_quantity|floatformat:0 }}</td>
                             <td class="text-end">
+                                {% if record.can_apply_bird_transfer %}<a href="{% url 'production_apply_birds' record.pk %}" class="btn btn-outline-primary btn-sm mb-1">Apply chicken count to flock</a>{% endif %}
                                 <div class="btn-group btn-group-sm">
                                     <a href="{% url 'production_record_update' record.id %}" class="btn btn-outline-primary">
                                         <i class="bi bi-pencil-square"></i> Edit
@@ -61,16 +66,22 @@
                     {% endfor %}
                 {% empty %}
                     <tr>
-                        <td colspan="9" class="text-center text-muted py-4">No production records yet.</td>
+                        <td colspan="10" class="text-center text-muted py-4">No production stock available. Sold-out batches are in Production History.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+<details class="panel-card mt-3" id="productionHistoryPanel"><summary>Production History ({{ production_history|length }})</summary>
+<p class="text-muted mt-2">Batches with no stock remaining appear here. Correcting a sale restores the batch to Production Records when stock becomes available.</p>
+<div class="table-responsive"><table class="table" id="productionHistoryTable"><thead><tr><th>Branch</th><th>Date</th><th>Flock</th><th>Product</th><th>Egg Size</th><th>Produced</th><th>Sold</th><th>Available</th></tr></thead><tbody>
+{% for record in production_history %}<tr data-production-id="{{ record.pk }}"><td>{{ record.branch.name|default:'Unassigned' }}</td><td>{{ record.date|date:'M d, Y' }}</td><td>{{ record.flock.flock_id }}</td><td>{{ record.get_product_type_display }}</td><td>{% if record.product_type == 'eggs' %}{{ record.get_egg_size_display|default:'Not recorded' }}{% else %}—{% endif %}</td><td>{{ record.quantity|floatformat:2 }}</td><td>{{ record.sold_quantity|floatformat:2 }}</td><td>{{ record.available_quantity|floatformat:0 }}</td></tr>
+{% empty %}<tr><td colspan="8">No sold-out production batches.</td></tr>{% endfor %}
+</tbody></table></div></details>
 <details class="panel-card mt-3"><summary>Production Sales History</summary>
-<div class="table-responsive"><table class="table"><thead><tr><th>Revenue #</th><th>Sale date</th><th>Branch</th><th>Flock</th><th>Production date</th><th>Product</th><th>Quantity sold</th><th>Amount</th></tr></thead><tbody>
-{% for sale in sales_history %}<tr><td>{{ sale.pk }}</td><td>{{ sale.date }}</td><td>{{ sale.branch.name|default:'Unassigned' }}</td><td>{{ sale.flock.flock_id }}</td><td>{{ sale.production.date }}</td><td>{{ sale.get_revenue_type_display }}</td><td>{{ sale.quantity|floatformat:2 }}</td><td>&#8369;{{ sale.total_amount|floatformat:2 }}</td></tr>
-{% empty %}<tr><td colspan="8">No production stock has been sold yet.</td></tr>{% endfor %}
+<div class="table-responsive"><table class="table"><thead><tr><th>Revenue #</th><th>Sale date</th><th>Branch</th><th>Flock</th><th>Production date</th><th>Product</th><th>Buyer</th><th>Order Number</th><th>Transaction Number</th><th>Quantity sold</th><th>Amount</th></tr></thead><tbody>
+{% for sale in sales_history %}<tr><td>{{ sale.pk }}</td><td>{{ sale.date }}</td><td>{{ sale.branch.name|default:'Unassigned' }}</td><td>{{ sale.flock.flock_id }}</td><td>{{ sale.production.date }}</td><td>{{ sale.get_revenue_type_display }}</td><td>{{ sale.buyer_name|default:'Not recorded' }}</td><td>{{ sale.order_number|default:'Not recorded' }}</td><td>{{ sale.transaction_number|default:'Not recorded' }}</td><td>{{ sale.quantity|floatformat:2 }}</td><td>&#8369;{{ sale.total_amount|floatformat:2 }}</td></tr>
+{% empty %}<tr><td colspan="11">No production stock has been sold yet.</td></tr>{% endfor %}
 </tbody></table></div></details>
 {% endblock %}

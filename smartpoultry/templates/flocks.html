@@ -7,6 +7,7 @@
         <h1>Flocks Management</h1>
     </div>
     <div class="col-md-4 text-end">
+        <button class="btn btn-outline-primary" type="button" id="flockHistoryBtn" aria-expanded="false" aria-controls="flockHistoryPanel">History</button>
         <button class="btn btn-primary" id="addFlockBtn">
             <i class="bi bi-plus-circle"></i> Add New Flock
         </button>
@@ -16,7 +17,7 @@
 <!-- Flocks Table -->
 <div class="card">
     <div class="card-header">
-        <h5>Active Flocks</h5>
+        <h5>Current Flocks</h5>
     </div>
     <div class="card-body">
         <div class="table-responsive"><table class="table table-hover" id="flocksTable">
@@ -27,6 +28,7 @@
                     <th>Breed</th>
                     <th>Quantity</th>
                     <th>Status</th>
+                    <th>Source</th><th>Purchase cost</th>
                     <th>Added Date</th>
                     <th>Actions</th>
                 </tr>
@@ -39,6 +41,8 @@
 </div>
 
 <!-- Add Flock Modal -->
+<section class="card mt-4" id="flockHistoryPanel" hidden><div class="card-header"><h5>Flock History</h5></div><div class="card-body"><p class="text-muted">Sold flocks and flocks with no live chicken remain here with their records. Broilers already recorded as production can still be sold from Revenue while stock is available.</p><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Branch</th><th>Flock ID</th><th>Type</th><th>Live chicken</th><th>Reason</th><th>Source</th><th>Purchase cost</th><th>Added date</th><th>Actions</th></tr></thead><tbody id="flockHistoryBody"></tbody></table></div></div></section>
+
 <div class="modal fade" id="addFlockModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -64,11 +68,23 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Breed</label>
-                        <select class="form-select" name="breed" required>
+                        <select class="form-select" name="breed" required onchange="updateFlockReadinessFields()">
                             <option value="">Choose breed...</option>
                             <option value="layers">Layers</option>
                             <option value="broilers">Broilers</option>
                         </select>
+                    </div>
+                    <div class="mb-3" id="placementDateField" hidden><label class="form-label" for="flockPlacementDate">Delivery / hatch date</label><input type="date" class="form-control" id="flockPlacementDate" name="placement_date"><small class="text-muted">For bought broilers, enter the actual delivery date; for your own chicks, enter the hatch date. Harvest and sale require 42 days. Expected readiness: days 42–60.</small><p id="flockReadinessWindow" class="text-muted mb-0"></p></div>
+                    <div class="mb-3">
+                        <label class="form-label" for="flockSource">Flock source</label>
+                        <select class="form-select" name="acquisition_source" id="flockSource" required onchange="updateFlockPurchaseFields()"><option value="">Choose source...</option><option value="own">Raised on my farm</option><option value="purchased">Bought</option><option value="unknown" id="unknownFlockSource" hidden>Not recorded (existing flock)</option></select>
+                    </div>
+                    <div id="flockPurchaseFields" hidden>
+                        <div class="mb-3"><label class="form-label" for="flockPurchaseAmount">Total chicken purchase cost (₱)</label><input type="number" min="0" step="0.01" class="form-control" id="flockPurchaseAmount" name="purchase_amount" value="0"></div>
+                        <div class="mb-3"><label class="form-label" for="flockDeliveryCost">Delivery fee (₱)</label><input type="number" min="0" step="0.01" class="form-control" id="flockDeliveryCost" name="delivery_cost" value="0"></div>
+                        <div class="mb-3"><label class="form-label" for="flockPurchaseDate">Purchase date</label><input type="date" class="form-control" id="flockPurchaseDate" name="purchase_date"></div>
+                        <div class="mb-3"><label class="form-label" for="flockSupplier">Supplier (optional)</label><input class="form-control" id="flockSupplier" name="supplier" maxlength="255"></div>
+                        <p class="text-muted">Purchase cost plus delivery is recorded once in this branch's Expenses. Selling chicken or reducing live stock does not reduce the original purchase cost.</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Quantity</label>
@@ -134,6 +150,22 @@
 <script>
     let editingFlockId = null;
     let deletingFlockId = null;
+    function updateFlockReadinessFields() {
+        const broiler=document.getElementById('addFlockForm').elements.breed.value==='broilers';
+        document.getElementById('placementDateField').hidden=!broiler;
+        const input=document.getElementById('flockPlacementDate');input.required=broiler;
+        const date=new Date();input.max=new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,10);
+        let text='';
+        if(broiler && input.value){const start=new Date(input.value+'T00:00:00Z');const end=new Date(start);start.setUTCDate(start.getUTCDate()+42);end.setUTCDate(end.getUTCDate()+60);text='Ready from '+start.toISOString().slice(0,10)+'; expected window ends '+end.toISOString().slice(0,10)+'.';}
+        document.getElementById('flockReadinessWindow').textContent=text;
+    }
+    document.getElementById('flockPlacementDate').addEventListener('input',updateFlockReadinessFields);
+    function updateFlockPurchaseFields() {
+        const bought=document.getElementById('flockSource').value==='purchased';
+        document.getElementById('flockPurchaseFields').hidden=!bought;
+        document.querySelectorAll('#flockPurchaseFields input').forEach(input=>input.disabled=!bought);
+        document.getElementById('flockPurchaseDate').required=bought;
+    }
 
     function showMessageDialog(message, title = 'Message') {
         document.getElementById('messageDialogTitle').textContent = title;
@@ -141,54 +173,13 @@
         new bootstrap.Modal(document.getElementById('messageDialog')).show();
     }
 
-    function loadFlocks() {
-        fetch('/api/flocks/')
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.getElementById('flocksBody');
-                tbody.innerHTML = '';
-
-                const records = (data.results || []).slice().sort((a, b) => {
-                    const branchA = (a.branch_name || 'Unassigned').toLowerCase();
-                    const branchB = (b.branch_name || 'Unassigned').toLowerCase();
-                    if (branchA !== branchB) return branchA.localeCompare(branchB);
-                    return new Date(b.date_added) - new Date(a.date_added);
-                });
-
-                let currentBranch = null;
-                records.forEach(flock => {
-                    const branchName = flock.branch_name || 'Unassigned';
-                    if (currentBranch !== branchName) {
-                        currentBranch = branchName;
-                        const header = document.createElement('tr');
-                        header.className = 'table-light';
-                        header.innerHTML = `<td colspan="7"><strong>${branchName}</strong></td>`;
-                        tbody.appendChild(header);
-                    }
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${branchName}</td>
-                        <td>${flock.flock_id}</td>
-                        <td>${flock.breed}</td>
-                        <td>${flock.quantity}</td>
-                        <td><span class="badge ${flock.status === 'active' ? 'bg-success' : 'bg-secondary'}">${flock.status}</span></td>
-                        <td>${new Date(flock.date_added).toLocaleDateString()}</td>
-                        <td>
-                            <button class="btn btn-sm btn-info" onclick="editFlock(${flock.id})">Edit</button>
-                            <button class="btn btn-sm btn-danger" data-flock-name="${encodeURIComponent(flock.flock_id)}" onclick="confirmDeleteFlock(${flock.id}, decodeURIComponent(this.dataset.flockName))">Delete</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            })
-            .catch(err => console.error('Error loading flocks:', err));
-    }
-
     document.getElementById('addFlockBtn').addEventListener('click', function() {
         editingFlockId = null;
         const form = document.getElementById('addFlockForm');
         form.reset();
+        document.getElementById('unknownFlockSource').hidden=true;
+        updateFlockPurchaseFields();
+        updateFlockReadinessFields();
         document.querySelector('#addFlockModal .modal-title').textContent = 'Add New Flock';
         document.getElementById('saveFlockBtn').textContent = 'Save Flock';
         new bootstrap.Modal(document.getElementById('addFlockModal')).show();
@@ -209,13 +200,20 @@
             flock_id: formData.get('flock_id'),
             breed: formData.get('breed'),
             quantity: parseInt(formData.get('quantity')),
-            status: formData.get('status')
+            status: formData.get('status'),
+            acquisition_source:formData.get('acquisition_source'),
+            purchase_amount:formData.get('acquisition_source')==='purchased'?(formData.get('purchase_amount') || '0'):'0',
+            delivery_cost:formData.get('acquisition_source')==='purchased'?(formData.get('delivery_cost') || '0'):'0',
+            purchase_date:formData.get('acquisition_source')==='purchased'?formData.get('purchase_date'):null,
+            supplier:formData.get('acquisition_source')==='purchased'?formData.get('supplier'):'',
+            placement_date:formData.get('placement_date') || null
         };
 
         if (!editingFlockId) {
             payload.status = formData.get('status');
         }
         
+        this.disabled=true;
         fetch(url, {
             method: method,
             headers: {
@@ -244,7 +242,7 @@
                 .join('\n') || 'Unable to save flock.';
             showMessageDialog(message, 'Unable to Save Flock');
             console.error('Error saving flock:', err);
-        });
+        }).finally(()=>{this.disabled=false;});
     });
 
     function editFlock(id) {
@@ -258,6 +256,15 @@
                 form.elements.breed.value = flock.breed;
                 form.elements.quantity.value = flock.quantity;
                 form.elements.status.value = flock.status;
+                form.elements.acquisition_source.value=flock.acquisition_source;
+                document.getElementById('unknownFlockSource').hidden=flock.acquisition_source!=='unknown';
+                form.elements.purchase_amount.value=flock.purchase_amount;
+                form.elements.delivery_cost.value=flock.delivery_cost;
+                form.elements.purchase_date.value=flock.purchase_date || '';
+                form.elements.placement_date.value=flock.placement_date || '';
+                updateFlockReadinessFields();
+                form.elements.supplier.value=flock.supplier || '';
+                updateFlockPurchaseFields();
                 document.querySelector('#addFlockModal .modal-title').textContent = 'Edit Flock';
                 document.getElementById('saveFlockBtn').textContent = 'Update Flock';
                 new bootstrap.Modal(document.getElementById('addFlockModal')).show();
@@ -296,6 +303,7 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', loadFlocks);
+    document.addEventListener('DOMContentLoaded', () => loadFlocks());
 </script>
+<script src="{% static 'js/flock_history.js' %}?v=2"></script>
 {% endblock %}

@@ -33,6 +33,9 @@ def _record_revenue_transaction(instance, action, using):
             'price_per_unit': str(instance.price_per_unit),
             'flock_id': instance.flock_id,
             'production_id': instance.production_id,
+            'buyer_name': instance.buyer_name,
+            'order_number': instance.order_number,
+            'transaction_number': instance.transaction_number,
             **({'reconciliation':instance._reconciliation_details} if hasattr(instance,'_reconciliation_details') else {}),
         },
     )
@@ -55,6 +58,10 @@ def _record_expense_transaction(instance, action, using):
             'branch_id': instance.branch_id,
             'inventory_id': instance.inventory_purchase_id,
             'distribution_id': instance.inventory_distribution_id,
+            'flock_purchase_id': instance.flock_purchase_id,
+            'return_quantity': str(instance.return_quantity) if instance.return_quantity is not None else None,
+            'return_unit': instance.return_unit,
+            'return_item_name': instance.return_item_name,
         },
     )
 

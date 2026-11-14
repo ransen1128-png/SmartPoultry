@@ -25,6 +25,8 @@ class BranchFlockSelect(forms.Select):
         if flock:
             option['attrs']['data-branch-id'] = str(flock.branch_id or '')
             option['attrs']['data-product-type'] = {'layers': 'eggs', 'broilers': 'meat_ready'}.get(flock.breed, 'both')
+            option['attrs']['data-ready-from'] = flock.ready_from.isoformat() if flock.ready_from else ''
+            option['attrs']['data-ready-until'] = flock.readiness_window_end.isoformat() if flock.readiness_window_end else ''
         return option
 
 
@@ -38,6 +40,7 @@ class ProductionRecordForm(StyledModelForm):
         if user is not None:
             self.fields['flock'].queryset = self.fields['flock'].queryset.filter(user=user, status='active').exclude(branch__status='inactive')
             self.fields['branch'].queryset = self.fields['branch'].queryset.filter(farm__owner=user, status='active')
+            if not self.instance.pk:self.fields['flock'].queryset=self.fields['flock'].queryset.filter(quantity__gt=0)
         branch_id = self.data.get('branch') if self.is_bound else getattr(self.instance, 'branch_id', None)
         if branch_id:
             breeds = set(self.fields['flock'].queryset.filter(branch_id=branch_id).values_list('breed', flat=True)) if str(branch_id).isdigit() else set()
@@ -49,6 +52,8 @@ class ProductionRecordForm(StyledModelForm):
         cleaned_data = super().clean()
         flock = cleaned_data.get('flock')
         product_type = cleaned_data.get('product_type')
+        if product_type=='eggs' and not cleaned_data.get('egg_size') and (not self.instance.pk or self.instance.egg_size):
+            self.add_error('egg_size','Choose Small, Medium or Large for these eggs.')
         expected_product = {
             'layers': 'eggs',
             'broilers': 'meat_ready',
@@ -62,7 +67,7 @@ class ProductionRecordForm(StyledModelForm):
 
     class Meta:
         model = ProductionRecord
-        fields = ['branch', 'flock', 'product_type', 'quantity', 'date']
+        fields = ['branch', 'flock', 'product_type', 'egg_size', 'quantity', 'date']
         widgets = {
             'flock': BranchFlockSelect(),
         }
@@ -74,6 +79,16 @@ class MortalityRecordForm(StyledModelForm):
         if user is not None:
             self.fields['flock'].queryset = self.fields['flock'].queryset.filter(user=user, status='active').exclude(branch__status='inactive')
             self.fields['branch'].queryset = self.fields['branch'].queryset.filter(farm__owner=user, status='active')
+            if not self.instance.pk:self.fields['flock'].queryset=self.fields['flock'].queryset.filter(quantity__gt=0)
+        self.fields['branch'].required = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        branch = cleaned_data.get('branch')
+        flock = cleaned_data.get('flock')
+        if flock and branch and flock.branch_id != branch.pk:
+            self.add_error('flock', 'Select a flock from the selected branch.')
+        return cleaned_data
 
     class Meta:
         model = MortalityRecord
@@ -86,6 +101,7 @@ class MortalityRecordForm(StyledModelForm):
             'quantity': 'This number will be subtracted from the selected flock.',
         }
         widgets = {
+            'flock': BranchFlockSelect(),
             'description': forms.Textarea(attrs={'rows': 3}),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }

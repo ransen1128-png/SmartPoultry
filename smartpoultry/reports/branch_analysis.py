@@ -56,7 +56,7 @@ def feed_report(request):
         group=grouped.setdefault(key,{'branch_id':row.branch_id,'branch':row.branch.name,'flock_id':row.flock_id,
             'flock':row.flock.flock_id if row.flock_id else 'Branch stock — flock not recorded',
             'quantities':defaultdict(Decimal),'cost':Decimal('0'),'missing_cost_records':0})
-        group['quantities'][row.unit_snapshot or row.inventory.unit]+=row.quantity
+        group['quantities'][row.measurement_unit or row.inventory.unit]+=row.measurement_quantity
         if row.cost_snapshot is None: group['missing_cost_records']+=1
         else: group['cost']+=row.cost_snapshot
     results=[]

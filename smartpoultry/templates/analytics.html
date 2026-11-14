@@ -38,7 +38,7 @@
 
 <div class="card mt-4">
     <div class="card-header">
-        <h5>Saved Forecast Records</h5>
+        <h5>Actual Recorded Values</h5>
     </div>
     <div class="card-body table-responsive">
         <table class="table table-sm align-middle">
@@ -46,29 +46,21 @@
                 <tr>
                     <th>Date</th>
                     <th>Type</th>
-                    <th>Predicted Value</th>
                     <th>Actual Value</th>
-                    <th>Method</th>
+                    <th>Source</th>
                 </tr>
             </thead>
             <tbody>
-                {% for prediction in latest_predictions %}
+                {% for record in actual_records %}
                     <tr>
-                        <td>{{ prediction.forecast_date }}</td>
-                        <td>{{ prediction.get_prediction_type_display }}</td>
-                        <td>{{ prediction.predicted_value|floatformat:2 }}</td>
-                        <td>
-                            {% if prediction.actual_value is not None %}
-                                {{ prediction.actual_value|floatformat:2 }}
-                            {% else %}
-                                Pending
-                            {% endif %}
-                        </td>
-                        <td>{{ prediction.method }}</td>
+                        <td>{{ record.date|date:"M Y" }}</td>
+                        <td>{{ record.type }}</td>
+                        <td>{{ record.value|floatformat:2 }} {{ record.unit }}</td>
+                        <td>{{ record.source }}</td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="5" class="text-muted">No forecast records available.</td>
+                        <td colspan="4" class="text-muted">No actual records available in the last six months.</td>
                     </tr>
                 {% endfor %}
             </tbody>

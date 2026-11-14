@@ -18,7 +18,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
         return Inventory.objects.filter(user=self.request.user)
 
     def perform_destroy(self,instance):
-        if instance.distributions.exists():raise ValidationError('Items with distribution history are retained for the audit. Reverse a mistaken distribution instead.')
+        if instance.quantity<=0 or instance.distributions.exists():raise ValidationError('Depleted items and items with distribution history are retained in History. Reverse a mistaken distribution instead.')
         instance.delete()
 
     def perform_update(self,serializer):

@@ -4,8 +4,8 @@ from .models import ProductionRecord, MortalityRecord, BreedInformation, HealthR
 
 @admin.register(ProductionRecord)
 class ProductionRecordAdmin(admin.ModelAdmin):
-    list_display = ('flock', 'product_type', 'quantity', 'unit', 'date')
-    list_filter = ('product_type', 'date', 'flock')
+    list_display = ('flock', 'product_type', 'egg_size', 'quantity', 'unit', 'date')
+    list_filter = ('product_type', 'egg_size', 'date', 'flock')
     search_fields = ('flock__flock_id', 'product_type')
 
 

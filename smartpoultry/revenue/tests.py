@@ -19,7 +19,7 @@ class ProductionSalesTests(TestCase):
         self.client.force_login(self.user)
 
     def sale(self, quantity):
-        return self.client.post(reverse('revenue-list'),{'production':self.production.pk,'quantity':quantity,'price_per_unit':'5','date':'2026-11-12'})
+        return self.client.post(reverse('revenue-list'),{'buyer_name':'Test buyer','production':self.production.pk,'quantity':quantity,'price_per_unit':'5','date':'2026-11-12'})
 
     def test_sale_deducts_stock_and_appears_in_production_history(self):
         response=self.sale('30')
@@ -65,9 +65,52 @@ class ProductionSalesTests(TestCase):
         self.assertEqual(self.sale('1').status_code,400)
 
     def test_sale_cannot_predate_production(self):
-        response=self.client.post(reverse('revenue-list'),{'production':self.production.pk,'quantity':1,'price_per_unit':5,'date':'2026-11-01'})
+        response=self.client.post(reverse('revenue-list'),{'buyer_name':'Buyer','production':self.production.pk,'quantity':1,'price_per_unit':5,'date':'2026-11-01'})
         self.assertEqual(response.status_code,400)
         self.assertEqual(self.production.available_quantity,100)
+
+    def test_buyer_details_and_order_are_saved_and_transaction_reference_is_stable(self):
+        payload={'production':self.production.pk,'quantity':'2','price_per_unit':'5','date':'2026-11-12',
+                 'buyer_name':'Buyer One','buyer_contact':'buyer@example.com','buyer_address':'Main Street','order_number':'ORDER-101','transaction_number':'fake-reference'}
+        result=self.client.post(reverse('revenue-list'),payload)
+        self.assertEqual(result.status_code,201,result.content)
+        self.assertEqual(result.data['buyer_name'],'Buyer One')
+        self.assertEqual(result.data['buyer_contact'],'buyer@example.com')
+        self.assertEqual(result.data['buyer_address'],'Main Street')
+        self.assertEqual(result.data['order_number'],'ORDER-101')
+        reference=result.data['transaction_number'];self.assertTrue(reference.startswith('TXN-'))
+        detail=reverse('revenue-detail',args=[result.data['id']])
+        changed=self.client.patch(detail,{'quantity':'3','transaction_number':'replacement'},content_type='application/json')
+        self.assertEqual(changed.status_code,200,changed.content)
+        self.assertEqual(changed.data['transaction_number'],reference)
+        self.assertEqual(self.production.available_quantity,97)
+        another=self.sale('1');self.assertNotEqual(another.data['transaction_number'],reference)
+        self.assertTrue(another.data['order_number'].startswith('ORD-'))
+        from core.models import TransactionRecord
+        self.assertTrue(TransactionRecord.objects.filter(metadata__transaction_number=reference).exists())
+        other=get_user_model().objects.create_user(username='buyer-outsider')
+        self.client.force_login(other)
+        self.assertEqual(self.client.get(detail).status_code,404)
+
+    def test_missing_or_blank_buyer_rejected_without_deducting_stock(self):
+        payload={'production':self.production.pk,'quantity':'2','price_per_unit':'5','date':'2026-11-12'}
+        for buyer in (None,'','   '):
+            data=payload if buyer is None else {**payload,'buyer_name':buyer}
+            response=self.client.post(reverse('revenue-list'),data)
+            self.assertEqual(response.status_code,400)
+            self.assertIn('buyer_name',response.data)
+        self.assertEqual(self.production.available_quantity,100)
+        self.assertFalse(Revenue.objects.exists())
+
+    def test_broiler_sale_captures_buyer_and_references(self):
+        flock=Flock.objects.create(user=self.user,branch=self.branch,flock_id='BROILER',breed='broilers',quantity=10,placement_date=date(2026,9,1))
+        batch=ProductionRecord.objects.create(user=self.user,branch=self.branch,flock=flock,product_type='meat',quantity=5,unit='birds',date=date(2026,11,10))
+        result=self.client.post(reverse('revenue-list'),{'production':batch.pk,'quantity':'2','price_per_unit':'100','date':'2026-11-12','buyer_name':'Broiler buyer'})
+        self.assertEqual(result.status_code,201,result.content)
+        self.assertEqual(result.data['revenue_type'],'meat')
+        self.assertEqual(result.data['buyer_name'],'Broiler buyer')
+        self.assertTrue(result.data['transaction_number'].startswith('TXN-'))
+        self.assertEqual(batch.available_quantity,3)
 
     def test_whole_account_deletion_does_not_break_existing_admin_workflow(self):
         self.assertEqual(self.sale('20').status_code,201)

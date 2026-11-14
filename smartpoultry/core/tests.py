@@ -192,6 +192,7 @@ class DashboardInventoryFeedCostTests(TestCase):
         self.farm = Farm.objects.create(owner=self.user, name='Feed farm', location='Test',
             established_date=date(2026, 1, 1), contact_email='feed@example.com', contact_phone='123')
         self.branch = Branch.objects.create(farm=self.farm, name='Main')
+        Flock.objects.create(user=self.user,branch=self.branch,flock_id='Ready',breed='other',quantity=10)
         self.client.force_login(self.user)
 
     def test_feed_purchase_appears_once_and_distribution_does_not_reduce_cost(self):
@@ -313,7 +314,7 @@ class MortalityProductionDisplayTests(TestCase):
         response = self.client.get(reverse('production_records'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Current Birds Remaining')
+        self.assertContains(response, 'Current Chicken Remaining')
         self.assertContains(response, '<td>17</td>', html=True)
         self.assertContains(response, '<td>10</td>', html=True)
         self.assertNotContains(response, '<th>Notes</th>', html=True)
@@ -453,6 +454,7 @@ class ProductionProductTypeTests(TestCase):
             user=user,
             flock_id='BROILERS-001',
             breed='broilers',
+            placement_date=date(2026,7,1),
             quantity=20,
             status='active',
         )
@@ -460,6 +462,7 @@ class ProductionProductTypeTests(TestCase):
         layers_form = ProductionRecordForm({
             'flock': layers.pk,
             'product_type': 'eggs',
+            'egg_size':'medium',
             'quantity': '10',
             'unit': 'eggs',
             'date': '2026-09-13',
@@ -1025,11 +1028,12 @@ class ForecastingPageTests(TestCase):
         response = self.client.get(reverse('forecasting'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['revenue_forecast'], 1000.0)
-        self.assertEqual(response.context['expected_profit'], -300.0)
+        self.assertIsNone(response.context['revenue_forecast'])
+        self.assertIsNone(response.context['expected_profit'])
+        self.assertEqual(response.context['model_reports']['revenue']['status'],'insufficient_history')
         self.assertEqual(response.context['feed_demand'], 72.0)
         self.assertEqual(response.context['feed_stock'], Decimal('40'))
-        self.assertEqual(response.context['production_forecast'], 55.0)
+        self.assertIsNone(response.context['production_forecast'])
         self.assertNotIn(9000.0, response.context['chart_data']['actualRevenue'])
 
 

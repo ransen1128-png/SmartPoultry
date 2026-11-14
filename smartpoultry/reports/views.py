@@ -68,7 +68,7 @@ class ReportViewSet(viewsets.ModelViewSet):
             user=user,
             date__gte=report.start_date,
             date__lte=report.end_date,
-        ).select_related('flock', 'branch').order_by('date', 'created_at')
+        ).select_related('flock', 'branch','production').order_by('date', 'created_at')
         expense_records = Expense.objects.filter(
             user=user,
             date__gte=report.start_date,
@@ -108,7 +108,7 @@ class ReportViewSet(viewsets.ModelViewSet):
         writer.writerow(['Profit', total_profit])
         writer.writerow(['Eggs Produced', total_eggs])
         writer.writerow(['Mortality', total_mortality])
-        writer.writerow(['Active Birds', active_birds])
+        writer.writerow(['Active Chicken', active_birds])
         writer.writerow([])
 
         writer.writerow(['Monthly Financial Summary'])
@@ -133,7 +133,10 @@ class ReportViewSet(viewsets.ModelViewSet):
         writer.writerow([])
 
         writer.writerow(['Revenue Records'])
-        writer.writerow(['Date', 'Branch', 'Type', 'Flock', 'Quantity', 'Unit', 'Price Per Unit', 'Total Amount', 'Notes'])
+        writer.writerow(['Date', 'Branch', 'Type', 'Flock', 'Quantity', 'Unit', 'Price Per Unit', 'Total Amount', 'Notes','Buyer Name','Buyer Contact','Buyer Address','Order Number','Transaction Number','Egg Size'])
+        def safe_sale_text(value):
+            text=str(value or '')
+            return "'"+text if text.lstrip().startswith(('=','+','-','@')) else text
         for item in revenue_records:
             writer.writerow([
                 item.date,
@@ -145,11 +148,13 @@ class ReportViewSet(viewsets.ModelViewSet):
                 item.price_per_unit,
                 item.total_amount,
                 item.notes,
+                *[safe_sale_text(value) for value in (item.buyer_name,item.buyer_contact,item.buyer_address,item.order_number,item.transaction_number)],
+                item.production.get_egg_size_display() if item.production_id else '',
             ])
         writer.writerow([])
 
         writer.writerow(['Expense Records'])
-        writer.writerow(['Date', 'Branch', 'Type', 'Description', 'Category', 'Amount', 'Notes'])
+        writer.writerow(['Date', 'Branch', 'Type', 'Description', 'Category', 'Amount', 'Notes','Returned Quantity','Return Unit','Returned Item'])
         for item in expense_records:
             writer.writerow([
                 item.date,
@@ -159,11 +164,14 @@ class ReportViewSet(viewsets.ModelViewSet):
                 item.category,
                 item.amount,
                 item.notes,
+                item.return_quantity,
+                safe_sale_text(item.return_unit),
+                safe_sale_text(item.return_item_name),
             ])
         writer.writerow([])
 
         writer.writerow(['Production Records'])
-        writer.writerow(['Date', 'Branch', 'Product Type', 'Flock', 'Quantity', 'Unit', 'Notes'])
+        writer.writerow(['Date', 'Branch', 'Product Type', 'Flock', 'Quantity', 'Unit', 'Notes','Egg Size'])
         for item in production_records:
             writer.writerow([
                 item.date,
@@ -173,6 +181,7 @@ class ReportViewSet(viewsets.ModelViewSet):
                 item.quantity,
                 item.unit,
                 item.notes,
+                item.get_egg_size_display(),
             ])
         writer.writerow([])
 
@@ -206,7 +215,7 @@ class ReportViewSet(viewsets.ModelViewSet):
         writer.writerow([])
 
         writer.writerow(['Inventory'])
-        writer.writerow(['Type', 'Name', 'Quantity', 'Unit', 'Cost Per Unit', 'Total Value', 'Date Added', 'Notes'])
+        writer.writerow(['Type', 'Name', 'Quantity', 'Unit', 'Cost Per Unit', 'Total Value', 'Date Added', 'Notes','Package Size','Content Unit','Total Content'])
         for item in inventory_items:
             writer.writerow([
                 item.get_item_type_display(),
@@ -217,4 +226,7 @@ class ReportViewSet(viewsets.ModelViewSet):
                 item.total_value,
                 item.date_added,
                 item.notes,
+                item.package_size if item.package_size is not None else '',
+                item.content_unit,
+                item.total_content if item.total_content is not None else '',
             ])

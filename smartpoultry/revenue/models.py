@@ -4,6 +4,7 @@ from flocks.models import Flock
 from core.models import Branch
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from uuid import uuid4
 
 
 class Revenue(models.Model):
@@ -11,7 +12,7 @@ class Revenue(models.Model):
     REVENUE_TYPES = [
         ('eggs', 'Eggs'),
         ('meat', 'Meat'),
-        ('birds', 'Birds'),
+        ('birds', 'Chicken'),
         ('manure', 'Manure'),
         ('other', 'Other'),
     ]
@@ -27,18 +28,35 @@ class Revenue(models.Model):
     total_amount = models.DecimalField(max_digits=15, decimal_places=2, editable=False)
     date = models.DateField()
     notes = models.TextField(blank=True)
+    buyer_name = models.CharField(max_length=255,blank=True)
+    buyer_contact = models.CharField(max_length=255,blank=True)
+    buyer_address = models.CharField(max_length=500,blank=True)
+    order_number = models.CharField(max_length=100,blank=True)
+    transaction_number = models.CharField(max_length=40,unique=True,null=True,blank=True,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+        if self._state.adding:
+            if not self.order_number.strip():
+                self.order_number='ORD-'+uuid4().hex.upper()
+            self.transaction_number='TXN-'+uuid4().hex.upper()
         with transaction.atomic():
+            previous=type(self).objects.select_for_update(of=('self',)).get(pk=self.pk) if self.pk else None
+            if previous and previous.production_id and previous.production_id!=self.production_id:
+                raise ValidationError({'production':'A recorded sale cannot be moved to another production batch. Delete the incorrect sale and record its replacement.'})
+            flock=None
             if self.production_id:
                 from production.models import ProductionRecord
                 # All sales from a batch serialize on the same production row.
-                production = ProductionRecord.objects.select_for_update().get(pk=self.production_id)
+                production = ProductionRecord.objects.select_for_update(of=('self',)).get(pk=self.production_id)
+                flock=Flock.objects.select_for_update(of=('self',)).get(pk=production.flock_id)
                 if production.user_id != self.user_id:
                     raise ValidationError({'production': 'Select production from your account.'})
-                if production.flock.status != 'active' or (production.branch_id and production.branch.status != 'active'):
+                if production.product_type!='eggs':
+                    flock.validate_broiler_ready(self.date)
+                editing_auto_sold=previous is not None and flock.status=='sold' and flock.auto_sold
+                if (flock.status != 'active' and not editing_auto_sold) or (production.branch_id and production.branch.status != 'active'):
                     raise ValidationError({'production': 'Select production from an active flock and branch.'})
                 sold = production.revenue_sales.exclude(pk=self.pk).aggregate(total=models.Sum('quantity'))['total'] or 0
                 if self.quantity <= 0 or self.quantity > production.quantity-sold:
@@ -50,6 +68,23 @@ class Revenue(models.Model):
                 self.unit = production.unit
             self.total_amount = self.quantity * self.price_per_unit
             super().save(*args, **kwargs)
+            if flock:
+                from flocks.lifecycle import refresh_broiler_status
+                refresh_broiler_status(flock)
+
+    def delete(self,*args,**kwargs):
+        with transaction.atomic():
+            current=type(self).objects.select_for_update(of=('self',)).get(pk=self.pk)
+            flock=None
+            if current.production_id:
+                from production.models import ProductionRecord
+                production=ProductionRecord.objects.select_for_update(of=('self',)).get(pk=current.production_id)
+                flock=Flock.objects.select_for_update(of=('self',)).get(pk=production.flock_id)
+            result=super().delete(*args,**kwargs)
+            if flock:
+                from flocks.lifecycle import refresh_broiler_status
+                refresh_broiler_status(flock)
+            return result
 
     def __str__(self):
         return f"{self.revenue_type.upper()} - {self.total_amount} ({self.date})"

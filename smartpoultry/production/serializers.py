@@ -3,6 +3,16 @@ from .models import ProductionRecord, MortalityRecord, BreedInformation, HealthR
 
 
 class ProductionRecordSerializer(serializers.ModelSerializer):
+    def create(self,validated_data):
+        from django.core.exceptions import ValidationError as ModelError
+        try:return super().create(validated_data)
+        except ModelError as error:raise serializers.ValidationError(error.message_dict if hasattr(error,'message_dict') else error.messages)
+
+    def update(self,instance,validated_data):
+        from django.core.exceptions import ValidationError as ModelError
+        try:return super().update(instance,validated_data)
+        except ModelError as error:raise serializers.ValidationError(error.message_dict if hasattr(error,'message_dict') else error.messages)
+
     branch_name = serializers.CharField(source='branch.name', read_only=True)
     sold_quantity = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     available_quantity = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
@@ -13,6 +23,8 @@ class ProductionRecordSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Select one of your own flocks.')
         if flock.status != 'active' or (flock.branch_id and flock.branch.status != 'active'):
             raise serializers.ValidationError('Select an active flock from an active branch.')
+        if not self.instance and flock.quantity<=0:
+            raise serializers.ValidationError('This flock has no live chicken remaining.')
         return flock
 
     def validate_branch(self, branch):
@@ -25,10 +37,15 @@ class ProductionRecordSerializer(serializers.ModelSerializer):
         flock = attrs.get('flock', getattr(self.instance, 'flock', None))
         branch = attrs.get('branch', getattr(self.instance, 'branch', None))
         product_type = attrs.get('product_type', getattr(self.instance, 'product_type', None))
+        egg_size=attrs.get('egg_size',getattr(self.instance,'egg_size',''))
+        if product_type=='eggs' and not egg_size and (self.instance is None or self.instance.egg_size):
+            raise serializers.ValidationError({'egg_size':'Choose Small, Medium or Large for these eggs.'})
+        if product_type!='eggs' and egg_size:
+            raise serializers.ValidationError({'egg_size':'Egg size applies only to egg production.'})
         if self.instance and self.instance.revenue_sales.exists():
             if attrs.get('quantity', self.instance.quantity) < self.instance.sold_quantity:
                 raise serializers.ValidationError({'quantity': 'Quantity cannot be below the amount already sold.'})
-            for field in ('flock','branch','product_type','unit','date'):
+            for field in ('flock','branch','product_type','egg_size','unit','date'):
                 if field in attrs and attrs[field] != getattr(self.instance, field):
                     raise serializers.ValidationError({field: 'Production details with sales history cannot be changed.'})
         if flock and (flock.status != 'active' or (flock.branch_id and flock.branch.status != 'active')):
@@ -49,7 +66,7 @@ class ProductionRecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductionRecord
-        fields = ['id', 'branch', 'branch_name', 'flock', 'product_type', 'quantity', 'sold_quantity', 'available_quantity', 'unit', 'date', 'notes', 'created_at']
+        fields = ['id', 'branch', 'branch_name', 'flock', 'product_type', 'egg_size', 'quantity', 'sold_quantity', 'available_quantity', 'unit', 'date', 'notes', 'created_at']
         read_only_fields = ['id', 'created_at']
 
 

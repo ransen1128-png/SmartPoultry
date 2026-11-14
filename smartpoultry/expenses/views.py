@@ -11,12 +11,12 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Expense.objects.filter(user=self.request.user).select_related('branch','inventory_distribution')
+        return Expense.objects.filter(user=self.request.user).select_related('branch','inventory_distribution__inventory')
 
     def perform_destroy(self, instance):
-        if instance.inventory_purchase_id or instance.inventory_distribution_id:
+        if instance.inventory_purchase_id or instance.inventory_distribution_id or instance.flock_purchase_id:
             from rest_framework.exceptions import ValidationError
-            raise ValidationError('Inventory costs are managed through inventory distributions and cannot be deleted separately.')
+            raise ValidationError('This expense is managed through its inventory distribution or flock purchase and cannot be deleted separately.')
         instance.delete()
 
     def perform_create(self, serializer):

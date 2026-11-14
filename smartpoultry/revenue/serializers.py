@@ -6,9 +6,16 @@ from production.models import ProductionRecord
 
 class RevenueSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(source='branch.name', read_only=True)
+    revenue_type_display = serializers.CharField(source='get_revenue_type_display',read_only=True)
+    egg_size = serializers.CharField(source='production.egg_size',read_only=True,default=None)
+    egg_size_label = serializers.CharField(source='production.get_egg_size_display',read_only=True,default=None)
     production = serializers.PrimaryKeyRelatedField(queryset=ProductionRecord.objects.all(), required=False, allow_null=True)
 
     def validate(self, attrs):
+        if self.instance is None and not attrs.get('buyer_name','').strip():
+            raise serializers.ValidationError({'buyer_name':'Enter the buyer name for this sale.'})
+        if 'buyer_name' in attrs and not attrs['buyer_name'].strip():
+            raise serializers.ValidationError({'buyer_name':'Buyer name cannot be empty.'})
         production = attrs.get('production', getattr(self.instance, 'production', None))
         if production is None:
             raise serializers.ValidationError({'production': 'Select available production stock.'})
@@ -44,7 +51,7 @@ class RevenueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Revenue
-        fields = ['id', 'production', 'branch', 'branch_name', 'revenue_type', 'flock', 'quantity', 'unit', 'price_per_unit',
-                  'total_amount', 'date', 'notes', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'total_amount', 'created_at', 'updated_at']
+        fields = ['id', 'production', 'branch', 'branch_name', 'revenue_type','revenue_type_display', 'flock', 'quantity', 'unit', 'price_per_unit',
+                  'total_amount', 'date', 'notes', 'created_at', 'updated_at','buyer_name','buyer_contact','buyer_address','order_number','transaction_number','egg_size','egg_size_label']
+        read_only_fields = ['id', 'total_amount', 'created_at', 'updated_at','transaction_number']
         extra_kwargs = {'revenue_type': {'required': False}, 'price_per_unit': {'min_value': 0}, 'quantity': {'min_value': 0.01}}

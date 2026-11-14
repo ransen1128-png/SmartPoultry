@@ -202,7 +202,7 @@ def dashboard(request):
     branch_summaries = []
     summary_branches = branches.filter(pk=selected_branch.pk) if selected_branch else branches
     for branch in summary_branches:
-        branch_flocks = Flock.objects.filter(user=request.user, branch=branch, status='active')
+        branch_flocks = Flock.objects.filter(user=request.user, branch=branch, status='active',quantity__gt=0)
         branch_bird_count = branch_flocks.aggregate(total=Sum('quantity'))['total'] or 0
         branch_flock_count = branch_flocks.count()
         branch_expenses = Expense.objects.filter(user=request.user, branch=branch, date__gte=current_month_start, date__lt=next_month_start)
@@ -265,16 +265,22 @@ def dashboard(request):
         records_for_period(ProductionRecord, current_month_start, next_month_start, product_type='eggs'),
         'quantity',
     )
+    meat_production = list(
+        records_for_period(ProductionRecord,current_month_start,next_month_start,product_type='meat_ready')
+        .order_by('unit').values('unit').annotate(total=Sum('quantity'))
+    )
     mortality_total = records_for_period(MortalityRecord, current_month_start, next_month_start).aggregate(
         total=Sum('quantity')
     )['total'] or 0
-    active_flocks_query = Flock.objects.filter(user=request.user, status='active')
+    active_flocks_query = Flock.objects.filter(user=request.user, status='active',quantity__gt=0)
     if selected_branch:
         active_flocks_query = active_flocks_query.filter(branch=selected_branch)
     total_birds = active_flocks_query.aggregate(total=Sum('quantity'))['total'] or 0
     active_flocks = active_flocks_query.count()
     mortality_rate = round((mortality_total / total_birds) * 100, 2) if total_birds else 0
     feed_stock = decimal_sum(Inventory.objects.filter(user=request.user, item_type='feed'), 'quantity')
+    from inventory.quantities import measurement_totals
+    feed_stock_by_unit=measurement_totals(Inventory.objects.filter(user=request.user,item_type='feed'))
     feed_expense_share = round((feed_cost / current_expenses) * 100, 1) if current_expenses else 0
 
     chart_months = []
@@ -352,7 +358,9 @@ def dashboard(request):
             'total_birds': total_birds,
             'active_flocks': active_flocks,
             'production_total': production_total,
+            'meat_production': meat_production,
             'feed_stock': feed_stock,
+            'feed_stock_by_unit': feed_stock_by_unit,
             'latest_notification': latest_notification,
         },
         'chart_data': {
@@ -776,14 +784,14 @@ def analytics_view(request):
 
     revenue_by_month = {
         month_key(item['month']): item['total'] or 0
-        for item in Revenue.objects.filter(user=request.user, date__gte=history_start)
+        for item in Revenue.objects.filter(user=request.user, date__gte=history_start,date__lte=today)
         .annotate(month=TruncMonth('date'))
         .values('month')
         .annotate(total=Sum('total_amount'))
     }
     expense_by_month = {
         month_key(item['month']): item['total'] or 0
-        for item in Expense.objects.filter(user=request.user, date__gte=history_start)
+        for item in Expense.objects.filter(user=request.user, date__gte=history_start,date__lte=today)
         .annotate(month=TruncMonth('date'))
         .values('month')
         .annotate(total=Sum('amount'))
@@ -821,6 +829,7 @@ def analytics_view(request):
                 product_type='eggs',
                 date__gte=week_start,
                 date__lt=week_end,
+                date__lte=today,
             ),
             'quantity',
         )))
@@ -855,6 +864,22 @@ def analytics_view(request):
         forecast_date__in=future_months,
     ).order_by('forecast_date', 'prediction_type')
 
+    # The table presents recorded outcomes, not generated future predictions.
+    recorded_revenue = revenue_by_month
+    recorded_expenses = expense_by_month
+    actual_records = [
+        {'date':month,'type':'Profit','value':recorded_revenue.get(month,0)-recorded_expenses.get(month,0),
+         'unit':'PHP','source':'Recorded revenue minus recorded expenses'}
+        for month in history_months if month in recorded_revenue or month in recorded_expenses
+    ]
+    actual_records.extend(
+        {'date':month_key(row['month']),'type':'Egg Production','value':row['total'],
+         'unit':row['unit'],'source':'Production records'}
+        for row in ProductionRecord.objects.filter(user=request.user,product_type='eggs',date__gte=history_start,date__lte=today)
+        .annotate(month=TruncMonth('date')).order_by().values('month','unit').annotate(total=Sum('quantity'))
+    )
+    actual_records.sort(key=lambda row:row['date'],reverse=True)
+
     all_months = history_months + future_months
     chart_data = {
         'actualVsPredicted': {
@@ -876,6 +901,7 @@ def analytics_view(request):
     return render(request, 'analytics.html', {
         'chart_data': chart_data,
         'latest_predictions': latest_predictions,
+        'actual_records': actual_records,
         'prediction_method': method,
         'last_updated': timezone.now(),
     })
@@ -1255,10 +1281,16 @@ def reports_view(request):
 def production_records_view(request):
     """Production records page."""
     from production.models import ProductionRecord
-    records = ProductionRecord.objects.select_related('flock').filter(user=request.user).exclude(flock__status='inactive').exclude(branch__status='inactive').exclude(flock__branch__status='inactive')[:50]
+    from django.db.models import Sum,Value,DecimalField,F
+    from django.db.models.functions import Coalesce
+    batches = ProductionRecord.objects.select_related('flock','branch').filter(user=request.user).exclude(flock__status='inactive').exclude(branch__status='inactive').exclude(flock__branch__status='inactive').annotate(
+        _sold_quantity=Coalesce(Sum('revenue_sales__quantity'),Value(0),output_field=DecimalField(max_digits=12,decimal_places=2)),
+    ).annotate(_available=F('quantity')-F('_sold_quantity'))
+    records=batches.filter(_available__gt=0)
+    production_history=batches.filter(_available__lte=0)
     from revenue.models import Revenue
     history = Revenue.objects.filter(user=request.user, production__isnull=False).select_related('production','branch','flock').exclude(flock__status='inactive').exclude(branch__status='inactive')[:100]
-    return render(request, 'production_records.html', {'records': records, 'sales_history': history})
+    return render(request, 'production_records.html', {'records': records, 'production_history':production_history,'sales_history': history})
 
 
 @login_required(login_url='login')
@@ -1268,20 +1300,41 @@ def production_record_create(request):
     if request.method == 'POST' and form.is_valid():
         record = form.save(commit=False)
         record.user = request.user
-        record.save()
-        create_activity_notification(
-            request.user,
-            f"Successfully added {record.get_product_type_display().lower()} production record",
-            f"Recorded {record.quantity:g} {record.unit} for flock {record.flock.flock_id} on {record.date}.",
-            record,
-        )
-        messages.success(request, 'Production record added.')
-        return redirect('production_records')
+        try:
+            record.save()
+        except ValidationError as error:
+            form.add_error(None,error)
+        else:
+            create_activity_notification(
+                request.user,
+                f"Successfully added {record.get_product_type_display().lower()} production record",
+                f"Recorded {record.quantity:g} {record.unit} for flock {record.flock.flock_id} on {record.date}.",
+                record,
+            )
+            messages.success(request, 'Production record added.')
+            return redirect('production_records')
     return render(request, 'production_record_form.html', {
         'form': form,
         'title': 'Add Production Record',
         'submit_label': 'Save Record',
     })
+
+
+@login_required(login_url='login')
+def production_apply_birds(request,record_id):
+    from production.models import ProductionRecord
+    record=get_object_or_404(ProductionRecord.objects.select_related('flock','branch'),pk=record_id,user=request.user)
+    error=None
+    if request.method=='POST':
+        if request.POST.get('confirmed')!='yes':
+            error='Confirm that these chicken are still included in the live flock count.'
+        else:
+            try:count=record.apply_bird_transfer(request.user)
+            except ValidationError as issue:error='; '.join(issue.messages)
+            else:
+                messages.success(request,f'{count} chicken transferred from the live flock. Zero-quantity flocks are in Flock History.' if count else 'This production entry has already been applied to the flock.')
+                return redirect('production_records')
+    return render(request,'production_apply_birds.html',{'record':record,'error':error})
 
 
 @login_required(login_url='login')
@@ -1291,9 +1344,13 @@ def production_record_update(request, record_id):
     record = get_object_or_404(ProductionRecord, pk=record_id, user=request.user)
     form = ProductionRecordForm(request.POST or None, instance=record, user=request.user)
     if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, 'Production record updated.')
-        return redirect('production_records')
+        try:
+            form.save()
+        except ValidationError as error:
+            form.add_error(None,error)
+        else:
+            messages.success(request, 'Production record updated.')
+            return redirect('production_records')
     return render(request, 'production_record_form.html', {
         'form': form,
         'title': 'Edit Production Record',
@@ -1380,125 +1437,17 @@ def mortality_record_delete(request, record_id):
 
 @login_required(login_url='login')
 def forecasting_view(request):
-    """Forecasting page based on the logged-in user's encoded records."""
-    from expenses.models import Expense
-    from flocks.models import Flock
-    from inventory.models import Inventory
-    from production.models import ProductionRecord
-    from revenue.models import Revenue
-
+    """Forecast from each branch's own recorded revenue, costs and production."""
+    from .branch_forecasting import forecast_context
+    branches=list(Branch.objects.filter(farm__owner=request.user,status='active').order_by('name','pk'))
+    selected=None
+    branch_id=request.GET.get('branch','').strip()
+    if branch_id:
+        if not branch_id.isdigit():raise Http404('Branch not found.')
+        selected=next((branch for branch in branches if branch.pk==int(branch_id)),None)
+        if selected is None:raise Http404('Branch not found.')
     ensure_month_end_forecast_notification(request.user)
-
-    today = timezone.localdate()
-    current_month_start = today.replace(day=1)
-
-    def add_months(value, months):
-        month_index = value.month - 1 + months
-        year = value.year + month_index // 12
-        month = month_index % 12 + 1
-        return value.replace(year=year, month=month, day=1)
-
-    def month_key(value):
-        return value.date() if hasattr(value, 'date') else value
-
-    def decimal_sum(queryset, field):
-        return queryset.aggregate(total=Sum(field))['total'] or 0
-
-    def trend_forecast(values, periods=1):
-        numeric_values = [float(value) for value in values if value is not None]
-        if not numeric_values:
-            return [0 for _ in range(periods)]
-        if len(numeric_values) == 1:
-            return [round(numeric_values[0], 2) for _ in range(periods)]
-
-        recent_window = numeric_values[-3:] if len(numeric_values) >= 3 else numeric_values
-        baseline = sum(recent_window) / len(recent_window)
-        slope = (numeric_values[-1] - numeric_values[0]) / max(len(numeric_values) - 1, 1)
-        return [round(max(0, baseline + slope * step), 2) for step in range(1, periods + 1)]
-
-    history_start = add_months(current_month_start, -5)
-    history_months = [add_months(history_start, offset) for offset in range(6)]
-    forecast_months = [add_months(current_month_start, offset) for offset in range(1, 4)]
-
-    revenue_by_month = {
-        month_key(item['month']): item['total'] or 0
-        for item in Revenue.objects.filter(user=request.user, date__gte=history_start)
-        .annotate(month=TruncMonth('date'))
-        .values('month')
-        .annotate(total=Sum('total_amount'))
-    }
-    expense_by_month = {
-        month_key(item['month']): item['total'] or 0
-        for item in Expense.objects.filter(user=request.user, date__gte=history_start)
-        .annotate(month=TruncMonth('date'))
-        .values('month')
-        .annotate(total=Sum('amount'))
-    }
-    production_by_month = {
-        month_key(item['month']): item['total'] or 0
-        for item in ProductionRecord.objects.filter(
-            user=request.user,
-            product_type='eggs',
-            date__gte=history_start,
-        )
-        .annotate(month=TruncMonth('date'))
-        .values('month')
-        .annotate(total=Sum('quantity'))
-    }
-
-    revenue_history = [
-        float(revenue_by_month[month])
-        for month in history_months
-        if month in revenue_by_month
-    ]
-    expense_history = [
-        float(expense_by_month[month])
-        for month in history_months
-        if month in expense_by_month
-    ]
-    production_history = [
-        float(production_by_month[month])
-        for month in history_months
-        if month in production_by_month
-    ]
-
-    revenue_forecast = trend_forecast(revenue_history, 3)
-    expense_forecast = trend_forecast(expense_history, 3)
-    production_forecast = trend_forecast(production_history, 1)[0]
-    expected_profit = round(revenue_forecast[0] - expense_forecast[0], 2)
-
-    active_birds = decimal_sum(
-        Flock.objects.filter(user=request.user, status='active'),
-        'quantity',
-    )
-    feed_demand = round(float(active_birds) * 0.12 * 30, 2)
-    feed_stock = decimal_sum(
-        Inventory.objects.filter(user=request.user, item_type='feed'),
-        'quantity',
-    )
-
-    encoded_months = len(set(revenue_by_month) | set(expense_by_month) | set(production_by_month))
-    confidence = min(95, 45 + encoded_months * 8)
-
-    chart_data = {
-        'labels': [capfirst(month.strftime('%b %Y')) for month in history_months + forecast_months],
-        'actualRevenue': [
-            float(revenue_by_month[month]) if month in revenue_by_month else None
-            for month in history_months
-        ] + [None for _ in forecast_months],
-        'forecastRevenue': [None for _ in history_months] + revenue_forecast,
-    }
-
-    return render(request, 'forecasting.html', {
-        'revenue_forecast': revenue_forecast[0],
-        'expected_profit': expected_profit,
-        'feed_demand': feed_demand,
-        'feed_stock': feed_stock,
-        'production_forecast': production_forecast,
-        'forecast_confidence': confidence,
-        'chart_data': chart_data,
-        'has_encoded_data': any([revenue_history, expense_history, production_history, active_birds]),
-    })
+    return render(request,'forecasting.html',forecast_context(request.user,branches,selected))
 
 
 def ensure_month_end_forecast_notification(user):

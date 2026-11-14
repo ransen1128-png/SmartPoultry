@@ -4,23 +4,29 @@
 <div class="page-heading">
     <div>
         <h1>Forecasting</h1>
-        <p>Projected revenue, production, and feed usage</p>
+        <p>Random Forest forecasts{% if selected_branch %} — {{ selected_branch.name }}{% else %} — All branches{% endif %}</p>
     </div>
+    <form method="get" class="d-flex gap-2 align-items-center"><label class="visually-hidden" for="forecastBranch">Branch</label><select class="form-select" id="forecastBranch" name="branch" onchange="this.form.requestSubmit()"><option value="">All branches</option>{% for branch in branches %}<option value="{{ branch.pk }}" {% if selected_branch.pk == branch.pk %}selected{% endif %}>{{ branch.name }}</option>{% endfor %}</select><button type="submit" class="btn btn-primary">Apply</button></form>
 </div>
 
 <section class="metric-grid">
-    <div class="metric-card"><span>Revenue Forecast</span><strong>&#8369;{{ revenue_forecast|floatformat:2 }}</strong><small class="text-success">next month</small></div>
-    <div class="metric-card"><span>Expected Profit</span><strong>&#8369;{{ expected_profit|floatformat:2 }}</strong><small class="text-success">{{ forecast_confidence }}% confidence</small></div>
-    <div class="metric-card"><span>Feed Demand</span><strong>{{ feed_demand|floatformat:2 }} kg</strong><small>{{ feed_stock|floatformat:2 }} kg feed encoded</small></div>
-    <div class="metric-card"><span>Production Forecast</span><strong>{{ production_forecast|floatformat:2 }}</strong><small>eggs next month</small></div>
+    <div class="metric-card"><span>Revenue Forecast</span><strong>{% if revenue_forecast is not None %}&#8369;{{ revenue_forecast|floatformat:2 }}{% else %}—{% endif %}</strong><small>Random Forest · next month</small></div>
+    <div class="metric-card"><span>Expected Profit</span><strong>{% if expected_profit is not None %}&#8369;{{ expected_profit|floatformat:2 }}{% else %}—{% endif %}</strong><small>Forecast revenue minus forecast expenses</small></div>
+    <div class="metric-card"><span>Feed Demand</span><strong>{{ feed_demand|floatformat:2 }} kg</strong><small>30-day estimate at 0.12 kg per live chicken daily</small></div>
+    <div class="metric-card"><span>Production Forecast</span><strong>{% if production_forecast is not None %}{{ production_forecast|floatformat:2 }}{% else %}—{% endif %}</strong><small>Random Forest · eggs next month</small></div>
 </section>
+<p class="text-muted">{% if selected_branch %}Feed delivered to this branch in the last six months: {% for feed in feed_deliveries %}{{ feed.quantity|floatformat:"-2" }} {{ feed.unit }}{% if not forloop.last %}; {% endif %}{% empty %}No recorded deliveries{% endfor %}.{% else %}Farm feed inventory: {% for feed in feed_stock_by_unit %}{{ feed.quantity|floatformat:"-2" }} {{ feed.unit }}{% if not forloop.last %}; {% endif %}{% empty %}No feed stock recorded{% endfor %}.{% endif %} Branch forecasts use assigned records. Undistributed purchase costs remain part of the farm-wide forecast.</p>
+
+<section class="panel-card mb-3"><h2 class="h5">Forecast by branch</h2><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Branch</th><th>Revenue forecast</th><th>Expected profit</th><th>Feed demand (kg)</th><th>Egg production forecast</th><th>Revenue model</th></tr></thead><tbody id="branchForecastBody">{% for forecast in branch_forecasts %}<tr><td><a href="?branch={{ forecast.branch.pk }}">{{ forecast.branch.name }}</a></td><td>{% if forecast.revenue_forecast is not None %}&#8369;{{ forecast.revenue_forecast|floatformat:2 }}{% else %}—{% endif %}</td><td>{% if forecast.expected_profit is not None %}&#8369;{{ forecast.expected_profit|floatformat:2 }}{% else %}—{% endif %}</td><td>{{ forecast.feed_demand|floatformat:2 }}</td><td>{% if forecast.production_forecast is not None %}{{ forecast.production_forecast|floatformat:2 }}{% else %}—{% endif %}</td><td>{% if forecast.model_reports.revenue.status == 'trained' %}Random Forest{% else %}Needs {{ forecast.model_reports.revenue.minimum_months }} completed recorded months ({{ forecast.model_reports.revenue.observed_months }} available){% endif %}</td></tr>{% empty %}<tr><td colspan="6">No active branches available.</td></tr>{% endfor %}</tbody></table></div></section>
+
+<section class="panel-card mb-3"><h2 class="h5">Model readiness and validation</h2><p class="text-muted">Each branch trains on its own completed recorded months. Current-month totals and unrecorded months are not used as completed training labels. Feed demand uses the live-chicken estimate shown above.</p><ul>{% for name,report in model_reports.items %}<li>{{ name|title }}: {% if report.status == 'trained' %}Random Forest trained on {{ report.training_samples }} observations. Latest held-out month MAE: {{ report.validation_mae }}; previous-value baseline MAE: {{ report.baseline_mae }}. One held-out month provides limited validation.{% else %}Insufficient history — {{ report.observed_months }} completed recorded months; at least {{ report.minimum_months }} are required.{% endif %}</li>{% endfor %}</ul></section>
 
 {% if not has_encoded_data %}
-    <div class="alert alert-info">No user records are encoded yet, so forecasts are showing zero. Add revenue, expenses, flocks, feed inventory, and production records to generate projections.</div>
+    <div class="alert alert-info">No records are available for this selection. Add dated records assigned to this branch to build its forecasting history.</div>
 {% endif %}
 
 <div class="panel-card">
-    <div class="panel-title">Revenue Forecast</div>
+    <div class="panel-title">Revenue Forecast — {{ selected_branch.name|default:'All branches' }}</div>
     <canvas id="forecastChart"></canvas>
 </div>
 {% endblock %}

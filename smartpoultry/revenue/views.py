@@ -46,8 +46,11 @@ class RevenueViewSet(viewsets.ModelViewSet):
         records = ProductionRecord.objects.filter(user=request.user, flock__status='active').exclude(branch__status='inactive').exclude(flock__branch__status='inactive').select_related('branch','flock').annotate(
             _sold_quantity=Coalesce(Sum('revenue_sales__quantity'), Value(0), output_field=DecimalField()),
         ).annotate(_available=F('quantity')-F('_sold_quantity')).filter(_available__gt=0)
+        from django.utils import timezone
+        records=[r for r in records if r.product_type=='eggs' or r.flock.breed!='broilers' or (r.flock.ready_from and r.flock.ready_from<=timezone.localdate())]
         return Response([{'id': record.pk, 'branch': record.branch_id, 'branch_name': record.branch.name if record.branch_id else 'Unassigned',
                           'flock': record.flock.flock_id, 'product': record.get_product_type_display(),
+                          'egg_size':record.egg_size,'egg_size_label':record.get_egg_size_display() if record.product_type=='eggs' else '',
                           'revenue_type': 'eggs' if record.product_type == 'eggs' else 'meat',
                           'available_quantity': str(record.available_quantity), 'date': record.date.isoformat()} for record in records])
 

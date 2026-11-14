@@ -8,6 +8,7 @@ from django.core.management import call_command
 from core.models import Farm,Branch
 from inventory.models import Inventory,InventoryDistribution
 from expenses.models import Expense
+from flocks.models import Flock
 
 
 class DistributionExpenseTests(TestCase):
@@ -16,6 +17,8 @@ class DistributionExpenseTests(TestCase):
         farm=Farm.objects.create(owner=self.user,name='Farm',location='Town',established_date=date(2026,1,1),contact_email='a@example.com',contact_phone='123')
         self.branch=Branch.objects.create(farm=farm,name='North')
         self.other_branch=Branch.objects.create(farm=farm,name='South')
+        for branch in (self.branch,self.other_branch):
+            Flock.objects.create(user=self.user,branch=branch,flock_id='Ready',breed='other',quantity=10)
         self.item=Inventory.objects.create(user=self.user,item_type='feed',name='Layer feed',quantity=Decimal('100'),unit='kg',cost_per_unit=Decimal('25'),date_added=date(2026,10,1))
         self.client.force_login(self.user)
 
@@ -102,3 +105,20 @@ class DistributionExpenseTests(TestCase):
         self.other_branch.farm.owner=other;self.other_branch.farm.save()
         self.assertEqual(self.distribute('10',self.other_branch).status_code,400)
         self.assertFalse(InventoryDistribution.objects.exists())
+
+    def test_depleted_item_and_records_are_retained_and_reversal_restores_stock(self):
+        response=self.distribute('100')
+        self.assertEqual(response.status_code,201,response.content)
+        self.item.refresh_from_db();self.assertEqual(self.item.quantity,0)
+        self.assertEqual(self.client.get(reverse('inventory-detail',args=[self.item.pk])).status_code,200)
+        self.assertEqual(self.client.delete(reverse('inventory-detail',args=[self.item.pk])).status_code,400)
+        self.assertEqual(Expense.objects.get(inventory_distribution_id=response.data['id']).amount,Decimal('2500'))
+        result=self.client.post(reverse('inventory-distribution-reverse',args=[response.data['id']]),{'reason':'Return unused stock'})
+        self.assertEqual(result.status_code,200,result.content)
+        self.item.refresh_from_db();self.assertEqual(self.item.quantity,100)
+        self.assertEqual(self.total(),Decimal('2500'))
+
+    def test_zero_item_without_distributions_is_kept_for_history(self):
+        self.item.quantity=Decimal('0');self.item.save()
+        self.assertEqual(self.client.delete(reverse('inventory-detail',args=[self.item.pk])).status_code,400)
+        self.assertTrue(Inventory.objects.filter(pk=self.item.pk).exists())

@@ -34,3 +34,23 @@
     </form>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+    const branch = document.getElementById('id_branch');
+    const flock = document.getElementById('id_flock');
+    const options = Array.from(flock.options).filter(option => option.value).map(option => option.cloneNode(true));
+    function updateFlocks() {
+        const previous = flock.value;
+        const matching = branch.value ? options.filter(option => option.dataset.branchId === branch.value) : [];
+        flock.replaceChildren(new Option(branch.value ? (matching.length ? 'Choose flock...' : 'No active flocks in this branch') : 'Choose a branch first', ''));
+        matching.forEach(option => flock.appendChild(option.cloneNode(true)));
+        flock.value = matching.some(option => option.value === previous) ? previous : '';
+        flock.disabled = matching.length === 0;
+    }
+    branch.addEventListener('change', updateFlocks);
+    updateFlocks();
+})();
+</script>
+{% endblock %}

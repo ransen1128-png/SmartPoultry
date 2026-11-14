@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from flocks.models import Flock
 from core.models import Branch
+from decimal import Decimal
 
 
 class ProductionRecord(models.Model):
@@ -12,15 +13,18 @@ class ProductionRecord(models.Model):
         ('eggs', 'Eggs'),
         ('meat_ready', 'Meat Ready'),
     ]
+    EGG_SIZES = [('small','Small'),('medium','Medium'),('large','Large')]
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='production_records', null=True, blank=True)
     branch = models.ForeignKey('core.Branch', on_delete=models.SET_NULL, related_name='production_records', null=True, blank=True)
     flock = models.ForeignKey(Flock, on_delete=models.CASCADE, related_name='production_records')
     product_type = models.CharField(max_length=50, choices=PRODUCT_TYPES)
+    egg_size = models.CharField(max_length=10,choices=EGG_SIZES,blank=True,default='')
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     unit = models.CharField(max_length=50, default='units')
     date = models.DateField()
     notes = models.TextField(blank=True)
+    birds_removed = models.PositiveIntegerField(default=0,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -33,29 +37,103 @@ class ProductionRecord(models.Model):
         return self.quantity - self.sold_quantity
 
     def clean(self):
+        if self.egg_size and self.egg_size not in dict(self.EGG_SIZES):
+            raise ValidationError({'egg_size':'Choose Small, Medium or Large.'})
+        if self.product_type!='eggs' and self.egg_size:
+            raise ValidationError({'egg_size':'Egg size applies only to egg production.'})
+        if self.quantity is not None and self.quantity<=0:
+            raise ValidationError({'quantity':'Production quantity must be greater than zero.'})
+        desired=self.bird_count()
+        previous=type(self).objects.filter(pk=self.pk).first() if self.pk else None
+        if self.product_type=='meat_ready' and self.flock_id and (previous is None or any(getattr(self,f)!=getattr(previous,f) for f in ('flock_id','product_type','date','quantity'))):
+            self.flock.validate_broiler_ready(self.date)
+        if desired and (previous is None or previous.birds_removed):
+            available=self.flock.quantity+(previous.birds_removed if previous and previous.flock_id==self.flock_id else 0)
+            if desired>available:raise ValidationError({'quantity':f'Only {available} live chicken are available in this flock.'})
         if self.pk and self.quantity is not None and self.quantity < self.sold_quantity:
             raise ValidationError({'quantity': 'Production quantity cannot be less than the quantity already sold.'})
         if self.pk and self.revenue_sales.exists():
             previous = type(self).objects.get(pk=self.pk)
-            if any(getattr(self, field) != getattr(previous, field) for field in ('user_id','branch_id','flock_id','product_type','unit','date')):
+            if any(getattr(self, field) != getattr(previous, field) for field in ('user_id','branch_id','flock_id','product_type','egg_size','unit','date')):
                 raise ValidationError('Production details with recorded sales cannot be changed; create a new entry.')
+
+    def bird_count(self):
+        if self.product_type!='meat_ready' or not self.flock_id or self.flock.breed!='broilers':return 0
+        if self.unit.strip().lower() not in ('units','unit','birds','bird','chicken','chickens','pcs','pc','pieces','piece','head'):return 0
+        value=Decimal(str(self.quantity)) if self.quantity is not None else Decimal('0')
+        if value<=0 or value!=value.to_integral_value():
+            raise ValidationError({'quantity':'Enter a whole number of broiler chicken.'})
+        return int(value)
+
+    @property
+    def can_apply_bird_transfer(self):
+        try:desired=self.bird_count()
+        except ValidationError:return False
+        return not self.birds_removed and desired>0 and desired<=self.flock.quantity and self.flock.status=='active'
+
+    def apply_bird_transfer(self,actor):
+        """Owner explicitly confirms that a legacy batch remains in live count."""
+        from django.utils import timezone
+        with transaction.atomic():
+            current=type(self).objects.select_for_update(of=('self',)).get(pk=self.pk)
+            flock=Flock.objects.select_for_update(of=('self',)).get(pk=current.flock_id)
+            if current.user_id!=actor.pk or flock.user_id!=actor.pk:
+                raise ValidationError('Select production from your own account.')
+            if current.birds_removed:return 0
+            if flock.status!='active' or (flock.branch_id and flock.branch.status!='active'):
+                raise ValidationError('Select an active flock and branch.')
+            flock.validate_broiler_ready(current.date)
+            desired=current.bird_count()
+            if not desired or desired>flock.quantity:
+                raise ValidationError('The whole-chicken count cannot be transferred from the current live quantity. Review the original record.')
+            flock.quantity-=desired
+            flock.save(update_fields=['quantity','updated_at'])
+            current.notes+=f'\nLive-chicken transfer confirmed by account #{actor.pk} at {timezone.now().isoformat()}: {desired} chicken.'
+            type(self).objects.filter(pk=current.pk).update(birds_removed=desired,notes=current.notes,updated_at=timezone.now())
+            from flocks.lifecycle import refresh_broiler_status
+            refresh_broiler_status(flock)
+            return desired
 
     def save(self, *args, **kwargs):
         with transaction.atomic():
-            if self.pk:
-                type(self).objects.select_for_update().get(pk=self.pk)
-                self.clean()
-                previous = type(self).objects.get(pk=self.pk)
-                if self.revenue_sales.exists() and any(getattr(self, field) != getattr(previous, field) for field in ('user_id','branch_id','flock_id','product_type','unit','date')):
-                    raise ValidationError('Production details with recorded sales cannot be changed; create a new entry.')
+            previous=type(self).objects.select_for_update(of=('self',)).get(pk=self.pk) if self.pk else None
+            self.clean()
+            desired=self.bird_count()
+            # Older records have no applied bird movement: ordinary edits do not
+            # silently re-count a historical flock whose opening count is unknown.
+            if previous and not previous.birds_removed:desired=0
+            ids={self.flock_id}|({previous.flock_id} if previous else set())
+            locked={row.pk:row for row in Flock.objects.select_for_update(of=('self',)).filter(pk__in=ids).order_by('pk')}
+            if previous and previous.birds_removed:locked[previous.flock_id].quantity+=previous.birds_removed
+            if desired>locked[self.flock_id].quantity:
+                raise ValidationError({'quantity':f'Only {locked[self.flock_id].quantity} live chicken are available in this flock.'})
+            locked[self.flock_id].quantity-=desired
+            self.birds_removed=desired
+            if kwargs.get('update_fields') is not None:kwargs['update_fields']=set(kwargs['update_fields'])|{'birds_removed'}
             super().save(*args, **kwargs)
+            from flocks.lifecycle import refresh_broiler_status
+            for row in locked.values():
+                row.save(update_fields=['quantity','updated_at'])
+                refresh_broiler_status(row)
+
+    def delete(self,*args,**kwargs):
+        with transaction.atomic():
+            current=type(self).objects.select_for_update(of=('self',)).get(pk=self.pk)
+            flock=Flock.objects.select_for_update(of=('self',)).get(pk=current.flock_id)
+            result=super().delete(*args,**kwargs)
+            if current.birds_removed:
+                flock.quantity+=current.birds_removed
+                flock.save(update_fields=['quantity','updated_at'])
+            from flocks.lifecycle import refresh_broiler_status
+            refresh_broiler_status(flock)
+            return result
     
     def __str__(self):
         return f"{self.flock} - {self.product_type} ({self.date})"
     
     class Meta:
         ordering = ['branch__name', '-date', '-created_at']
-        unique_together = ('flock', 'product_type', 'date')
+        unique_together = ('flock', 'product_type', 'date', 'egg_size')
 
 
 class MortalityRecord(models.Model):
@@ -82,7 +160,7 @@ class MortalityRecord(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.flock} - {self.quantity} birds ({self.date})"
+        return f"{self.flock} - {self.quantity} chicken ({self.date})"
 
     def clean(self):
         if self.quantity is not None and self.quantity <= 0:

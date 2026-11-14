@@ -69,6 +69,34 @@ class FarmImprovementTests(TestCase):
         self.assertEqual(self.distribute(branch=self.south.pk).status_code,400)
         self.assertFalse(InventoryDistribution.objects.exists())
 
+    def test_branch_without_ready_flocks_rejects_distribution_without_side_effects(self):
+        for status,quantity in ((None,None),('inactive',20),('active',0),('sold',20),('deceased',20),('retired',20)):
+            with self.subTest(status=status,quantity=quantity):
+                if status is not None:
+                    self.flock.status=status;self.flock.quantity=quantity;self.flock.save()
+                branch=self.south if status is None else self.branch
+                before_expenses=list(Expense.objects.order_by('pk').values_list('pk','amount'))
+                before_notifications=Notification.objects.count()
+                result=self.distribute(branch=branch.pk,flock='')
+                self.assertEqual(result.status_code,400,result.content)
+                self.assertIn('no active flock with chicken',str(result.data['branch']))
+                self.item.refresh_from_db();self.assertEqual(self.item.quantity,100)
+                self.assertFalse(InventoryDistribution.objects.filter(user=self.user).exists())
+                self.assertEqual(list(Expense.objects.order_by('pk').values_list('pk','amount')),before_expenses)
+                self.assertEqual(Notification.objects.count(),before_notifications)
+
+    def test_branch_distribution_without_flock_selection_resumes_after_activation(self):
+        self.flock.status='inactive';self.flock.save()
+        self.assertEqual(self.distribute(flock='').status_code,400)
+        self.flock.status='active';self.flock.save()
+        self.assertEqual(self.distribute(flock='').status_code,201)
+
+    def test_flock_with_no_live_birds_cannot_receive_inventory(self):
+        self.flock.quantity=0;self.flock.save()
+        self.assertEqual(self.distribute().status_code,400)
+        self.item.refresh_from_db();self.assertEqual(self.item.quantity,100)
+        self.assertFalse(InventoryDistribution.objects.exists())
+
     def test_reports_scope_dates_branch_and_preserve_all_branch_total(self):
         self.distribute()
         url=reverse('report-branch-expenses')

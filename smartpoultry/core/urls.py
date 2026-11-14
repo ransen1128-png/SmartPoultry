@@ -46,6 +46,7 @@ urlpatterns = [
     path('reports/', views.reports_view, name='reports'),
     path('production-records/', views.production_records_view, name='production_records'),
     path('production-records/add/', views.production_record_create, name='production_record_create'),
+    path('production-records/<int:record_id>/apply-birds/', views.production_apply_birds, name='production_apply_birds'),
     path('production-records/<int:record_id>/edit/', views.production_record_update, name='production_record_update'),
     path('production-records/<int:record_id>/delete/', views.production_record_delete, name='production_record_delete'),
     path('mortality-records/', views.mortality_records_view, name='mortality_records'),

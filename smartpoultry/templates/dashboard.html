@@ -82,14 +82,17 @@
         <small>{{ selected_period_label }}</small>
     </div>
     <div class="metric-card">
-        <span>Total Birds</span>
+        <span>Total Chicken</span>
         <strong>{{ metrics.total_birds }}</strong>
         <small>{{ metrics.active_flocks }} active flocks</small>
     </div>
-    <div class="metric-card">
+    <div class="metric-card" id="dashboardProduction">
         <span>Production</span>
-        <strong>{{ metrics.production_total|floatformat:0 }}</strong>
-        <small>eggs in {{ selected_period_label }}</small>
+        <div class="d-flex flex-wrap gap-3">
+            <div class="flex-fill"><strong>{{ metrics.production_total|floatformat:0 }}</strong><small>Eggs</small></div>
+            <div class="flex-fill border-start ps-3">{% for meat in metrics.meat_production %}<strong>{{ meat.total|floatformat:"-2" }}{% if meat.unit != 'units' and meat.unit != 'unit' %} {{ meat.unit }}{% endif %}</strong>{% empty %}<strong>0</strong>{% endfor %}<small>Meat</small></div>
+        </div>
+        <small class="d-block mt-1">{{ selected_period_label }}</small>
     </div>
 </section>
 
@@ -146,7 +149,7 @@
         <div class="prediction-row">
             <div>
                 <span>Feed Stock</span>
-                <strong>{{ metrics.feed_stock|floatformat:2 }}</strong>
+                <strong>{% for feed in metrics.feed_stock_by_unit %}{{ feed.quantity|floatformat:"-3" }} {{ feed.unit }}{% if not forloop.last %}; {% endif %}{% empty %}0{% endfor %}</strong>
             </div>
             <small>{% if selected_branch %}Farm-wide current inventory{% else %}Current inventory{% endif %}</small>
         </div>

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="h3">Apply recorded broilers to the live flock</h1>
+<section class="panel-card"><p>Flock <strong>{{ record.flock.flock_id }}</strong> — {{ record.branch.name|default:'Unassigned' }}</p><p>Current live chicken: <strong>{{ record.flock.quantity }}</strong>. Recorded production: <strong>{{ record.quantity|floatformat:2 }} {% if record.unit == 'birds' or record.unit == 'bird' %}chicken{% else %}{{ record.unit }}{% endif %}</strong>.</p><p>This older entry was recorded before automatic chicken deductions. Apply it only if its chicken are still included in the current live quantity. This preserves the production and sales records and does not add another expense or sale.</p>
+{% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+{% if record.can_apply_bird_transfer %}<form method="post">{% csrf_token %}<div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="confirmBirdTransfer" name="confirmed" value="yes" required><label class="form-check-label" for="confirmBirdTransfer">These recorded chicken are still included in the live flock count.</label></div><button class="btn btn-primary" type="submit">Apply recorded chicken count</button></form>{% else %}<p>This entry has already been applied or its unit/count needs review. Its live quantity has not been changed.</p>{% endif %}
+<a class="btn btn-outline-secondary mt-3" href="{% url 'production_records' %}">Back to production</a></section>
+{% endblock %}

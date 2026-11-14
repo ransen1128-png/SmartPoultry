@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1 class="mb-4">Inventory Management</h1>
+<div id="inventoryStockWarning" class="alert alert-warning d-none" role="alert"><strong>Minimum stock warning</strong><p class="mb-1 stock-warning-message"></p><a href="{% url 'notifications_page' %}">View notifications</a></div>
 
 <div class="d-flex align-items-center justify-content-between mb-4">
     <button class="btn btn-outline-primary" type="button" id="allDistributionHistoryBtn">
@@ -64,20 +65,22 @@
                         <input type="date" class="form-control" name="date_added" value="{{ today|date:'Y-m-d' }}" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Quantity</label>
-                        <input type="number" class="form-control" name="quantity" step="1" required>
+                        <label class="form-label">Quantity (number of stock units)</label>
+                        <input type="number" class="form-control" name="quantity" min="0" step="0.01" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Unit</label>
-                        <input type="text" class="form-control" name="unit" placeholder="kg, liters, etc." required>
+                        <label class="form-label">Stock unit / package type</label>
+                        <input type="text" class="form-control" name="unit" placeholder="sacks, bottles, pcs — or kg for bulk stock" required>
                     </div>
+                    <div class="row"><div class="col-6 mb-3"><label class="form-label" for="newPackageSize">Size per package (optional)</label><input class="form-control" id="newPackageSize" name="package_size" type="number" min="0.001" step="0.001" placeholder="25"></div><div class="col-6 mb-3"><label class="form-label" for="newContentUnit">Content unit</label><input class="form-control" id="newContentUnit" name="content_unit" placeholder="kg, ml, g, L" maxlength="50"></div></div>
+                    <p class="text-muted">Examples: quantity 5, stock unit sacks, size 25, content unit kg → 125 kg. For vitamins, use bottles and ml. Leave package size and content unit empty for bulk stock.</p>
                     <div class="mb-3">
                         <label class="form-label" for="newMinimumStock">Minimum stock alert (optional)</label>
                         <input type="number" id="newMinimumStock" name="minimum_stock" class="form-control" min="0" step="0.01">
                         <small class="text-muted">Leave blank to disable alerts.</small>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Cost per Unit</label>
+                        <label class="form-label">Cost per stock unit (per sack/bottle)</label>
                         <input type="number" class="form-control" name="cost_per_unit" step="0.01" required>
                         <small class="text-muted">Feed purchase cost is included in Dashboard Feed Cost for the purchase month under All branches.</small>
                     </div>
@@ -102,7 +105,14 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
+                            <section id="depletedInventorySection" hidden>
+                                <h6>Depleted inventory</h6>
+                                <p class="text-muted">Items with no remaining stock are kept here with their purchase and distribution records.</p>
+                                <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Item</th><th>Type</th><th>Purchased</th><th>Last updated</th><th>Remaining</th><th>Cost/Unit</th><th>Actions</th></tr></thead><tbody id="depletedInventoryBody"></tbody></table></div>
+                                <hr>
+                            </section>
                             <div id="distributionEntrySection">
+                            <div id="distributionStockWarning" class="alert alert-warning d-none" role="alert"></div>
                             <form id="distributionForm" class="row g-3">
                                 <p class="text-muted mb-0">The cost will be assigned to this branch in Expenses, using the original purchase price. This does not add a second purchase expense.</p>
                                 <div class="col-md-4">
@@ -122,7 +132,6 @@
                                     <label class="form-label" for="distributionDate">Date distributed</label>
                                     <input class="form-control" id="distributionDate" name="date" type="date" value="{{ today|date:'Y-m-d' }}" required>
                                 </div>
-                                <div class="col-12"><label class="form-label" for="distributionFlock">Receiving flock (optional)</label><select id="distributionFlock" name="flock" class="form-select"><option value="">Branch stock — no flock assigned</option></select></div>
                             </form>
                             <hr>
                             </div>
@@ -160,14 +169,16 @@
         return number.toString();
     }
 
-    function formatQuantity(value, unit) {
-        const quantity = Number(value);
+    function formatQuantity(value, unit, packageSize = null, contentUnit = '') {
         const normalizedUnit = String(unit || '').trim();
-        const pieceLabel = quantity === 1 ? 'pc' : 'pcs';
-        return `${formatWholeQuantity(value)} ${pieceLabel} ${normalizedUnit}`.trim();
+        const stock = `${formatWholeQuantity(value)} ${normalizedUnit}`.trim();
+        if(packageSize == null || !contentUnit)return stock;
+        const total=Number((Number(value)*Number(packageSize)).toFixed(5));
+        return `${stock} × ${formatWholeQuantity(packageSize)} ${contentUnit} (${formatWholeQuantity(total)} ${contentUnit} total)`;
     }
 
     function openDistribution(inventoryId) {
+        document.getElementById('distributionStockWarning').classList.add('d-none');
         showDistributionModal(inventoryId, true);
     }
 
@@ -179,12 +190,13 @@
         selectedInventoryId = item ? Number(inventoryId) : null;
         document.getElementById('distributionModalTitle').textContent = allowDistribution
             ? `Distribute: ${item.name}`
-            : 'Inventory distribution history';
+            : 'Inventory History';
         document.getElementById('distributionAvailable').hidden = !item;
         if (item) {
             updateDistributionAvailable(item);
         }
         document.getElementById('distributionEntrySection').hidden = !allowDistribution;
+        document.getElementById('depletedInventorySection').hidden = allowDistribution;
         document.getElementById('saveDistributionBtn').hidden = !allowDistribution;
         document.getElementById('distributionForm').reset();
         document.getElementById('distributionDate').value = '{{ today|date:"Y-m-d" }}';
@@ -194,7 +206,9 @@
 
     function updateDistributionAvailable(item) {
         document.getElementById('distributionAvailable').textContent =
-            `Available: ${formatQuantity(item.quantity, item.unit)}`;
+            `Available: ${formatQuantity(item.quantity, item.unit,item.package_size,item.content_unit)}`;
+        document.querySelector('label[for="distributionQuantity"]').textContent='Quantity to distribute ('+item.unit+')';
+        document.getElementById('distributionQuantity').max=item.quantity;
     }
 
     document.getElementById('allDistributionHistoryBtn').addEventListener('click', () => {
@@ -221,7 +235,6 @@
                 inventory: selectedInventoryId,
                 branch: Number(formData.get('branch')),
                 quantity: Number(formData.get('quantity')),
-                flock:formData.get('flock') ? Number(formData.get('flock')) : null,
                 date: formData.get('date')
             })
         });
@@ -234,10 +247,20 @@
             return;
         }
 
+        const warning=document.getElementById('inventoryStockWarning');
+        warning.classList.toggle('d-none',!data.stock_warning);
+        warning.querySelector('.stock-warning-message').textContent=data.stock_warning || '';
+        const modalWarning=document.getElementById('distributionStockWarning');
+        modalWarning.classList.toggle('d-none',!data.stock_warning);
+        modalWarning.textContent=data.stock_warning || '';
         await loadInventory();
         const item = inventoryItems.get(selectedInventoryId);
         if (item) {
             updateDistributionAvailable(item);
+            if(Number(item.quantity)<=0) {
+                showDistributionModal(selectedInventoryId,false);
+                return;
+            }
         }
         document.getElementById('distributionQuantity').value = '';
         loadDistributionHistory(selectedInventoryId);
@@ -267,6 +290,8 @@
                 unit: formData.get('unit'),
                 cost_per_unit: parseFloat(formData.get('cost_per_unit')),
                 minimum_stock:formData.get('minimum_stock')===''?null:formData.get('minimum_stock')
+                ,package_size:formData.get('package_size') || null,
+                content_unit:formData.get('content_unit') || ''
             })
         });
         const data=await response.json();
@@ -316,7 +341,8 @@
     document.addEventListener('DOMContentLoaded', () => loadInventory());
 </script>
 {% load static %}
-<script src="{% static 'js/inventory_management.js' %}?v=1"></script>
+<script src="{% static 'js/inventory_management.js' %}?v=4"></script>
+<div class="modal fade" id="packagingModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Inventory packaging</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><form id="packagingForm"><p id="packagingItemName"></p><input id="packagingItemId" type="hidden"><div class="mb-3"><label for="packagingStockUnit" class="form-label">Stock unit / package type</label><input id="packagingStockUnit" class="form-control" required maxlength="50" placeholder="sacks, bottles, pcs"></div><div class="mb-3"><label for="packagingSize" class="form-label">Size per package</label><input id="packagingSize" class="form-control" type="number" min="0.001" step="0.001" placeholder="25"></div><div class="mb-3"><label for="packagingContentUnit" class="form-label">Content unit</label><input id="packagingContentUnit" class="form-control" maxlength="50" placeholder="kg, ml, g, L"></div><p class="text-muted">Quantity counts the selected stock units, not the total kg/ml. Correcting these labels does not convert stored quantities or change purchase costs. Earlier distribution labels are preserved. Leave size and content unit blank for bulk stock.</p><p id="packagingError" class="text-danger" role="alert"></p></form></div><div class="modal-footer"><button id="savePackagingBtn" class="btn btn-primary" type="button" onclick="savePackaging()">Save packaging</button></div></div></div></div>
 <div class="modal fade" id="minimumStockModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Minimum stock alert</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><form id="minimumStockForm"><p id="minimumItemName"></p><input type="hidden" id="minimumItemId"><label for="minimumValue" class="form-label">Minimum quantity</label><input type="number" min="0" step="0.01" id="minimumValue" class="form-control"><small>Leave blank to disable alerts.</small></form></div><div class="modal-footer"><button class="btn btn-primary" id="saveMinimumBtn" onclick="saveMinimum()">Save minimum</button></div></div></div></div>
 <div class="modal fade" id="reverseDistributionModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Reverse distribution</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><p id="reverseDistributionLabel"></p><p>This restores inventory and returns the assigned expense to the purchase balance. The original record stays in history.</p><form id="reverseDistributionForm"><input type="hidden" id="reverseDistributionId"><label for="reverseReason" class="form-label">Reason</label><textarea id="reverseReason" class="form-control" maxlength="500" required></textarea></form></div><div class="modal-footer"><button class="btn btn-danger" id="confirmReverseBtn" onclick="confirmReversal()">Reverse distribution</button></div></div></div></div>
 {% endblock %}
