@@ -1,4 +1,5 @@
 import calendar
+import logging
 import math
 import os
 from datetime import date, timedelta
@@ -25,6 +26,7 @@ from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 
 User = get_user_model()
 DEPLOY_MARKER = 'smartpoultry-health-2026-07-04-01'
+logger=logging.getLogger(__name__)
 
 
 def health_check(request):
@@ -1029,10 +1031,15 @@ def rooster_age_estimator_view(request):
     quick_mode = request.method == 'POST' and request.POST.get('analysis_mode') == 'age_only'
 
     if request.method == 'POST':
-        from core.rooster_age_classifier import model_is_ready, predict_rooster_age
+        predict_rooster_age=None
+        try:
+            from core.rooster_age_classifier import model_is_ready, predict_rooster_age
+            age_model_ready=model_is_ready(selected_age_model)
+        except (ImportError,OSError,RuntimeError):
+            logger.exception('Age-estimation runtime could not be loaded')
+            messages.error(request,'Age estimation is temporarily unavailable on this server. No age prediction will be generated until the model is available.')
         from core.chicken_detection import detect_chicken, load_detector
         from core.poultry_vision import analyze_poultry, assess_chicken_evidence, constrain_legs_to_body, summarize_anatomy, vision_is_ready
-        age_model_ready = model_is_ready(selected_age_model)
         if not quick_mode:
             chicken_detector_ready = load_detector() is not None
             anatomy_ready = vision_is_ready()

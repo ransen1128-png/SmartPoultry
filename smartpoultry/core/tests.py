@@ -593,6 +593,22 @@ class TransactionRecordTests(TestCase):
 
 
 class RoosterAgeEstimatorTests(TestCase):
+    def test_missing_age_runtime_does_not_crash_upload(self):
+        import builtins
+        original_import=builtins.__import__
+        def missing_runtime(name,*args,**kwargs):
+            if name=='core.rooster_age_classifier':raise ModuleNotFoundError("No module named 'torch'")
+            return original_import(name,*args,**kwargs)
+        photo=BytesIO();Image.new('RGB',(256,256),'brown').save(photo,format='JPEG')
+        for mode in ('age_only','full'):
+            with self.subTest(mode=mode),patch('builtins.__import__',side_effect=missing_runtime):
+                response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':mode,'photos':[SimpleUploadedFile('photo.jpg',photo.getvalue(),content_type='image/jpeg')]})
+            self.assertEqual(response.status_code,200)
+            record=RoosterAgeEstimate.objects.filter(user=self.user).latest('pk')
+            self.assertIsNone(record.analysis['age_prediction'])
+            self.assertEqual(record.analysis['age_prediction_status'],'not_produced')
+            self.assertContains(response,'Age estimation is temporarily unavailable on this server.')
+
     def setUp(self):
         self.detector_patch = patch('core.chicken_detection.load_detector', return_value=None)
         self.detector_patch.start()
