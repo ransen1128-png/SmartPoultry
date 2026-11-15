@@ -101,6 +101,9 @@ coverage.xml
 .ipynb_checkpoints
 *.ipynb
 
+# Superseded compressed export is retained locally; deployment uses FP32 stages.
+ml_models/free_runtime/chicken.int8.onnx
+
 # Mac
 .AppleDouble
 .LSOverride

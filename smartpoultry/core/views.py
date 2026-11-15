@@ -26,7 +26,7 @@ from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 from .age_inference import bound_estimator_requests
 
 User = get_user_model()
-DEPLOY_MARKER = 'smartpoultry-onnx-free-2026-11-15'
+DEPLOY_MARKER = 'smartpoultry-fp32-stages-2026-11-16'
 logger=logging.getLogger(__name__)
 
 

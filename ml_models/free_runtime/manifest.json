@@ -1,9 +1,9 @@
 {
-  "version": 1,
+  "version": 2,
   "runtime": "onnxruntime-1.23.2",
   "age_precision": "float32",
   "anatomy_precision": "float32",
-  "chicken_precision": "dynamic-int8-linear-weights",
+  "chicken_precision": "float32-staged",
   "files": [
     {
       "filename": "age.onnx",
@@ -16,14 +16,34 @@
       "sha256": "df2ef5670609fb7be6b5dc994579994d8ee883f4054daee83594aafac390f791"
     },
     {
-      "filename": "chicken.int8.onnx",
-      "bytes": 98986095,
-      "sha256": "e1aeee1c2bdd2560903b4bf2d36b5135a577400563fa779848203c6c252e798d"
+      "filename": "chicken.fp32.stage0.onnx",
+      "bytes": 96331170,
+      "sha256": "6359f4ee149e6329cd4265283c14e624b78fc511b2ece9da02b802fb27d48335"
+    },
+    {
+      "filename": "chicken.fp32.stage1.onnx",
+      "bytes": 85101543,
+      "sha256": "e1d1bf7bebee081d155961e7f58e7c255cf54efa4827274c5712d978eebd6b0f"
+    },
+    {
+      "filename": "chicken.fp32.stage2.onnx",
+      "bytes": 85101543,
+      "sha256": "d89805f89c949fffed0957dc286900d028fe9e9802bad8f25c3df94e371605a2"
+    },
+    {
+      "filename": "chicken.fp32.stage3.onnx",
+      "bytes": 85101968,
+      "sha256": "81640fda357c042083f1b034b4a7d71224f8d43ba4011bc2402e8708da23a94e"
+    },
+    {
+      "filename": "chicken.fp32.stage4.onnx",
+      "bytes": 6359566,
+      "sha256": "b2fa8c75999ec90044db940d279c710dd9a4b7c5b61702736059a16d251d7112"
     },
     {
       "filename": "chicken.json",
-      "bytes": 875,
-      "sha256": "b6486905400bb2c7003724863fd5ace6017b048002adc3d0ba769d8abae4057d"
+      "bytes": 1037,
+      "sha256": "994f8cceab00f3a9c33cd8af2bf17b8f518a7fda7d851de80c373f2e9d29ee93"
     },
     {
       "filename": "detect.onnx",

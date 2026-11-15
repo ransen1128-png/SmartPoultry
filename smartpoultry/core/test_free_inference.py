@@ -56,7 +56,7 @@ class FreeHostedEstimatorTests(TestCase):
         self.assertEqual(row.analysis['age_prediction']['age_months'],2.5)
         self.assertEqual(row.analysis['age_prediction']['runtime'],'onnx-fp32')
         self.assertEqual(row.analysis['anatomy']['status'],'completed')
-        self.assertEqual(row.analysis['chicken_detection']['runtime'],'onnx-int8')
+        self.assertEqual(row.analysis['chicken_detection']['runtime'],'onnx-fp32-staged')
         self.assertTrue(row.analysis['anatomy']['legs'])
         self.assertEqual(self.client.get(reverse('rooster_age_estimator'),{'estimate':row.pk}).status_code,200)
 
@@ -68,6 +68,20 @@ class FreeHostedEstimatorTests(TestCase):
         row=RoosterAgeEstimate.objects.get(user=self.user)
         self.assertEqual(row.analysis['age_prediction']['age_months'],2.5)
         self.assertEqual(row.analysis['anatomy']['status'],'not_run')
+
+    def test_full_chicken_preserves_desktop_body_detection(self):
+        content=(Path(__file__).parent/'testdata/full_chicken.jpg').read_bytes()
+        response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'full','photos':[SimpleUploadedFile('arbitrary-name.jpg',content,content_type='image/jpeg')]})
+        self.assertEqual(response.status_code,200)
+        row=RoosterAgeEstimate.objects.get(user=self.user)
+        body=row.analysis['chicken_detection']
+        self.assertEqual(body['status'],'detected')
+        self.assertEqual(body['runtime'],'onnx-fp32-staged')
+        self.assertEqual(body['boxes'][0]['xyxy'],[64.5,46.9,216.3,246.7])
+        self.assertAlmostEqual(body['boxes'][0]['score'],.9174,places=4)
+        self.assertEqual(row.analysis['age_prediction']['age_months'],13.1)
+        self.assertEqual(len(row.analysis['anatomy']['legs']),1)
+        self.assertEqual(row.analysis['anatomy']['spurs'],[])
 
     def test_second_estimation_request_is_rejected_without_writing(self):
         from core.age_inference import _REQUEST_SLOT

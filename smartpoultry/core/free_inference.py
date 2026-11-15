@@ -1,7 +1,7 @@
 """CPU ONNX inference without importing PyTorch, Transformers or Ultralytics.
 
-Uses exported versions of the existing checkpoints. OWL-ViT linear weights are
-INT8; age and anatomy remain FP32. Original checkpoints are never modified.
+Uses FP32 exports of the existing checkpoints. OWL-ViT runs in sequential stages
+to bound resident weights without quantization. Original checkpoints are never modified.
 YOLO geometry follows Ultralytics 8.3.221 (AGPL-3.0) postprocessing conventions.
 """
 import gc,hashlib,importlib.util,json,logging,math,os,threading
@@ -15,6 +15,11 @@ MODELS=ROOT/'ml_models/free_runtime'
 LOCK=threading.RLock()
 logger=logging.getLogger(__name__)
 MAX_IMAGE_PIXELS=16_000_000
+CHICKEN_STAGES=tuple(f'chicken.fp32.stage{i}.onnx' for i in range(5))
+
+
+def model_assets(task):
+    return CHICKEN_STAGES if task=='chicken' else (task+'.onnx',)
 
 
 def check_image_size(image):
@@ -31,7 +36,7 @@ def enabled():
 def manifest():return json.loads((MODELS/'manifest.json').read_text(encoding='utf-8'))
 
 
-@lru_cache(maxsize=8)
+@lru_cache(maxsize=32)
 def verified_file(name):
     entry=next(entry for entry in manifest()['files'] if entry['filename']==name)
     path=(MODELS/name).resolve()
@@ -48,14 +53,12 @@ def metadata(name):return json.loads(verified_file(name+'.json').read_text(encod
 
 
 def model_files_present(task):
-    file={'age':'age.onnx','chicken':'chicken.int8.onnx','detect':'detect.onnx','segment':'segment.onnx'}[task]
-    return (MODELS/file).is_file() and (task not in ('age','chicken') or (MODELS/(task+'.json')).is_file())
+    return all((MODELS/file).is_file() for file in model_assets(task)) and (task not in ('age','chicken') or (MODELS/(task+'.json')).is_file())
 
 
 def ready(task):
-    file={'age':'age.onnx','chicken':'chicken.int8.onnx','detect':'detect.onnx','segment':'segment.onnx'}[task]
     try:
-        verified_file(file)
+        for file in model_assets(task):verified_file(file)
         if task in ('age','chicken'):verified_file(task+'.json')
         return importlib.util.find_spec('onnxruntime') is not None
     except (OSError,ValueError,KeyError,StopIteration):return False
@@ -65,21 +68,23 @@ def run(task,pixels):
     # One live session at a time prevents model weights/activation arenas from
     # accumulating across requests on the 512 MiB hosted worker.
     import onnxruntime as ort
-    file={'age':'age.onnx','chicken':'chicken.int8.onnx','detect':'detect.onnx','segment':'segment.onnx'}[task]
     with LOCK:
-        options=ort.SessionOptions();options.intra_op_num_threads=1;options.inter_op_num_threads=1
-        options.enable_cpu_mem_arena=False;options.enable_mem_pattern=False
-        options.graph_optimization_level=ort.GraphOptimizationLevel.ORT_ENABLE_EXTENDED
-        session=ort.InferenceSession(str(verified_file(file)),sess_options=options,providers=['CPUExecutionProvider'])
-        try:return session.run(None,{session.get_inputs()[0].name:np.ascontiguousarray(pixels,dtype=np.float32)})
-        finally:
-            del session
-            gc.collect()
-            if os.name=='posix':
-                try:
-                    import ctypes
-                    ctypes.CDLL(None).malloc_trim(0)
-                except (AttributeError,OSError):pass
+        for file in model_assets(task):
+            options=ort.SessionOptions();options.intra_op_num_threads=1;options.inter_op_num_threads=1
+            options.enable_cpu_mem_arena=False;options.enable_mem_pattern=False
+            options.graph_optimization_level=ort.GraphOptimizationLevel.ORT_ENABLE_EXTENDED
+            session=ort.InferenceSession(str(verified_file(file)),sess_options=options,providers=['CPUExecutionProvider'])
+            try:outputs=session.run(None,{session.get_inputs()[0].name:np.ascontiguousarray(pixels,dtype=np.float32)})
+            finally:
+                del session
+                gc.collect()
+                if os.name=='posix':
+                    try:
+                        import ctypes
+                        ctypes.CDLL(None).malloc_trim(0)
+                    except (AttributeError,OSError):pass
+            pixels=outputs[0]
+        return outputs
 
 
 def age_ready(variant='finetuned'):
@@ -146,7 +151,7 @@ def detect_chicken(source):
         found=[{'xyxy':[round(float(v),1) for v in boxes[i]],'score':round(float(scores[i]),4),'query':meta['queries'][int(labels[i])]} for i in selected]
         status='detected' if any(box['score']>=.35 for box in found) else 'candidate' if found else 'not_detected'
         result.update(status=status,boxes=found,image_width=width,image_height=height,queries=meta['queries'],candidate_threshold=.25,detection_threshold=.35,
-                      runtime='onnx-int8',message='; '.join(f"Box {b['xyxy']} pixels; detector score {b['score']:.3f}; query: {b['query']}" for b in found) if found else 'No chicken body candidate above the 0.25 threshold. This does not prove absence.')
+                      runtime='onnx-fp32-staged',message='; '.join(f"Box {b['xyxy']} pixels; detector score {b['score']:.3f}; query: {b['query']}" for b in found) if found else 'No chicken body candidate above the 0.25 threshold. This does not prove absence.')
     except Exception:logger.exception('ONNX chicken detection failed');result.update(status='error',message='Chicken detection failed for this image.')
     finally:source.seek(0)
     return result

@@ -34,6 +34,13 @@
       0.27577711
     ]
   },
-  "quantization": "dynamic-int8-linear-weights",
-  "source_sha256": "40b0fbb7b18a468417dd1786d035d993a8414706bb4b16098cfc1edbdba6031e"
+  "source_sha256": "40b0fbb7b18a468417dd1786d035d993a8414706bb4b16098cfc1edbdba6031e",
+  "precision": "float32",
+  "stages": [
+    "chicken.fp32.stage0.onnx",
+    "chicken.fp32.stage1.onnx",
+    "chicken.fp32.stage2.onnx",
+    "chicken.fp32.stage3.onnx",
+    "chicken.fp32.stage4.onnx"
+  ]
 }
