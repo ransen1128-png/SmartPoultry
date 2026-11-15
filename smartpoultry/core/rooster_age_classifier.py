@@ -4,6 +4,7 @@
 from functools import lru_cache
 import hashlib
 import math
+import threading
 from pathlib import Path
 
 import torch
@@ -20,6 +21,15 @@ MODEL_PATH = (
 )
 
 DEVICE = torch.device("cpu")
+_INFERENCE_LOCK=threading.RLock()
+
+
+def _checkpoint_sha256(path):
+    digest=hashlib.sha256()
+    with path.open('rb') as source:
+        for block in iter(lambda:source.read(1024*1024),b''):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 @lru_cache(maxsize=2)
@@ -31,7 +41,7 @@ def _load_ready_model(model_variant='original'):
         if candidate is None:
             return None
         path = candidate['resolved_path']
-        if hashlib.sha256(path.read_bytes()).hexdigest() != candidate['sha256']:
+        if _checkpoint_sha256(path) != candidate['sha256']:
             return None
     elif model_variant != 'original':
         return None
@@ -45,6 +55,7 @@ def _load_ready_model(model_variant='original'):
             path,
             map_location=DEVICE,
             weights_only=True,
+            mmap=True,
         )
 
         if checkpoint.get("architecture") != "resnet18":
@@ -54,10 +65,13 @@ def _load_ready_model(model_variant='original'):
         age_min = float(checkpoint["age_min"])
         age_max = float(checkpoint["age_max"])
 
-        model = models.resnet18(weights=None)
-        model.fc = nn.Linear(model.fc.in_features, 1)
+        # Reuse mapped checkpoint tensors instead of allocating a second random
+        # network and copying all weights during the first hosted request.
+        with torch.device('meta'):
+            model = models.resnet18(weights=None)
+            model.fc = nn.Linear(model.fc.in_features, 1)
 
-        model.load_state_dict(checkpoint["model_state_dict"])
+        model.load_state_dict(checkpoint["model_state_dict"],assign=True)
         model.to(DEVICE)
         model.eval()
 
@@ -78,7 +92,7 @@ def _load_ready_model(model_variant='original'):
             "test_mae": float(
                 checkpoint.get("test_mae_months", 0)
             ),
-            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "sha256": _checkpoint_sha256(path),
             "model_variant": model_variant,
             "comparison_metrics": candidate.get('metrics') if candidate else None,
             "evaluation_status": checkpoint.get(
@@ -92,15 +106,22 @@ def _load_ready_model(model_variant='original'):
 
 
 def model_is_ready(model_variant='original'):
-    return _load_ready_model(model_variant) is not None
+    with _INFERENCE_LOCK:
+        return _load_ready_model(model_variant) is not None
 
 
 def model_test_mae():
-    artifact = _load_ready_model()
+    with _INFERENCE_LOCK:
+        artifact = _load_ready_model()
     return artifact['test_mae'] if artifact else None
 
 
 def predict_rooster_age(image_source, model_variant='original'):
+    with _INFERENCE_LOCK:
+        return _predict_rooster_age(image_source,model_variant)
+
+
+def _predict_rooster_age(image_source, model_variant='original'):
     artifact = _load_ready_model(model_variant)
 
     if artifact is None:
@@ -111,7 +132,7 @@ def predict_rooster_age(image_source, model_variant='original'):
             image = image.convert("RGB")
             image_tensor = artifact["transform"](image).unsqueeze(0)
 
-        with torch.no_grad():
+        with torch.inference_mode():
             prediction = artifact["model"](
                 image_tensor.to(DEVICE)
             ).item()

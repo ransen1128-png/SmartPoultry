@@ -25,7 +25,7 @@ from .forms import MortalityRecordForm, ProductionRecordForm
 from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 
 User = get_user_model()
-DEPLOY_MARKER = 'smartpoultry-health-2026-07-04-01'
+DEPLOY_MARKER = 'smartpoultry-age-worker-2026-11-15'
 logger=logging.getLogger(__name__)
 
 
@@ -40,6 +40,7 @@ def health_check(request):
     return JsonResponse({
         'ok': True,
         'marker': DEPLOY_MARKER,
+        'worker_profile':os.getenv('SMARTPOULTRY_WORKER_PROFILE','unconfigured'),
         'render': bool(os.getenv('RENDER') or os.getenv('RENDER_EXTERNAL_HOSTNAME')),
         'render_hostname': os.getenv('RENDER_EXTERNAL_HOSTNAME', ''),
         'debug': settings.DEBUG,
