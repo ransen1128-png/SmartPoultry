@@ -3,7 +3,8 @@ services:
     name: smartpoultry
     env: python
     healthCheckPath: /__health/
-    buildCommand: bash tools/render-build.sh
+    # Free-plan default: age estimation. Full-vision build is opt-in on a larger instance.
+    buildCommand: pip install -r requirements.txt && python smartpoultry/manage.py collectstatic --noinput
     startCommand: cd smartpoultry && python manage.py migrate && gunicorn --config gunicorn.conf.py core.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION

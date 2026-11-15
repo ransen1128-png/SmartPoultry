@@ -3,6 +3,19 @@
 The deployed age model, body detector, leg/spur detector and spur segmenter are
 separate artifacts. Publishing Django code alone did not publish the detectors.
 
+## Selected free-plan configuration
+
+The user selected the free plan. The live service reports a 512 MiB cgroup limit.
+The default `render.yaml` build therefore remains:
+`pip install -r requirements.txt && python smartpoultry/manage.py collectstatic --noinput`.
+Age estimation stays enabled. Full detection stays unavailable under the capacity
+guard; billing and instance type are not changed. A desktop test of age plus the
+smaller anatomy models, without OWL-ViT, still peaked around 439 MiB and does not
+establish safe headroom on the 512 MiB hosted instance.
+
+The full model bundle remains available for a separately resourced deployment;
+its configuration below is optional and is not the selected free-plan default.
+
 ## Render settings
 
 - Build command: `bash tools/render-build.sh`
