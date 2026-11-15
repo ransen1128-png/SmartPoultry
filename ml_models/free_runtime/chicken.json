@@ -1,0 +1,39 @@
+{
+  "queries": [
+    "a photo of a chicken",
+    "a young chicken",
+    "a hen",
+    "a rooster"
+  ],
+  "image_processor": {
+    "_processor_class": "OwlViTProcessor",
+    "do_convert_rgb": true,
+    "image_processor_type": "OwlViTImageProcessor",
+    "do_resize": true,
+    "size": {
+      "height": 768,
+      "width": 768
+    },
+    "resample": 3,
+    "do_center_crop": false,
+    "crop_size": {
+      "height": 768,
+      "width": 768
+    },
+    "do_rescale": true,
+    "rescale_factor": 0.00392156862745098,
+    "do_normalize": true,
+    "image_mean": [
+      0.48145466,
+      0.4578275,
+      0.40821073
+    ],
+    "image_std": [
+      0.26862954,
+      0.26130258,
+      0.27577711
+    ]
+  },
+  "quantization": "dynamic-int8-linear-weights",
+  "source_sha256": "40b0fbb7b18a468417dd1786d035d993a8414706bb4b16098cfc1edbdba6031e"
+}

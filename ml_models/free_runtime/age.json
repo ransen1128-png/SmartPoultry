@@ -1,0 +1,23 @@
+{
+  "age_min": 1.0,
+  "age_max": 24.0,
+  "test_mae": 2.0246996879577637,
+  "sha256": "91ec42527a3d958e75cb105bc31deffa2f96b5ce82aa3e7fd2c8b3d7015bb61c",
+  "model_variant": "finetuned",
+  "comparison_metrics": {
+    "validation_mae_months": 1.2492742538452148,
+    "test_mae_months": 2.0246996879577637
+  },
+  "evaluation_status": "Source-family fine-tuning diagnostic; original pretraining overlap and bird identity unresolved.",
+  "image_size": 224,
+  "mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "std": [
+    0.229,
+    0.224,
+    0.225
+  ]
+}

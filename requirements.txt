@@ -8,13 +8,15 @@ gunicorn==21.2.0
 whitenoise==6.7.0
 
 # Machine Learning
-# CPU inference runtime for the deployed ResNet-18 age model.
+# Desktop PyTorch runtime; Render/Linux uses the lighter ONNX runtime below.
 # Matched versions: https://pytorch.org/get-started/previous-versions/
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.14.1+cpu; sys_platform != "darwin"
-torchvision==0.29.1+cpu; sys_platform != "darwin"
+torch==2.14.1+cpu; sys_platform == "win32"
+torchvision==0.29.1+cpu; sys_platform == "win32"
 torch==2.14.1; sys_platform == "darwin"
 torchvision==0.29.1; sys_platform == "darwin"
+onnxruntime==1.23.2
+opencv-python-headless==4.11.0.86; sys_platform == "linux"
 pandas==2.0.3
 numpy==1.24.3
 scikit-learn==1.3.0

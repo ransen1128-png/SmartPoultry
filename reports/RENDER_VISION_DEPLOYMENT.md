@@ -1,9 +1,13 @@
 # Full estimator deployment
 
+The active free-plan implementation is now the lighter ONNX backend described
+in [ONNX_FREE_PLAN.md](ONNX_FREE_PLAN.md). The PyTorch capacity notes below refer
+to the original full-precision deployment and remain as historical context.
+
 The deployed age model, body detector, leg/spur detector and spur segmenter are
 separate artifacts. Publishing Django code alone did not publish the detectors.
 
-## Selected free-plan configuration
+## Historical PyTorch free-plan configuration
 
 The user selected the free plan. The live service reports a 512 MiB cgroup limit.
 The default `render.yaml` build therefore remains:

@@ -2,3 +2,4 @@
 # These files are SHA-256 pinned: preserve bytes across Windows/Linux checkouts.
 ml_models/chicken_owlvit/** -text whitespace=cr-at-eol
 ml_models/poultry_vision/** -text whitespace=cr-at-eol
+ml_models/free_runtime/** -text whitespace=cr-at-eol

@@ -1,5 +1,7 @@
 # Hosted full analysis: same model-library versions as the desktop installation.
 -r requirements.txt
+torch==2.14.1+cpu; sys_platform == "linux"
+torchvision==0.29.1+cpu; sys_platform == "linux"
 transformers==4.57.6
 tokenizers==0.22.2
 safetensors==0.8.0

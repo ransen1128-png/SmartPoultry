@@ -16,6 +16,8 @@ BODY_QUERIES = ['a photo of a chicken', 'a young chicken', 'a hen', 'a rooster']
 
 @lru_cache(maxsize=1)
 def load_detector():
+    from core import free_inference
+    if free_inference.enabled():return {'runtime':'onnx'} if free_inference.ready('chicken') else None
     from core.vision_deployment import memory_warning
     if memory_warning():return None
     path = Path(os.environ.get('CHICKEN_DETECTOR_PATH', DEFAULT_MODEL))
@@ -35,6 +37,8 @@ def load_detector():
 
 
 def detect_chicken(source):
+    from core import free_inference
+    if free_inference.enabled():return free_inference.detect_chicken(source)
     result = {'status': 'unavailable', 'boxes': [], 'message':
               'Not located; no chicken detector is configured.'}
     from core.vision_deployment import memory_warning

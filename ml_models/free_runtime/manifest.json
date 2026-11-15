@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "runtime": "onnxruntime-1.23.2",
+  "age_precision": "float32",
+  "anatomy_precision": "float32",
+  "chicken_precision": "dynamic-int8-linear-weights",
+  "files": [
+    {
+      "filename": "age.onnx",
+      "bytes": 44698592,
+      "sha256": "d1cb8660aba5e8bc2b95058568aff17810b408ae58842893cd16c1c9bbb4383e"
+    },
+    {
+      "filename": "age.json",
+      "bytes": 570,
+      "sha256": "df2ef5670609fb7be6b5dc994579994d8ee883f4054daee83594aafac390f791"
+    },
+    {
+      "filename": "chicken.int8.onnx",
+      "bytes": 98986095,
+      "sha256": "e1aeee1c2bdd2560903b4bf2d36b5135a577400563fa779848203c6c252e798d"
+    },
+    {
+      "filename": "chicken.json",
+      "bytes": 875,
+      "sha256": "b6486905400bb2c7003724863fd5ace6017b048002adc3d0ba769d8abae4057d"
+    },
+    {
+      "filename": "detect.onnx",
+      "bytes": 10423030,
+      "sha256": "540dcb83d7ad13576de6603f7f09cdf1defe78c81efb49a7e673ac2d172c164b"
+    },
+    {
+      "filename": "segment.onnx",
+      "bytes": 11441968,
+      "sha256": "ac727e00a0b8dc19b9a49ae4763be2174b8643f0ac0bd5b1f96f7c72d73adc24"
+    }
+  ]
+}

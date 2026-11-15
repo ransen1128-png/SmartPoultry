@@ -23,9 +23,10 @@ from PIL import Image, ImageFilter, ImageStat, UnidentifiedImageError
 from notifications.utils import create_activity_notification
 from .forms import MortalityRecordForm, ProductionRecordForm
 from .models import Feedback, RoosterAgeEstimate, Farm, Branch
+from .age_inference import bound_estimator_requests
 
 User = get_user_model()
-DEPLOY_MARKER = 'smartpoultry-full-vision-2026-11-15'
+DEPLOY_MARKER = 'smartpoultry-onnx-free-2026-11-15'
 logger=logging.getLogger(__name__)
 
 
@@ -916,6 +917,11 @@ def analyze_rooster_photo(photo):
     try:
         photo.seek(0)
         with Image.open(photo) as image:
+            from core.free_inference import enabled,check_image_size
+            if enabled():
+                try:check_image_size(image)
+                except ValueError as error:
+                    return {'quality':'unreadable','summary':str(error),'penalty':2,'too_large':True}
             image = image.convert('L')
             width, height = image.size
             resized = image.resize((min(width, 512), max(1, int(height * min(width, 512) / width))))
@@ -924,7 +930,7 @@ def analyze_rooster_photo(photo):
             contrast = stat.stddev[0]
             edge_stat = ImageStat.Stat(resized.filter(ImageFilter.FIND_EDGES))
             sharpness = edge_stat.stddev[0]
-    except (UnidentifiedImageError, OSError, ValueError, ZeroDivisionError):
+    except (UnidentifiedImageError, OSError, ValueError, ZeroDivisionError,Image.DecompressionBombError):
         photo.seek(0)
         return {
             'quality': 'unreadable',
@@ -1022,6 +1028,7 @@ def _present_rooster_estimate(record, number=1):
 
 
 @login_required(login_url='login')
+@bound_estimator_requests
 def rooster_age_estimator_view(request):
     """Estimate chicken age from an uploaded spur image using the trained model."""
     # Opening the form or saved analysis must not load neural-network weights.
@@ -1036,7 +1043,7 @@ def rooster_age_estimator_view(request):
     if request.method == 'POST':
         predict_rooster_age=None
         try:
-            from core.rooster_age_classifier import model_is_ready, predict_rooster_age
+            from core.age_inference import model_is_ready, predict_rooster_age
             age_model_ready=model_is_ready(selected_age_model)
         except (ImportError,OSError,RuntimeError):
             logger.exception('Age-estimation runtime could not be loaded')
@@ -1151,6 +1158,9 @@ def rooster_age_estimator_view(request):
                         f"{photo_analysis['summary']} Image quality alone "
                         'cannot confirm that the chicken or spur is visible.'
                     )
+                    if photo_analysis.get('too_large'):
+                        evidence='No age estimate was provided because this photo exceeds the free server image-size limit.'
+                        reasoning=photo_analysis['summary']
 
                 elif not age_model_ready:
                     evidence = 'The existing age model could not be loaded.'

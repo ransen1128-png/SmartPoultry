@@ -56,6 +56,8 @@ def _load_bundle(manifest_text):
 
 
 def load_vision_models():
+    from core import free_inference
+    if free_inference.enabled():return {'runtime':'onnx'} if all(free_inference.ready(task) for task in ('detect','segment')) else None
     from core.vision_deployment import memory_warning
     if memory_warning():return None
     manifest = _read_manifest()
@@ -161,6 +163,8 @@ def _centerline_measurement(polygon, width, height, pixels_per_cm=None):
 
 
 def analyze_poultry(source, pixels_per_cm=None):
+    from core import free_inference
+    if free_inference.enabled():return free_inference.analyze_anatomy(source,pixels_per_cm)
     result = {'status': 'unavailable', 'legs': [], 'spurs': [], 'masks': [], 'unconfirmed_masks': [],
               'measurements': [], 'image_width': None, 'image_height': None,
               'message': 'Anatomy models are unavailable.'}
