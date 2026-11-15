@@ -79,9 +79,4 @@
 {% for record in production_history %}<tr data-production-id="{{ record.pk }}"><td>{{ record.branch.name|default:'Unassigned' }}</td><td>{{ record.date|date:'M d, Y' }}</td><td>{{ record.flock.flock_id }}</td><td>{{ record.get_product_type_display }}</td><td>{% if record.product_type == 'eggs' %}{{ record.get_egg_size_display|default:'Not recorded' }}{% else %}—{% endif %}</td><td>{{ record.quantity|floatformat:2 }}</td><td>{{ record.sold_quantity|floatformat:2 }}</td><td>{{ record.available_quantity|floatformat:0 }}</td></tr>
 {% empty %}<tr><td colspan="8">No sold-out production batches.</td></tr>{% endfor %}
 </tbody></table></div></details>
-<details class="panel-card mt-3"><summary>Production Sales History</summary>
-<div class="table-responsive"><table class="table"><thead><tr><th>Revenue #</th><th>Sale date</th><th>Branch</th><th>Flock</th><th>Production date</th><th>Product</th><th>Buyer</th><th>Order Number</th><th>Transaction Number</th><th>Quantity sold</th><th>Amount</th></tr></thead><tbody>
-{% for sale in sales_history %}<tr><td>{{ sale.pk }}</td><td>{{ sale.date }}</td><td>{{ sale.branch.name|default:'Unassigned' }}</td><td>{{ sale.flock.flock_id }}</td><td>{{ sale.production.date }}</td><td>{{ sale.get_revenue_type_display }}</td><td>{{ sale.buyer_name|default:'Not recorded' }}</td><td>{{ sale.order_number|default:'Not recorded' }}</td><td>{{ sale.transaction_number|default:'Not recorded' }}</td><td>{{ sale.quantity|floatformat:2 }}</td><td>&#8369;{{ sale.total_amount|floatformat:2 }}</td></tr>
-{% empty %}<tr><td colspan="11">No production stock has been sold yet.</td></tr>{% endfor %}
-</tbody></table></div></details>
 {% endblock %}

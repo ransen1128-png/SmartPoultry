@@ -49,6 +49,12 @@ class InventoryDistributionViewSet(mixins.ListModelMixin, mixins.CreateModelMixi
     serializer_class = InventoryDistributionSerializer
     permission_classes = [IsAuthenticated]
 
+    def create(self,request,*args,**kwargs):
+        from django.db import transaction
+        # Include response serialization in the same transaction as stock and cost.
+        with transaction.atomic():
+            return super().create(request,*args,**kwargs)
+
     def get_queryset(self):
         queryset = InventoryDistribution.objects.select_related('inventory', 'branch','expense','flock').filter(user=self.request.user)
         inventory_id = self.request.query_params.get('inventory')

@@ -105,6 +105,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
+                            <div id="distributionFeedback" class="alert d-none" role="alert"></div>
                             <section id="depletedInventorySection" hidden>
                                 <h6>Depleted inventory</h6>
                                 <p class="text-muted">Items with no remaining stock are kept here with their purchase and distribution records.</p>
@@ -160,6 +161,21 @@
 <script>
     const inventoryItems = new Map();
     let selectedInventoryId = null;
+    let distributionSaving=false;
+    let distributionNeedsReload=false;
+    function distributionFeedback(message,kind='danger') {
+        const feedback=document.getElementById('distributionFeedback');
+        feedback.textContent=message;feedback.className='alert alert-'+kind+(message?'':' d-none');
+    }
+    const distributionModal=document.getElementById('distributionModal');
+    distributionModal.addEventListener('hide.bs.modal',event=>{if(distributionSaving)event.preventDefault();});
+    distributionModal.addEventListener('hidden.bs.modal',()=>{
+        bootstrap.Modal.getInstance(distributionModal)?.dispose();
+        selectedInventoryId=null;
+        document.getElementById('distributionForm').reset();
+        document.getElementById('saveDistributionBtn').disabled=distributionNeedsReload;
+        distributionFeedback('');
+    });
 
     function formatWholeQuantity(value) {
         const number = Number(value);
@@ -183,6 +199,7 @@
     }
 
     function showDistributionModal(inventoryId, allowDistribution) {
+        if(distributionSaving)return;
         const item = inventoryId ? inventoryItems.get(Number(inventoryId)) : null;
         if (allowDistribution && !item) {
             return;
@@ -198,10 +215,12 @@
         document.getElementById('distributionEntrySection').hidden = !allowDistribution;
         document.getElementById('depletedInventorySection').hidden = allowDistribution;
         document.getElementById('saveDistributionBtn').hidden = !allowDistribution;
+        document.getElementById('saveDistributionBtn').disabled=distributionNeedsReload || !document.querySelector('#distributionBranch option[value]:not([value=""])');
+        distributionFeedback(distributionNeedsReload?'Reload this page before another distribution, and check History to confirm the previous result.':'');
         document.getElementById('distributionForm').reset();
         document.getElementById('distributionDate').value = '{{ today|date:"Y-m-d" }}';
         loadDistributionHistory(selectedInventoryId);
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('distributionModal')).show();
+        if(!distributionModal.classList.contains('show'))bootstrap.Modal.getOrCreateInstance(distributionModal).show();
     }
 
     function updateDistributionAvailable(item) {
@@ -214,16 +233,26 @@
     document.getElementById('allDistributionHistoryBtn').addEventListener('click', () => {
         showDistributionModal(null, false);
     });
+    document.getElementById('distributionForm').addEventListener('submit',event=>{event.preventDefault();document.getElementById('saveDistributionBtn').click();});
 
     document.getElementById('saveDistributionBtn').addEventListener('click', async () => {
+        if(distributionSaving || distributionNeedsReload)return;
         const form = document.getElementById('distributionForm');
+        distributionFeedback('');
+        const current=inventoryItems.get(selectedInventoryId);
+        if(current && Number(form.elements.quantity.value)>Number(current.quantity)) {
+            distributionFeedback('Only '+formatQuantity(current.quantity,current.unit)+' available. Enter a quantity within the available stock.');return;
+        }
         if (!form.reportValidity() || !selectedInventoryId) {
             return;
         }
 
         const formData = new FormData(form);
         const saveButton=document.getElementById('saveDistributionBtn');
+        const inventoryId=selectedInventoryId;
+        distributionSaving=true;
         saveButton.disabled=true;
+        let saved=false;
         try {
         const response = await fetch('/api/inventory/distributions/', {
             method: 'POST',
@@ -232,20 +261,29 @@
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
-                inventory: selectedInventoryId,
+                inventory: inventoryId,
                 branch: Number(formData.get('branch')),
                 quantity: Number(formData.get('quantity')),
                 date: formData.get('date')
             })
         });
+        saved=response.ok;
+        if(response.status>=500)throw new Error('Server could not confirm the result.');
         const data = await response.json();
         if (!response.ok) {
             const message = Object.entries(data)
                 .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`)
                 .join('\n') || 'Unable to save distribution.';
-            showAppDialog(message, 'Unable to Distribute Inventory');
+            distributionFeedback(message);
+            if(data.quantity){
+                try{await loadInventory();const latest=inventoryItems.get(inventoryId);if(latest)updateDistributionAvailable(latest);}
+                catch(refreshError){distributionFeedback(message+' Stock could not refresh; reload the page to see current availability.');}
+            }
             return;
         }
+
+        document.getElementById('distributionQuantity').value = '';
+        distributionFeedback('Distribution saved.','success');
 
         const warning=document.getElementById('inventoryStockWarning');
         warning.classList.toggle('d-none',!data.stock_warning);
@@ -254,19 +292,22 @@
         modalWarning.classList.toggle('d-none',!data.stock_warning);
         modalWarning.textContent=data.stock_warning || '';
         await loadInventory();
-        const item = inventoryItems.get(selectedInventoryId);
+        const item = inventoryItems.get(inventoryId);
         if (item) {
             updateDistributionAvailable(item);
             if(Number(item.quantity)<=0) {
-                showDistributionModal(selectedInventoryId,false);
+                distributionSaving=false;
+                showDistributionModal(inventoryId,false);
+                distributionFeedback('Distribution saved. This item has no remaining stock.','success');
                 return;
             }
         }
         document.getElementById('distributionQuantity').value = '';
-        loadDistributionHistory(selectedInventoryId);
+        await loadDistributionHistory(inventoryId);
         } catch(error) {
-            showAppDialog('Unable to save distribution. Please check your connection.', 'Distribution Error');
-        } finally {saveButton.disabled=false;}
+            distributionNeedsReload=true;
+            distributionFeedback(saved?'Distribution saved, but the stock display could not refresh. Reload this page before distributing again.':'The server response could not be confirmed. Check History and reload this page before trying again.','warning');
+        } finally {distributionSaving=false;saveButton.disabled=distributionNeedsReload;}
     });
 
     document.getElementById('saveInventoryBtn').addEventListener('click', async function() {

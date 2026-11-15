@@ -32,8 +32,8 @@ class ProductionSalesTests(TestCase):
         stock=self.client.get(reverse('revenue-available-production')).json()
         self.assertEqual(Decimal(stock[0]['available_quantity']),70)
         page=self.client.get(reverse('production_records'))
-        self.assertEqual(page.context['sales_history'][0].pk,sale.pk)
-        self.assertContains(page,'Production Sales History')
+        self.assertEqual(page.context['records'][0].pk,self.production.pk)
+        self.assertNotContains(page,'Production Sales History')
 
     def test_overselling_and_invalid_values_do_not_create_revenue(self):
         for amount in ('101','0','-1'):

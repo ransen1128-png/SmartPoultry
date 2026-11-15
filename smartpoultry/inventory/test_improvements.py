@@ -69,6 +69,36 @@ class FarmImprovementTests(TestCase):
         self.assertEqual(self.distribute(branch=self.south.pk).status_code,400)
         self.assertFalse(InventoryDistribution.objects.exists())
 
+    def test_excess_distribution_after_stock_changes_does_not_process_any_part(self):
+        self.item.minimum_stock=Decimal('10');self.item.save()
+        valid=self.distribute(quantity='80')
+        self.assertEqual(valid.status_code,201,valid.content)
+        expenses=list(Expense.objects.filter(user=self.user).order_by('pk').values_list('pk','amount'))
+        notices=Notification.objects.filter(user=self.user).count()
+        rejected=self.distribute(quantity='21')
+        self.assertEqual(rejected.status_code,400,rejected.content)
+        self.assertIn('Only 20.00 kg available',str(rejected.data['quantity']))
+        self.item.refresh_from_db();self.assertEqual(self.item.quantity,20)
+        self.assertEqual(InventoryDistribution.objects.filter(user=self.user).count(),1)
+        self.assertEqual(list(Expense.objects.filter(user=self.user).order_by('pk').values_list('pk','amount')),expenses)
+        self.assertEqual(Notification.objects.filter(user=self.user).count(),notices)
+
+    def test_response_serialization_failure_rolls_back_distribution_and_expenses(self):
+        from unittest.mock import patch
+        from inventory.serializers import InventoryDistributionSerializer
+        expenses=list(Expense.objects.filter(user=self.user).order_by('pk').values_list('pk','amount'))
+        notices=Notification.objects.filter(user=self.user).count()
+        self.client.raise_request_exception=False
+        try:
+            with patch.object(InventoryDistributionSerializer,'to_representation',side_effect=RuntimeError('Simulated response failure')):
+                response=self.distribute()
+        finally:self.client.raise_request_exception=True
+        self.assertEqual(response.status_code,500)
+        self.item.refresh_from_db();self.assertEqual(self.item.quantity,100)
+        self.assertFalse(InventoryDistribution.objects.filter(user=self.user).exists())
+        self.assertEqual(list(Expense.objects.filter(user=self.user).order_by('pk').values_list('pk','amount')),expenses)
+        self.assertEqual(Notification.objects.filter(user=self.user).count(),notices)
+
     def test_branch_without_ready_flocks_rejects_distribution_without_side_effects(self):
         for status,quantity in ((None,None),('inactive',20),('active',0),('sold',20),('deceased',20),('retired',20)):
             with self.subTest(status=status,quantity=quantity):

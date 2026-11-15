@@ -1288,9 +1288,7 @@ def production_records_view(request):
     ).annotate(_available=F('quantity')-F('_sold_quantity'))
     records=batches.filter(_available__gt=0)
     production_history=batches.filter(_available__lte=0)
-    from revenue.models import Revenue
-    history = Revenue.objects.filter(user=request.user, production__isnull=False).select_related('production','branch','flock').exclude(flock__status='inactive').exclude(branch__status='inactive')[:100]
-    return render(request, 'production_records.html', {'records': records, 'production_history':production_history,'sales_history': history})
+    return render(request, 'production_records.html', {'records': records, 'production_history':production_history})
 
 
 @login_required(login_url='login')
