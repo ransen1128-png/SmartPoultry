@@ -56,6 +56,8 @@ def _load_bundle(manifest_text):
 
 
 def load_vision_models():
+    from core.vision_deployment import memory_warning
+    if memory_warning():return None
     manifest = _read_manifest()
     return _load_bundle(json.dumps(manifest, sort_keys=True)) if manifest else None
 
@@ -162,6 +164,10 @@ def analyze_poultry(source, pixels_per_cm=None):
     result = {'status': 'unavailable', 'legs': [], 'spurs': [], 'masks': [], 'unconfirmed_masks': [],
               'measurements': [], 'image_width': None, 'image_height': None,
               'message': 'Anatomy models are unavailable.'}
+    from core.vision_deployment import memory_warning
+    if memory_warning():
+        result['message']=memory_warning()
+        return result
     bundle = load_vision_models()
     if bundle is None:
         return result
@@ -252,6 +258,9 @@ def assess_chicken_evidence(detection, anatomy):
     if detection.get('status') == 'not_run':
         return {'status':'not_run','label':'Not analyzed — quick age mode',
                 'explanation':'Use full photo analysis for chicken and spur detection.'}
+    if detection.get('status') in ('unavailable','error') and anatomy.get('status') in ('unavailable','error'):
+        return {'status':'unavailable','label':'Detection unavailable',
+                'explanation':'Detection could not run on this server. No conclusion about chicken presence was made.'}
     if detection.get('status') == 'detected' and detection.get('boxes'):
         return {'status': 'body_candidate', 'label': 'Yes',
                 'explanation': 'The chicken detector found a body candidate. This is a model prediction.'}

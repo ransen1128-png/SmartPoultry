@@ -25,13 +25,14 @@ from .forms import MortalityRecordForm, ProductionRecordForm
 from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 
 User = get_user_model()
-DEPLOY_MARKER = 'smartpoultry-age-worker-2026-11-15'
+DEPLOY_MARKER = 'smartpoultry-full-vision-2026-11-15'
 logger=logging.getLogger(__name__)
 
 
 def health_check(request):
     """Lightweight production diagnostic that avoids templates and database queries."""
     database = settings.DATABASES['default']
+    from core.vision_deployment import deployment_status
     static_dirs = [str(path) for path in getattr(settings, 'STATICFILES_DIRS', [])]
     static_sources = {
         'source_logo_exists': any((path / 'images' / 'smartpoultry_logo.svg').exists() for path in getattr(settings, 'STATICFILES_DIRS', [])),
@@ -41,6 +42,7 @@ def health_check(request):
         'ok': True,
         'marker': DEPLOY_MARKER,
         'worker_profile':os.getenv('SMARTPOULTRY_WORKER_PROFILE','unconfigured'),
+        'vision_deployment':deployment_status(),
         'render': bool(os.getenv('RENDER') or os.getenv('RENDER_EXTERNAL_HOSTNAME')),
         'render_hostname': os.getenv('RENDER_EXTERNAL_HOSTNAME', ''),
         'debug': settings.DEBUG,

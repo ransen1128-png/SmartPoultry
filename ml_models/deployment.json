@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "ml_models/chicken_owlvit/config.json",
+      "bytes": 1312,
+      "sha256": "7015b7e6c30b5961e13ce6bc716311e5cd548efb23d9e7fca43893e23b8197d6"
+    },
+    {
+      "path": "ml_models/chicken_owlvit/merges.txt",
+      "bytes": 524619,
+      "sha256": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a"
+    },
+    {
+      "path": "ml_models/chicken_owlvit/preprocessor_config.json",
+      "bytes": 549,
+      "sha256": "72f87a29326ea4b3bb2e72197b6a62b7a0920b3449bc421eefb08a3824000a9d"
+    },
+    {
+      "path": "ml_models/chicken_owlvit/special_tokens_map.json",
+      "bytes": 484,
+      "sha256": "a83f5831a70d1d21c057186d35aaa504894103d24ee905baa99bc7e83ceb70ee"
+    },
+    {
+      "path": "ml_models/chicken_owlvit/tokenizer.json",
+      "bytes": 3642207,
+      "sha256": "c748fe6027dff0040fbabedc43f4a20724fefa53cce66860e27618f24990622f"
+    },
+    {
+      "path": "ml_models/chicken_owlvit/tokenizer_config.json",
+      "bytes": 966,
+      "sha256": "aaa339276b96a1ea41b5715e00125583e4f632a1f0af91a1cc802c10ea7296ce"
+    },
+    {
+      "path": "ml_models/chicken_owlvit/vocab.json",
+      "bytes": 862328,
+      "sha256": "5047b556ce86ccaf6aa22b3ffccfc52d391ea4accdab9c2f2407da5b742d4363"
+    },
+    {
+      "path": "ml_models/poultry_vision/manifest.json",
+      "bytes": 2473,
+      "sha256": "847d6a307cc87358992509c7dcbe0f3835ce86781810fe1987f8b14557e4b1f8"
+    },
+    {
+      "path": "ml_models/poultry_vision/detect_45433d0396de91a7.pt",
+      "bytes": 5451098,
+      "sha256": "45433d0396de91a7dfa2ba61590478340b5d2fb3142d940f6d725ef8fdd8fa80"
+    },
+    {
+      "path": "ml_models/poultry_vision/segment_e2e91c19fb1839e9.pt",
+      "bytes": 5983524,
+      "sha256": "e2e91c19fb1839e908db87679ce2c20f39bb863ab71ff9022ae1bcbb39956fbe"
+    }
+  ],
+  "chicken_checkpoint": {
+    "path": "ml_models/chicken_owlvit/model.safetensors",
+    "bytes": 612978988,
+    "sha256": "40b0fbb7b18a468417dd1786d035d993a8414706bb4b16098cfc1edbdba6031e",
+    "source": {
+      "repo": "google/owlvit-base-patch32",
+      "revision": "cbc355fb364588351c5d51c7f74465e8e7ec6f72",
+      "url": "https://huggingface.co/google/owlvit-base-patch32/resolve/cbc355fb364588351c5d51c7f74465e8e7ec6f72/model.safetensors",
+      "sha256": "4dbe0399f0b7d7c8dddf1535a98769cc30743bebc877aea681998c8d984ce52b",
+      "omit_nonpersistent_buffers": [
+        "owlvit.text_model.embeddings.position_ids",
+        "owlvit.vision_model.embeddings.position_ids"
+      ]
+    }
+  }
+}

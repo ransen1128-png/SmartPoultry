@@ -732,7 +732,7 @@ class RoosterAgeEstimatorTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         result = response.context['results'][0]
-        self.assertEqual(result['chicken_detected'], 'Chicken not detected')
+        self.assertEqual(result['chicken_detected'], 'Detection unavailable')
         self.assertIn('no chicken detector is configured', result['chicken_location_assessment'])
         self.assertIn('unavailable', result['leg_detection_status'])
         self.assertIn('unavailable', result['spur_detection_status'])

@@ -16,6 +16,8 @@ BODY_QUERIES = ['a photo of a chicken', 'a young chicken', 'a hen', 'a rooster']
 
 @lru_cache(maxsize=1)
 def load_detector():
+    from core.vision_deployment import memory_warning
+    if memory_warning():return None
     path = Path(os.environ.get('CHICKEN_DETECTOR_PATH', DEFAULT_MODEL))
     if not path.is_dir():
         return None
@@ -35,6 +37,10 @@ def load_detector():
 def detect_chicken(source):
     result = {'status': 'unavailable', 'boxes': [], 'message':
               'Not located; no chicken detector is configured.'}
+    from core.vision_deployment import memory_warning
+    if memory_warning():
+        result['message']=memory_warning()
+        return result
     artifact = load_detector()
     if artifact is None:
         return result

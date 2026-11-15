@@ -58,11 +58,20 @@ db.sqlite3-journal
 
 # ML Models (optional - remove if you want to commit)
 ml_models/*.pkl
-ml_models/chicken_owlvit/
+ml_models/chicken_owlvit/*
+!ml_models/chicken_owlvit/config.json
+!ml_models/chicken_owlvit/merges.txt
+!ml_models/chicken_owlvit/preprocessor_config.json
+!ml_models/chicken_owlvit/special_tokens_map.json
+!ml_models/chicken_owlvit/tokenizer.json
+!ml_models/chicken_owlvit/tokenizer_config.json
+!ml_models/chicken_owlvit/vocab.json
 .cache-huggingface/
 detection/dataset/
 detection/runs/
 ml_models/poultry_vision/*.pt
+!ml_models/poultry_vision/detect_45433d0396de91a7.pt
+!ml_models/poultry_vision/segment_e2e91c19fb1839e9.pt
 detection/derived/
 detection/annotation_views/
 detection/annotation_review/
