@@ -3,10 +3,45 @@ from io import BytesIO
 from unittest import TestCase
 from unittest.mock import patch
 from PIL import Image
-from core.vision_api import locate_spurs,validate_boxes,crop_visible_spur,spur_model,is_configured
+from core.vision_api import locate_spurs,locate_spurs_with_fallback,validate_boxes,crop_visible_spur,spur_model,is_configured
 
 
 class VisionAPIContractTests(TestCase):
+    def test_overloaded_primary_uses_one_backup_and_preserves_attempt_provenance(self):
+        responses=[{'status':'error','http_status':503,'boxes':[],'attempts':2,'message':'Provider overloaded.'},
+                   {'status':'completed','boxes':[[40,10,120,40]],'attempts':1,'message':'API prediction.'}]
+        with patch.dict('os.environ',{'GEMINI_SPUR_BACKUP_MODEL':'backup-test'}),patch('core.vision_api.locate_spurs',side_effect=responses) as call:
+            result=locate_spurs_with_fallback(Image.new('RGB',(200,100)),model='primary-test')
+        self.assertEqual(call.call_count,2)
+        self.assertEqual(call.call_args.kwargs,{'model':'backup-test','timeout':20,'max_attempts':1})
+        self.assertEqual(result['model'],'backup-test')
+        self.assertEqual(result['attempts'],3)
+        self.assertEqual(result['boxes'],[[40,10,120,40]])
+        self.assertEqual(result['model_attempts'][0]['http_status'],503)
+        self.assertTrue(result['fallback_used'])
+
+    def test_no_failover_for_successful_empty_response_key_quota_or_invalid_response(self):
+        responses=[{'status':'completed','boxes':[],'attempts':1},
+                   {'status':'error','http_status':403,'boxes':[],'attempts':1},
+                   {'status':'error','http_status':429,'boxes':[],'attempts':1},
+                   {'status':'error','boxes':[],'attempts':1}]
+        for response in responses:
+            with patch('core.vision_api.locate_spurs',return_value=response) as call:
+                result=locate_spurs_with_fallback(Image.new('RGB',(201,101)))
+            call.assert_called_once()
+            self.assertFalse(result['fallback_used'])
+            self.assertEqual(result['boxes'],[])
+
+    def test_failover_exhaustion_retains_errors_and_never_fabricates_detection(self):
+        responses=[{'status':'error','error_kind':'network','boxes':[],'attempts':2,'message':'Timeout.'},
+                   {'status':'error','http_status':503,'boxes':[],'attempts':1,'message':'Provider overloaded.'}]
+        with patch.dict('os.environ',{'GEMINI_SPUR_BACKUP_MODEL':'backup-test'}),patch('core.vision_api.locate_spurs',side_effect=responses):
+            result=locate_spurs_with_fallback(Image.new('RGB',(202,102)),model='primary-test')
+        self.assertEqual(result['status'],'error')
+        self.assertEqual(result['boxes'],[])
+        self.assertEqual(len(result['model_attempts']),2)
+        self.assertEqual(result['attempts'],3)
+
     def test_spur_model_default_and_explicit_override_do_not_use_legacy_benchmark_model(self):
         with patch.dict('os.environ',{'GEMINI_API_KEY':'configuration-test','GEMINI_VISION_MODEL':'legacy',
                                      'GEMINI_SPUR_FALLBACK_MODEL':''}):

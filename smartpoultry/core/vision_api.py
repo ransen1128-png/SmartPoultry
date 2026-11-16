@@ -31,11 +31,16 @@ PROMPT = (
 PROMPT_HASH = hashlib.sha256(PROMPT.encode()).hexdigest()
 REQUEST_POLICY_HASH = hashlib.sha256(b'20261116:gemini-3-low-thinking;other-model-default').hexdigest()
 DEFAULT_SPUR_MODEL = 'gemini-3.1-flash-lite'
+DEFAULT_SPUR_BACKUP_MODEL = 'gemini-3-flash-preview'
 
 
 def spur_model():
     """Same tested model for web assistance, independent of offline benchmarks."""
     return os.environ.get('GEMINI_SPUR_FALLBACK_MODEL', '').strip() or DEFAULT_SPUR_MODEL
+
+
+def spur_backup_model():
+    return os.environ.get('GEMINI_SPUR_BACKUP_MODEL', DEFAULT_SPUR_BACKUP_MODEL).strip()
 
 
 def is_configured():
@@ -434,6 +439,7 @@ def locate_spurs(image, *, api_key=None, model=None, timeout=30, max_attempts=3)
                 'status': 'error',
                 'boxes': [],
                 'attempts': attempt,
+                'error_kind': 'network',
                 'message': (
                     'Gemini network request failed '
                     f'({type(error).__name__}).'
@@ -460,6 +466,30 @@ def locate_spurs(image, *, api_key=None, model=None, timeout=30, max_attempts=3)
                     )[:180]
                 )
             }
+
+
+def locate_spurs_with_fallback(image, *, model=None, timeout=20, max_attempts=2):
+    """Bounded provider failover; an empty successful response is never retried."""
+    primary = model or spur_model()
+    result = locate_spurs(image, model=primary, timeout=timeout, max_attempts=max_attempts)
+    result = dict(result)
+    result.setdefault('model', primary)
+    trace = [{'model':primary, 'status':result['status'], 'http_status':result.get('http_status'),
+              'attempts':result.get('attempts',0), 'message':result.get('message','')}]
+    backup = spur_backup_model()
+    temporary_failure = result.get('http_status') in (500,502,503,504) or result.get('error_kind') == 'network'
+    if result.get('status') == 'error' and temporary_failure and backup and backup != primary:
+        second = dict(locate_spurs(image, model=backup, timeout=timeout, max_attempts=1))
+        second.setdefault('model',backup)
+        trace.append({'model':backup, 'status':second['status'], 'http_status':second.get('http_status'),
+                      'attempts':second.get('attempts',0), 'message':second.get('message','')})
+        result = second
+        result['fallback_used'] = True
+    else:
+        result['fallback_used'] = False
+    result['model_attempts'] = trace
+    result['attempts'] = sum(item['attempts'] for item in trace)
+    return result
 
 
 def crop_visible_spur(image, boxes, padding=.15):

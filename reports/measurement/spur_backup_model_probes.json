@@ -1,0 +1,41 @@
+[
+  {
+    "model": "gemini-3.5-flash-lite",
+    "seconds": 2.39,
+    "status": "completed",
+    "boxes": [],
+    "http_status": null,
+    "message": "API-predicted spur boxes; not verified annotations or physical measurements."
+  },
+  {
+    "model": "gemini-3.8-flash",
+    "seconds": 20.27,
+    "status": "error",
+    "boxes": [],
+    "http_status": null,
+    "message": "Gemini network request failed (TimeoutError)."
+  },
+  {
+    "model": "gemini-3-flash-preview",
+    "seconds": 5.64,
+    "status": "completed",
+    "boxes": [
+      [
+        163.2,
+        205.2,
+        183.3,
+        224.4
+      ]
+    ],
+    "http_status": null,
+    "message": "API-predicted spur boxes; not verified annotations or physical measurements."
+  },
+  {
+    "model": "gemini-3.1-flash-lite-preview",
+    "seconds": 2.81,
+    "status": "error",
+    "boxes": [],
+    "http_status": 503,
+    "message": "Gemini HTTP 503 (UNAVAILABLE): This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later."
+  }
+]

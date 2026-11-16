@@ -101,6 +101,14 @@
                 {% endif %}
             {% endif %}
             <p>These are model predictions. Detections can be incorrect; length describes the visible outline in the photo. Age accuracy on independent chickens is not established.</p>
+            {% if result.api_spur_assistance.status == 'error' or result.api_spur_assistance.status == 'unconfigured' %}
+                <div class="alert alert-warning" role="alert" data-spur-api-error>
+                    <strong>Spur API request failed:</strong> {{ result.api_spur_assistance.message }}
+                    {% if result.api_spur_assistance.model %}<br>Model: {{ result.api_spur_assistance.model }}.{% endif %}
+                    {% if result.api_spur_assistance.attempts %} Attempts: {{ result.api_spur_assistance.attempts }}.{% endif %}
+                    <p class="mb-0">The age result is retained. This failed request did not establish whether a spur is visible.</p>
+                </div>
+            {% endif %}
             <dl>
                 {% if result.analysis_mode == 'age_only' %}
                 <dt>Analysis:</dt><dd>Quick age estimate. Detection and spur measurements were not run.</dd>
@@ -144,6 +152,9 @@
                 <dd>{{ result.api_spur_assistance.status }} — {{ result.api_spur_assistance.message }}
                     {% if result.api_spur_assistance.model %}Model: {{ result.api_spur_assistance.model }}.{% endif %}
                     {% if result.api_spur_assistance.attempts %} Attempts: {{ result.api_spur_assistance.attempts }}.{% endif %}
+                    {% for attempt in result.api_spur_assistance.model_attempts %}
+                        <div>{{ attempt.model }}: {{ attempt.message }}</div>
+                    {% endfor %}
                 </dd>
                 {% endif %}
                 <dt>Confidence:</dt>

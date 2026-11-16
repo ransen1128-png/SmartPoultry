@@ -39,6 +39,18 @@ class MeasurementReviewTests(TestCase):
         self.assertContains(response,'Trace outline')
         self.record.refresh_from_db();self.assertEqual(self.record.analysis,self.original)
 
+    def test_saved_api_failure_is_visible_without_expanding_model_details(self):
+        self.record.analysis['anatomy']['api_spur_assistance']={
+            'status':'error','message':'Gemini HTTP 403: API key is not permitted.',
+            'model':'gemini-3.1-flash-lite','attempts':1}
+        self.record.save(update_fields=['analysis'])
+        response=self.client.get(reverse('rooster_age_estimator'),{'estimate':self.record.pk})
+        self.assertContains(response,'data-spur-api-error')
+        html=response.content.decode()
+        self.assertLess(html.index('Spur API request failed:'),html.index('<details>'))
+        self.assertContains(response,'Gemini HTTP 403: API key is not permitted.')
+        self.assertContains(response,'The age result is retained.')
+
     def test_review_preserves_models_age_and_photo_and_keeps_an_audit_history(self):
         self.assertEqual(self.client.post(self.url,self.data).status_code,302)
         self.record.refresh_from_db();analysis=self.record.analysis

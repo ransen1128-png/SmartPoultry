@@ -8,7 +8,7 @@ import math
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from .vision_api import locate_spurs, spur_model
+from .vision_api import locate_spurs_with_fallback as locate_spurs, spur_model
 
 
 def _valid_box(box, width, height):

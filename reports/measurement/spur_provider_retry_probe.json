@@ -1,0 +1,47 @@
+{
+  "probe": "Real API requests, primary preview model previously returned actual HTTP 503; no mocked detections.",
+  "seconds": 21.34,
+  "status": "completed",
+  "boxes": [
+    [
+      148.5,
+      202.5,
+      183.0,
+      223.5
+    ]
+  ],
+  "model": "gemini-3.1-flash-lite-preview",
+  "model_version": "gemini-3.1-flash-lite",
+  "prompt_sha256": "451b8e129a5c30dc3fd5ebfa9efe3be56b83aef29fbe29b1eebe319f023705b6",
+  "request_policy_sha256": "e31bd86ba7e6b532964a6c9d7e3e9d70ee6abe70ec6bf815fe0d2555e98f7cf2",
+  "usage": {
+    "promptTokenCount": 1169,
+    "candidatesTokenCount": 34,
+    "totalTokenCount": 1328,
+    "promptTokensDetails": [
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1089
+      },
+      {
+        "modality": "TEXT",
+        "tokenCount": 80
+      }
+    ],
+    "thoughtsTokenCount": 125,
+    "serviceTier": "standard"
+  },
+  "attempts": 2,
+  "cached": false,
+  "message": "API-predicted spur boxes; not verified annotations or physical measurements.",
+  "fallback_used": false,
+  "model_attempts": [
+    {
+      "model": "gemini-3.1-flash-lite-preview",
+      "status": "completed",
+      "http_status": null,
+      "attempts": 2,
+      "message": "API-predicted spur boxes; not verified annotations or physical measurements."
+    }
+  ]
+}
