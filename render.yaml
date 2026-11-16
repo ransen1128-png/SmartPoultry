@@ -15,6 +15,10 @@ services:
         value: .onrender.com,localhost,127.0.0.1
       - key: CSRF_TRUSTED_ORIGINS
         value: https://*.onrender.com
+      # Optional Gemini assistance uses GEMINI_API_KEY from the dashboard.
+      # Without a key the manual outline/base/tip editor still works.
+      - key: GEMINI_SPUR_FALLBACK_MODEL
+        value: gemini-3.1-flash-lite
       - key: DATABASE_URL
         fromDatabase:
           name: smartpoultry-db

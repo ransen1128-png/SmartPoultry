@@ -7,6 +7,15 @@ from core.vision_api import locate_spurs,validate_boxes,crop_visible_spur
 
 
 class VisionAPIContractTests(TestCase):
+    def test_gemini3_requests_use_bounded_thinking_and_record_policy(self):
+        response={'candidates':[{'finishReason':'STOP','content':{'parts':[{'text':'{"boxes": []}'}]}}]}
+        with patch('core.vision_api.urllib.request.urlopen',return_value=BytesIO(json.dumps(response).encode())) as request:
+            result=locate_spurs(Image.new('RGB',(110,90)),api_key='policy-contract-key',model='gemini-3.1-flash-lite')
+        self.assertEqual(result['status'],'completed')
+        body=json.loads(request.call_args.args[0].data)
+        self.assertEqual(body['generationConfig']['thinkingConfig'],{'thinkingLevel':'low'})
+        self.assertIn('request_policy_sha256',result)
+
     def test_coordinates_are_validated_and_scaled_to_original_image(self):
         self.assertEqual(validate_boxes({'boxes':[[100,200,400,600]]},200,100),[[40,10,120,40]])
         for payload in ({'boxes':[[0,0,float('nan'),900]]},{'boxes':[[0,0,0,900]]},{'boxes':[[False,0,900,900]]},{'boxes':[[0,0,1001,900]]},{}):

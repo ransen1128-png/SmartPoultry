@@ -53,6 +53,10 @@
 
     <div id="roosterCards" class="rooster-card-list"></div>
 
+    {% if spur_api_available %}
+        <label class="d-block mb-3"><input type="checkbox" name="use_spur_api" checked> Combined analysis: local models + Gemini for missed spur regions. Sends the photo to Gemini only when needed. Age uses the local model; lengths require a local spur outline.</label>
+    {% endif %}
+
     <div class="rooster-actions">
         <button class="btn btn-primary" type="submit" name="analysis_mode" value="full">
             <i class="bi bi-upload"></i> Estimate Age + full photo analysis
@@ -78,6 +82,9 @@
                 <form method="post" action="{% url 'rooster_age_estimator' %}">
                     {% csrf_token %}
                     <input type="hidden" name="reanalyze_estimate_id" value="{{ result.id }}">
+                    {% if spur_api_available %}
+                        <label class="d-block mb-2"><input type="checkbox" name="use_spur_api" checked> Combined analysis: local models + Gemini for missed spur regions. Sends the photo to Gemini only when needed.</label>
+                    {% endif %}
                     <button type="submit" class="btn btn-secondary mb-3" name="analysis_mode" value="full">Analyze again with current models</button>
                     <button type="submit" class="btn btn-outline-primary mb-3" name="analysis_mode" value="age_only">Quick age estimate</button>
                 </form>
@@ -122,11 +129,20 @@
                 <dt>Image quality:</dt>
                 <dd>{{ result.image_assessment }}</dd>
             </dl>
+            <p><a class="btn btn-outline-primary" href="{{ result.measurement_review_url }}">Review outline, base and tip</a></p>
+            {% if result.reviewed_measurement %}
+                <p><strong>User-marked base:</strong> {{ result.reviewed_measurement.base }}
+                <strong>Tip:</strong> {{ result.reviewed_measurement.tip }}. Model detections remain separate.</p>
+            {% endif %}
             <details>
                 <summary>Model details and limitations</summary>
                 <dl>
                 <dt>Evidence:</dt>
                 <dd>{{ result.spur_observations }}</dd>
+                {% if result.api_spur_assistance %}
+                <dt>API assistance:</dt>
+                <dd>{{ result.api_spur_assistance.status }} — {{ result.api_spur_assistance.message }}</dd>
+                {% endif %}
                 <dt>Confidence:</dt>
                 <dd>{{ result.confidence }}</dd>
                 <dt>Model evaluation:</dt>
@@ -164,7 +180,10 @@
                     {% if estimate.analysis.age_prediction_status == 'experimental' %}
                         <p>Experimental model result; independent validation pending.</p>
                     {% endif %}
-                    {% if estimate.analysis.anatomy_assessment %}
+                    {% if estimate.analysis.spur_review %}
+                        <p>User-reviewed curve: {{ estimate.analysis.spur_review.measurement.length_px|floatformat:1 }} pixels
+                        {% if estimate.analysis.spur_review.measurement.physical_length_cm %}; {{ estimate.analysis.spur_review.measurement.physical_length_cm|floatformat:2 }} cm using the supplied scale{% endif %}.</p>
+                    {% elif estimate.analysis.anatomy_assessment %}
                         <p>{{ estimate.analysis.anatomy_assessment.leg_detection_status }} {{ estimate.analysis.anatomy_assessment.spur_segmentation_status }}</p>
                         <small>{{ estimate.analysis.anatomy_assessment.spur_length_assessment }}</small>
                     {% endif %}
@@ -210,12 +229,25 @@
                 const label = shape('text', {x: x1+2, y: Math.max(12, y1+12),
                     fill: box.color, 'font-size': Math.max(10, overlay.width/45),
                     stroke: '#fff', 'stroke-width': .6, 'paint-order': 'stroke'});
-                label.textContent = `${box.label} ${Number(box.score).toFixed(2)}`;
+                label.textContent = box.source === 'gemini_api'
+                    ? `${box.label} (Gemini API)`
+                    : `${box.label} ${Number(box.score).toFixed(2)}`;
             });
             overlay.measurements.forEach(measurement => shape('polyline', {
                 points: measurement.centerline.map(point => point.join(',')).join(' '),
                 fill: 'none', stroke: '#00e5ff', 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke'
             }));
+            const reviewed = overlay.reviewed_measurement;
+            if (reviewed) {
+                shape('polygon',{points:reviewed.polygon.map(p=>p.join(',')).join(' '),fill:'#9c27b0','fill-opacity':.15,stroke:'#9c27b0','stroke-width':1.5,'vector-effect':'non-scaling-stroke'});
+                shape('polyline',{points:reviewed.centerline.map(p=>p.join(',')).join(' '),fill:'none',stroke:'#9c27b0','stroke-width':2,'vector-effect':'non-scaling-stroke'});
+                for (const [name,color] of [['base','#07853d'],['tip','#d32f2f']]) {
+                    const p=reviewed[name];
+                    shape('circle',{cx:p[0],cy:p[1],r:Math.max(2,overlay.width/120),fill:color});
+                    const text=shape('text',{x:p[0]+3,y:p[1],fill:color,'font-size':Math.max(10,overlay.width/45),stroke:'#fff','stroke-width':.5,'paint-order':'stroke'});
+                    text.textContent=`${name} (user)`;
+                }
+            }
         });
         document.querySelectorAll('[data-overlay-target]').forEach(toggle => {
             toggle.addEventListener('change', () => {

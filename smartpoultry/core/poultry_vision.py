@@ -298,7 +298,9 @@ def summarize_anatomy(result):
                 'spur_length_assessment': 'Not measured; no usable spur mask.', 'spur_visibility_value': 'unassessed'}
 
     def locations(boxes):
-        return '; '.join(f"Box {box['xyxy']} pixels; model score {box['score']:.3f}" for box in boxes) if boxes else 'No region located.'
+        return '; '.join(f"Box {box['xyxy']} pixels; " +
+                         ('Gemini API prediction; no confidence score supplied' if box.get('source') == 'gemini_api'
+                          else f"model score {box['score']:.3f}") for box in boxes) if boxes else 'No region located.'
     spurs = result['spurs'] or result['masks']
     measurements = result['measurements']
     length = '; '.join(f"Spur {m.get('mask_index', i)+1}: {m['length_px']:.1f} pixels of visible spur centerline"
@@ -308,10 +310,16 @@ def summarize_anatomy(result):
     if length and not any(m['physical_length_cm'] is not None for m in measurements):
         length += '. Add a known image scale to convert pixels to centimeters.'
     partial = any(m['truncated_at_frame'] for m in measurements)
+    api_spurs = any(box.get('source') == 'gemini_api' for box in spurs)
+    local_spurs = any(box.get('source') != 'gemini_api' for box in spurs)
+    api_suffix = (' Sources: local model and Gemini API.' if local_spurs else ' Source: Gemini API.') if api_spurs else ''
+    api_failed = result.get('api_spur_assistance', {}).get('status') in ('error', 'unconfigured')
     return {
         'leg_detection_status': f"Leg detected — {len(result['legs'])} region(s)." if result['legs'] else 'Leg not detected. Upload a closer view of the leg.',
         'leg_location_assessment': locations(result['legs']),
-        'spur_detection_status': f"Spur detected — {len(spurs)} region(s)." if spurs else 'Spur not detected. Upload a closer view of the leg and spur.',
+        'spur_detection_status': (f"Spur detected — {len(spurs)} region(s)." + api_suffix if spurs else
+                                  'Local model did not detect a spur; API assistance did not complete.' if api_failed else
+                                  'Spur not detected. Upload a closer view of the leg and spur.'),
         'spur_location_assessment': locations(spurs),
         'spur_segmentation_status': (
             f"Spur outline detected — {len(result['masks'])} outline(s)."
@@ -321,5 +329,5 @@ def summarize_anatomy(result):
         ),
         'spur_visibility': ('Detected region reaches the image edge.' if partial else 'Spur region detected in the photo.') if spurs else 'No spur region detected.',
         'spur_visibility_value': ('partial' if partial else 'clear') if spurs else 'unassessed',
-        'spur_length_assessment': length or 'Not measured — a detected spur outline is required.',
+        'spur_length_assessment': length or ('Not measured — the API located a box; a spur outline is required for length.' if api_spurs else 'Not measured — a detected spur outline is required.'),
     }

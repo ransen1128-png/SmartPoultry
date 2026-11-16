@@ -6,6 +6,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from .measurement_review import review_spur
 
 urlpatterns = [
     path('__health/', views.health_check, name='health_check'),
@@ -43,6 +44,7 @@ urlpatterns = [
     path('analytics/', views.analytics_view, name='analytics'),
     path('rooster-age-estimator/', views.rooster_age_estimator_view, name='rooster_age_estimator'),
     path('rooster-age-estimator/photos/<int:estimate_id>/', views.rooster_estimate_photo, name='rooster_estimate_photo'),
+    path('rooster-age-estimator/<int:estimate_id>/review-spur/', review_spur, name='review_spur_measurement'),
     path('reports/', views.reports_view, name='reports'),
     path('production-records/', views.production_records_view, name='production_records'),
     path('production-records/add/', views.production_record_create, name='production_record_create'),

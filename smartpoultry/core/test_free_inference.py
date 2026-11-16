@@ -62,8 +62,8 @@ class FreeHostedEstimatorTests(TestCase):
 
     def test_quick_mode_does_not_run_detectors(self):
         content=(Path(__file__).resolve().parents[2]/'spurs images/4months.jpg').read_bytes()
-        with patch.object(free,'detect_chicken',side_effect=AssertionError('Body ran')),patch.object(free,'analyze_anatomy',side_effect=AssertionError('Anatomy ran')):
-            response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'age_only','photos':[SimpleUploadedFile('image.jpg',content,content_type='image/jpeg')]})
+        with patch.object(free,'detect_chicken',side_effect=AssertionError('Body ran')),patch.object(free,'analyze_anatomy',side_effect=AssertionError('Anatomy ran')),patch('core.spur_api_assistance.locate_spurs',side_effect=AssertionError('API ran in quick mode')):
+            response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'age_only','use_spur_api':'on','photos':[SimpleUploadedFile('image.jpg',content,content_type='image/jpeg')]})
         self.assertEqual(response.status_code,200)
         row=RoosterAgeEstimate.objects.get(user=self.user)
         self.assertEqual(row.analysis['age_prediction']['age_months'],2.5)
@@ -71,7 +71,8 @@ class FreeHostedEstimatorTests(TestCase):
 
     def test_full_chicken_preserves_desktop_body_detection(self):
         content=(Path(__file__).parent/'testdata/full_chicken.jpg').read_bytes()
-        response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'full','photos':[SimpleUploadedFile('arbitrary-name.jpg',content,content_type='image/jpeg')]})
+        with patch('core.spur_api_assistance.locate_spurs',side_effect=AssertionError('API ran without opt-in')):
+            response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'full','photos':[SimpleUploadedFile('arbitrary-name.jpg',content,content_type='image/jpeg')]})
         self.assertEqual(response.status_code,200)
         row=RoosterAgeEstimate.objects.get(user=self.user)
         body=row.analysis['chicken_detection']
@@ -82,6 +83,22 @@ class FreeHostedEstimatorTests(TestCase):
         self.assertEqual(row.analysis['age_prediction']['age_months'],13.1)
         self.assertEqual(len(row.analysis['anatomy']['legs']),1)
         self.assertEqual(row.analysis['anatomy']['spurs'],[])
+
+    def test_opted_in_api_assistance_saves_source_and_preserves_age(self):
+        content=(Path(__file__).parent/'testdata/full_chicken.jpg').read_bytes()
+        api={'status':'completed','boxes':[[161.1,204.6,183.9,224.4]],'model_version':'recorded-model'}
+        with patch('core.vision_api.is_configured',return_value=True),patch('core.spur_api_assistance.locate_spurs',return_value=api) as call:
+            response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'full','use_spur_api':'on','photos':[SimpleUploadedFile('arbitrary-name.jpg',content,content_type='image/jpeg')]})
+        self.assertEqual(response.status_code,200)
+        call.assert_called_once()
+        row=RoosterAgeEstimate.objects.get(user=self.user)
+        self.assertEqual(row.analysis['age_prediction']['age_months'],13.1)
+        self.assertEqual(row.analysis['anatomy']['spurs'][0]['source'],'gemini_api')
+        self.assertIsNone(row.analysis['anatomy']['spurs'][0]['score'])
+        self.assertFalse(row.analysis['anatomy']['masks'] or row.analysis['anatomy']['measurements'])
+        self.assertContains(response,'Source: Gemini API')
+        self.assertEqual(row.analysis['api_spur_assistance']['accepted_regions'],1)
+        self.assertEqual(row.analysis['inference_strategy'],'local_api_combined')
 
     def test_second_estimation_request_is_rejected_without_writing(self):
         from core.age_inference import _REQUEST_SLOT

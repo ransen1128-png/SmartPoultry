@@ -26,7 +26,7 @@ from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 from .age_inference import bound_estimator_requests
 
 User = get_user_model()
-DEPLOY_MARKER = 'smartpoultry-fp32-stages-2026-11-16'
+DEPLOY_MARKER = 'smartpoultry-spur-review-2026-11-16'
 logger=logging.getLogger(__name__)
 
 
@@ -34,6 +34,7 @@ def health_check(request):
     """Lightweight production diagnostic that avoids templates and database queries."""
     database = settings.DATABASES['default']
     from core.vision_deployment import deployment_status
+    from core.vision_api import is_configured
     static_dirs = [str(path) for path in getattr(settings, 'STATICFILES_DIRS', [])]
     static_sources = {
         'source_logo_exists': any((path / 'images' / 'smartpoultry_logo.svg').exists() for path in getattr(settings, 'STATICFILES_DIRS', [])),
@@ -44,6 +45,12 @@ def health_check(request):
         'marker': DEPLOY_MARKER,
         'worker_profile':os.getenv('SMARTPOULTRY_WORKER_PROFILE','unconfigured'),
         'vision_deployment':deployment_status(),
+        'spur_measurement': {
+            'review_editor': True,
+            'curved_pixel_measurement': True,
+            'physical_length_requires_known_scale': True,
+            'gemini_configured': is_configured(),
+        },
         'render': bool(os.getenv('RENDER') or os.getenv('RENDER_EXTERNAL_HOSTNAME')),
         'render_hostname': os.getenv('RENDER_EXTERNAL_HOSTNAME', ''),
         'debug': settings.DEBUG,
@@ -996,6 +1003,14 @@ def _present_rooster_estimate(record, number=1):
             'The improvement is small; prior checkpoint training overlap means this is not independent validation on new chickens.'
         )
     subject = assess_chicken_evidence(detection, anatomy)
+    reviewed = (analysis.get('spur_review') or {}).get('measurement')
+    if reviewed:
+        assessment['spur_length_assessment'] = (
+            f"User-reviewed base-to-tip curve: {reviewed['length_px']:.1f} pixels"
+            + (f"; {reviewed['physical_length_cm']:.2f} cm using your supplied scale."
+               if reviewed.get('physical_length_cm') is not None else '. No calibrated centimeter value.')
+        )
+        assessment['spur_segmentation_status'] += ' A separate user-reviewed outline is available.'
     # Update display wording for historical results while preserving raw analysis.
     old_body_label = 'Possible chicken body; lower-score experimental candidate.'
     body_label = 'Chicken-body model prediction; lower-score experimental result.'
@@ -1013,6 +1028,9 @@ def _present_rooster_estimate(record, number=1):
         'model_evaluation': evaluation,
         'age_model': analysis.get('age_model', 'original'),
         'analysis_mode': analysis.get('analysis_mode', 'full'),
+        'api_spur_assistance': anatomy.get('api_spur_assistance'),
+        'reviewed_measurement': reviewed,
+        'measurement_review_url': reverse('review_spur_measurement',args=[record.pk]),
         'original_age_prediction': analysis.get('original_age_prediction'),
         'photo_url': (reverse('rooster_estimate_photo', args=[record.pk])
                       if record.photo and quality.get('quality') != 'unreadable' else ''),
@@ -1023,6 +1041,7 @@ def _present_rooster_estimate(record, number=1):
                       + [{**box, 'label': 'leg', 'color': '#e5a000'} for box in anatomy['legs']]
                       + [{**box, 'label': 'spur', 'color': '#d81b60'} for box in anatomy['spurs']]),
             'masks': anatomy['masks'], 'measurements': anatomy['measurements'],
+            'reviewed_measurement': reviewed,
         },
     }
 
@@ -1037,6 +1056,8 @@ def rooster_age_estimator_view(request):
     from core.age_model_registry import candidate_entry
     candidate_available = candidate_entry() is not None
     selected_age_model = 'finetuned' if candidate_available else 'original'
+    from core.vision_api import is_configured
+    spur_api_available = is_configured()
     results = []
     quick_mode = request.method == 'POST' and request.POST.get('analysis_mode') == 'age_only'
 
@@ -1096,6 +1117,9 @@ def rooster_age_estimator_view(request):
                 detection = detect_chicken(photo)
                 anatomy = analyze_poultry(photo, calibration)
                 anatomy = constrain_legs_to_body(detection, anatomy)
+                if request.POST.get('use_spur_api') == 'on' and spur_api_available:
+                    from core.spur_api_assistance import assist_missed_spurs
+                    anatomy = assist_missed_spurs(photo, anatomy, calibration)
             assessment = summarize_anatomy(anatomy)
 
             # Quality heuristics are warnings, not a subject detector. Run the
@@ -1195,13 +1219,16 @@ def rooster_age_estimator_view(request):
                 'confidence': confidence,
                 'limitations': limitations,
                 'analysis': {
-                    'workflow_version': 6,
+                    'workflow_version': 8,
+                    'inference_strategy': ('local_api_combined' if not quick_mode and spur_api_available
+                                           and request.POST.get('use_spur_api') == 'on' else 'local_only'),
                     'reanalysis_of': int(reanalysis_id) if reanalysis_id else None,
                     'chicken_assessment': assess_chicken_evidence(detection, anatomy),
                     'input_mode': 'experimental_image_estimate',
                     'image_quality': photo_analysis,
                     'chicken_detection': detection,
                     'anatomy': anatomy,
+                    'api_spur_assistance': anatomy.get('api_spur_assistance'),
                     'anatomy_assessment': assessment,
                     'leg_detection': {'status': anatomy['status'], 'boxes': anatomy['legs']},
                     'spur_detection': {'status': anatomy['status'], 'boxes': anatomy['spurs']},
@@ -1211,6 +1238,7 @@ def rooster_age_estimator_view(request):
                                          'reason': 'Centimeter values require a supplied known in-plane scale; all geometry remains experimental.'},
                     'age_prediction': prediction,
                     'age_model': selected_age_model,
+                    'supplied_pixels_per_cm': calibration,
                     'analysis_mode': 'age_only' if quick_mode else 'full',
                     'original_age_prediction': original_prediction,
                     'age_prediction_status': 'experimental' if prediction else 'not_produced',
@@ -1263,6 +1291,7 @@ def rooster_age_estimator_view(request):
         'models_checked': request.method == 'POST' and not quick_mode,
         'candidate_available': candidate_available,
         'selected_age_model': selected_age_model,
+        'spur_api_available': spur_api_available,
         'viewing_saved': bool(request.method == 'GET' and selected_estimate),
     })
 

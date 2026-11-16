@@ -1,0 +1,22 @@
+{
+  "render_environment": true,
+  "review_save_after_onnx_inference": "passed; software fixture only",
+  "full_upload_and_saved_result": "passed",
+  "heavy_runtime_imports_blocked": true,
+  "leg_regions": 1,
+  "spur_regions": 1,
+  "spur_outlines": 0,
+  "age_months": 13.1,
+  "spur_source": "actual Gemini API response",
+  "api_boxes": [
+    [
+      148.5,
+      202.5,
+      183.0,
+      223.5
+    ]
+  ],
+  "web_process_peak_mb": 264.85,
+  "javascript_errors": [],
+  "database": "isolated temporary SQLite; no production data changed"
+}

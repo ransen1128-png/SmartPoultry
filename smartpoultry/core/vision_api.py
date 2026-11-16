@@ -29,6 +29,13 @@ PROMPT = (
 )
 
 PROMPT_HASH = hashlib.sha256(PROMPT.encode()).hexdigest()
+REQUEST_POLICY_HASH = hashlib.sha256(b'20261116:gemini-3-low-thinking;other-model-default').hexdigest()
+
+
+def is_configured():
+    """Readiness for the form; never makes an API request."""
+    return bool((os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY'))
+                and (os.environ.get('GEMINI_SPUR_FALLBACK_MODEL') or os.environ.get('GEMINI_VISION_MODEL')))
 
 _MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 _MAX_CACHE = 128
@@ -212,6 +219,7 @@ def locate_spurs(image, *, api_key=None, model=None, timeout=30, max_attempts=3)
         (
             model
             + PROMPT_HASH
+            + REQUEST_POLICY_HASH
             + str(image.size)
             + hashlib.sha256(key.encode()).hexdigest()
         ).encode() + jpeg
@@ -271,6 +279,9 @@ def locate_spurs(image, *, api_key=None, model=None, timeout=30, max_attempts=3)
             }
         }
     }
+
+    if re.match(r'^gemini-3(?:[.-]|$)', model):
+        body['generationConfig']['thinkingConfig'] = {'thinkingLevel': 'low'}
 
     request = urllib.request.Request(
         (
@@ -339,6 +350,7 @@ def locate_spurs(image, *, api_key=None, model=None, timeout=30, max_attempts=3)
                     'modelVersion'
                 ),
                 'prompt_sha256': PROMPT_HASH,
+                'request_policy_sha256': REQUEST_POLICY_HASH,
                 'usage': envelope.get('usageMetadata'),
                 'attempts': attempt,
                 'cached': False,
