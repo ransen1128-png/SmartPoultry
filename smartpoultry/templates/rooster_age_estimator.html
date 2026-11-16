@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<p><a class="btn btn-outline-primary" href="{% url 'spur_cache_connection' %}">Shared spur cache</a></p>
 <div class="page-heading">
     <div>
         <h1>Rooster Age Estimator</h1>
@@ -149,6 +150,7 @@
                 <dd>{{ result.spur_observations }}</dd>
                 {% if result.api_spur_assistance %}
                 <dt>API assistance:</dt>
+                {% if result.api_spur_assistance.persistent_cache %}<dd>Reused a saved successful API result.{% if result.api_spur_assistance.shared_cache %} Shared with your connected account.{% endif %}</dd>{% endif %}
                 <dd>{{ result.api_spur_assistance.status }} — {{ result.api_spur_assistance.message }}
                     {% if result.api_spur_assistance.model %}Model: {{ result.api_spur_assistance.model }}.{% endif %}
                     {% if result.api_spur_assistance.attempts %} Attempts: {{ result.api_spur_assistance.attempts }}.{% endif %}

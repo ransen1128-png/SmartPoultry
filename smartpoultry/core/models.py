@@ -3,6 +3,34 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
 
+class SpurPredictionCache(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    cache_key = models.CharField(max_length=64)
+    task = models.CharField(max_length=24)
+    identity = models.JSONField()
+    response = models.JSONField()
+    authority = models.CharField(max_length=255, default='local')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['user','cache_key','authority'],name='unique_spur_cache_authority')]
+
+
+class SpurCacheCredential(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    token_digest = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now=True)
+
+
+class SpurCacheConnection(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    service_url = models.URLField()
+    encrypted_token = models.TextField()
+    remote_user_id = models.PositiveIntegerField()
+    remote_username = models.CharField(max_length=150)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class Farm(models.Model):
     """Main farm information model."""
     owner = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='owned_farm')

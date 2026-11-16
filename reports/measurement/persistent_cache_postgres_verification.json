@@ -1,0 +1,18 @@
+{
+  "database": "existing desktop PostgreSQL",
+  "successful_result_saved": true,
+  "new_process_api_blocked_read": {
+    "status": "completed",
+    "boxes": [
+      [
+        148.5,
+        202.5,
+        183.0,
+        223.5
+      ]
+    ],
+    "persistent_cache": true
+  },
+  "existing_estimate_unchanged": true,
+  "cache_key": "92c508ea111ef08c2b32dce2af9650918d3cab42ffee4f60e58b787b2d83c5a0"
+}

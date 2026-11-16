@@ -26,7 +26,7 @@ from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 from .age_inference import bound_estimator_requests
 
 User = get_user_model()
-DEPLOY_MARKER = 'smartpoultry-spur-api-failover-2026-11-16'
+DEPLOY_MARKER = 'smartpoultry-shared-spur-cache-2026-11-17'
 logger=logging.getLogger(__name__)
 
 
@@ -52,6 +52,8 @@ def health_check(request):
             'gemini_configured': is_configured(),
             'gemini_spur_model': spur_model(),
             'gemini_spur_backup_model': spur_backup_model(),
+            'persistent_cache': True,
+            'authenticated_shared_cache': True,
         },
         'render': bool(os.getenv('RENDER') or os.getenv('RENDER_EXTERNAL_HOSTNAME')),
         'render_hostname': os.getenv('RENDER_EXTERNAL_HOSTNAME', ''),
@@ -1060,6 +1062,8 @@ def rooster_age_estimator_view(request):
     selected_age_model = 'finetuned' if candidate_available else 'original'
     from core.vision_api import is_configured
     spur_api_available = is_configured()
+    from .models import SpurCacheConnection,SpurPredictionCache
+    spur_api_available = spur_api_available or SpurCacheConnection.objects.filter(user=request.user).exists() or SpurPredictionCache.objects.filter(user=request.user).exists()
     results = []
     quick_mode = request.method == 'POST' and request.POST.get('analysis_mode') == 'age_only'
 
@@ -1121,7 +1125,7 @@ def rooster_age_estimator_view(request):
                 anatomy = constrain_legs_to_body(detection, anatomy)
                 if request.POST.get('use_spur_api') == 'on' and spur_api_available:
                     from core.spur_api_assistance import assist_missed_spurs
-                    anatomy = assist_missed_spurs(photo, anatomy, calibration)
+                    anatomy = assist_missed_spurs(photo, anatomy, calibration,user=request.user)
             assessment = summarize_anatomy(anatomy)
 
             # Quality heuristics are warnings, not a subject detector. Run the

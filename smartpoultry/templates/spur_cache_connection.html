@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><h1>Shared Spur Cache</h1><a class="btn btn-outline-secondary" href="{% url 'rooster_age_estimator' %}">Back to estimator</a></div>
+<section class="panel-card">
+<p>Successful API results are saved for your account using the image pixels, model and request settings. Failed requests are not saved as detections. This cache does not change the age model.</p>
+{% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+{% if notice %}<div class="alert alert-info" role="status">{{ notice }}</div>{% endif %}
+<p>Saved API entries for this account: {{ cache_count }}.</p>
+<h2>1. Create a token on Render</h2>
+<p><a href="{{ default_service_url }}{% url 'spur_cache_connection' %}" target="_blank" rel="noopener">Open cache settings on Render</a></p>
+<p>Open this page on Render while signed in to your Render account. Create a service token, then copy it into the localhost form below. Keep it private.</p>
+<form method="post">{% csrf_token %}<button class="btn btn-primary" name="action" value="issue">Create / replace service token</button>
+{% if credential_exists %}<button class="btn btn-outline-danger" name="action" value="revoke">Revoke service token</button>{% endif %}</form>
+{% if issued_token %}<label class="mt-3 d-block" for="issuedToken">Your token (shown once)</label><input id="issuedToken" readonly class="form-control" value="{{ issued_token }}" autocomplete="off"><p>Replacing this token disconnects clients using the previous one.</p>{% endif %}
+<hr>
+<h2>2. Connect localhost to Render</h2>
+{% if hosted_service %}
+<p>Render is the authoritative service. <a href="http://127.0.0.1:8000{% url 'spur_cache_connection' %}">Open the localhost connection form</a> and paste your token there.</p>
+{% else %}
+{% if connection %}<p>Connected to {{ connection.service_url }} as <strong>{{ connection.remote_username }}</strong>.</p>
+<form method="post">{% csrf_token %}<button class="btn btn-outline-danger" name="action" value="disconnect">Disconnect shared cache</button></form>{% endif %}
+<p>On localhost, enter the token you created on Render. Each account has its own connection. The token is encrypted in the local database and is never displayed again.</p>
+<form method="post" class="mt-3">{% csrf_token %}<input type="hidden" name="action" value="connect">
+<label for="cacheUrl">Render service address</label><input id="cacheUrl" class="form-control mb-3" name="service_url" type="url" value="{{ default_service_url }}" required>
+<label for="cacheToken">Service token from your Render account</label><input id="cacheToken" class="form-control mb-3" name="service_token" type="password" autocomplete="off" required>
+<button class="btn btn-primary">Verify and connect</button></form>
+{% endif %}
+<p class="mt-3">After connecting, localhost asks Render for the saved result first. On a cache miss, Render analyzes the image once and saves the successful response. A previously shared local copy can be reused during a service outage. Changing request settings creates a separate cache entry.</p>
+</section>
+{% endblock %}

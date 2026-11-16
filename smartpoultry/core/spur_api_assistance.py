@@ -66,7 +66,7 @@ def _recover_local_outlines(result, added_boxes, pixels_per_cm):
     result['unconfirmed_masks'] = unmatched
 
 
-def assist_missed_spurs(source, anatomy, pixels_per_cm=None):
+def assist_missed_spurs(source, anatomy, pixels_per_cm=None, *, user=None):
     if anatomy.get('status') != 'completed' or not anatomy.get('legs'):
         return anatomy
     regions = anatomy.get('spurs', []) + anatomy.get('masks', [])
@@ -87,7 +87,11 @@ def assist_missed_spurs(source, anatomy, pixels_per_cm=None):
             check_image_size(raw)
             image = ImageOps.exif_transpose(raw).convert('RGB')
         model = spur_model()
-        api = locate_spurs(image, model=model, timeout=20, max_attempts=2)
+        if user is not None:
+            from .spur_cache import prediction
+            api=prediction(user,image,'localization')
+        else:
+            api = locate_spurs(image, model=model, timeout=20, max_attempts=2)
         api.setdefault('model', model)
         result['api_spur_assistance'] = copy.deepcopy(api)
         accepted = []

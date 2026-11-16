@@ -47,6 +47,8 @@ def review_spur(request, estimate_id):
     candidates_available=candidate_manifest() is not None
     from .vision_api import is_configured
     api_available=is_configured()
+    from .models import SpurCacheConnection,SpurPredictionCache
+    api_available=api_available or SpurCacheConnection.objects.filter(user=request.user).exists() or SpurPredictionCache.objects.filter(user=request.user,task='geometry').exists()
     api_suggest=request.method=='POST' and request.POST.get('action')=='api_suggest'
     suggestion=None
     draft_token=''
@@ -62,9 +64,9 @@ def review_spur(request, estimate_id):
         elif not api_available:
             suggestion={'status':'error','message':'Gemini geometry suggestions are not configured.'}
         else:
-            from .geometry_api import propose_geometry
+            from .spur_cache import prediction
             with record.photo.open('rb') as stream:
-                with Image.open(stream) as image:response=propose_geometry(image)
+                with Image.open(stream) as image:response=prediction(request.user,image,'geometry')
             suggestion=response
             if response.get('status')=='completed' and response.get('regions'):
                 from .poultry_vision import _box_iou

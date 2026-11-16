@@ -87,7 +87,7 @@ class FreeHostedEstimatorTests(TestCase):
     def test_opted_in_api_assistance_saves_source_and_preserves_age(self):
         content=(Path(__file__).parent/'testdata/full_chicken.jpg').read_bytes()
         api={'status':'completed','boxes':[[161.1,204.6,183.9,224.4]],'model_version':'recorded-model'}
-        with patch('core.vision_api.is_configured',return_value=True),patch('core.spur_api_assistance.locate_spurs',return_value=api) as call:
+        with patch('core.vision_api.is_configured',return_value=True),patch('core.spur_cache.prediction',return_value=api) as call:
             response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'full','use_spur_api':'on','photos':[SimpleUploadedFile('arbitrary-name.jpg',content,content_type='image/jpeg')]})
         self.assertEqual(response.status_code,200)
         call.assert_called_once()

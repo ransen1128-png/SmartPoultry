@@ -7,9 +7,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 from .measurement_review import review_spur
+from .spur_cache_service import service as spur_cache_service, connection_page
 
 urlpatterns = [
     path('__health/', views.health_check, name='health_check'),
+    path('api/spur-cache/<str:action>/', spur_cache_service, name='spur_cache_service'),
+    path('rooster-age-estimator/shared-cache/', connection_page, name='spur_cache_connection'),
     path('', views.index, name='index'),
     path('login/', views.index, name='login'),
     path('forgot-password/', views.forgot_password, name='forgot_password'),

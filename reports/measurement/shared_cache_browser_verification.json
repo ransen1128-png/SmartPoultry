@@ -1,0 +1,18 @@
+{
+  "browser_pairing": "passed",
+  "token_encrypted_at_client": true,
+  "actual_service_api_prediction": "passed",
+  "boxes": [
+    [
+      148.5,
+      202.5,
+      183.0,
+      223.5
+    ]
+  ],
+  "new_service_process_compute_blocked": "passed",
+  "identical_shared_result_after_restart": true,
+  "anonymous_request_status": 401,
+  "javascript_errors": [],
+  "databases": "two isolated temporary databases; production accounts unchanged"
+}
