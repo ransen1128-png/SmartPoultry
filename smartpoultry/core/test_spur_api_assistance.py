@@ -10,6 +10,14 @@ from core.spur_api_assistance import assist_missed_spurs
 
 
 class SpurAPIAssistanceTests(TestCase):
+    def test_hosted_and_desktop_use_same_tested_default_despite_legacy_model_setting(self):
+        for hosted in ('', 'true'):
+            with patch.dict('os.environ',{'RENDER':hosted,'GEMINI_VISION_MODEL':'legacy-benchmark-model',
+                                         'GEMINI_SPUR_FALLBACK_MODEL':''}),patch('core.spur_api_assistance.locate_spurs',return_value=copy.deepcopy(self.api)) as call:
+                result=assist_missed_spurs(self.stream,self.anatomy)
+            self.assertEqual(call.call_args.kwargs,{'model':'gemini-3.1-flash-lite','timeout':20,'max_attempts':2})
+            self.assertEqual(result['api_spur_assistance']['model'],'gemini-3.1-flash-lite')
+
     def setUp(self):
         self.stream = BytesIO()
         Image.new('RGB', (300, 300), 'white').save(self.stream, format='PNG')

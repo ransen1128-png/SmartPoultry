@@ -26,7 +26,7 @@ from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 from .age_inference import bound_estimator_requests
 
 User = get_user_model()
-DEPLOY_MARKER = 'smartpoultry-spur-review-2026-11-16'
+DEPLOY_MARKER = 'smartpoultry-spur-api-parity-2026-11-16'
 logger=logging.getLogger(__name__)
 
 
@@ -34,7 +34,7 @@ def health_check(request):
     """Lightweight production diagnostic that avoids templates and database queries."""
     database = settings.DATABASES['default']
     from core.vision_deployment import deployment_status
-    from core.vision_api import is_configured
+    from core.vision_api import is_configured, spur_model
     static_dirs = [str(path) for path in getattr(settings, 'STATICFILES_DIRS', [])]
     static_sources = {
         'source_logo_exists': any((path / 'images' / 'smartpoultry_logo.svg').exists() for path in getattr(settings, 'STATICFILES_DIRS', [])),
@@ -50,6 +50,7 @@ def health_check(request):
             'curved_pixel_measurement': True,
             'physical_length_requires_known_scale': True,
             'gemini_configured': is_configured(),
+            'gemini_spur_model': spur_model(),
         },
         'render': bool(os.getenv('RENDER') or os.getenv('RENDER_EXTERNAL_HOSTNAME')),
         'render_hostname': os.getenv('RENDER_EXTERNAL_HOSTNAME', ''),

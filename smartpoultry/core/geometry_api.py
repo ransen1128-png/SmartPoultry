@@ -14,7 +14,7 @@ from io import BytesIO
 from PIL import ImageOps
 
 from .spur_measurement import validate_outline
-from .vision_api import _safe_http_error, validate_boxes
+from .vision_api import _safe_http_error, validate_boxes, spur_model
 
 PROMPT=('Find only visible rooster leg spurs, not claws, toes, the whole leg, feathers or background. '
         'Return JSON {"regions":[{"box":[ymin,xmin,ymax,xmax],"polygon":[[x,y],...],"base":[x,y],"tip":[x,y]}]}. '
@@ -50,7 +50,7 @@ def validate_geometry(payload,width,height):
 
 def propose_geometry(image,timeout=20):
     key=os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
-    model=os.environ.get('GEMINI_SPUR_FALLBACK_MODEL') or os.environ.get('GEMINI_VISION_MODEL')
+    model=spur_model()
     if not key or not model:return {'status':'unconfigured','regions':[],'message':'Gemini geometry suggestions are not configured.'}
     import re
     if not re.fullmatch(r'[A-Za-z0-9_.-]+',model):return {'status':'error','regions':[],'message':'Invalid API model identifier.'}

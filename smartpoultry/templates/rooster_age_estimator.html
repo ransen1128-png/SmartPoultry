@@ -141,7 +141,10 @@
                 <dd>{{ result.spur_observations }}</dd>
                 {% if result.api_spur_assistance %}
                 <dt>API assistance:</dt>
-                <dd>{{ result.api_spur_assistance.status }} — {{ result.api_spur_assistance.message }}</dd>
+                <dd>{{ result.api_spur_assistance.status }} — {{ result.api_spur_assistance.message }}
+                    {% if result.api_spur_assistance.model %}Model: {{ result.api_spur_assistance.model }}.{% endif %}
+                    {% if result.api_spur_assistance.attempts %} Attempts: {{ result.api_spur_assistance.attempts }}.{% endif %}
+                </dd>
                 {% endif %}
                 <dt>Confidence:</dt>
                 <dd>{{ result.confidence }}</dd>

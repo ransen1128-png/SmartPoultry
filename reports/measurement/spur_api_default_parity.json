@@ -1,0 +1,18 @@
+{
+  "environment": "Render-style ONNX anatomy with fallback env absent; actual external API request",
+  "selected_model": "gemini-3.1-flash-lite",
+  "api_status": "completed",
+  "message": "API-predicted spur boxes; not verified annotations or physical measurements.",
+  "attempts": 1,
+  "accepted_regions": 1,
+  "spur_boxes": [
+    [
+      148.5,
+      202.5,
+      183.0,
+      223.5
+    ]
+  ],
+  "masks": 0,
+  "measurements": 0
+}

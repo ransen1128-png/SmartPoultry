@@ -3,10 +3,26 @@ from io import BytesIO
 from unittest import TestCase
 from unittest.mock import patch
 from PIL import Image
-from core.vision_api import locate_spurs,validate_boxes,crop_visible_spur
+from core.vision_api import locate_spurs,validate_boxes,crop_visible_spur,spur_model,is_configured
 
 
 class VisionAPIContractTests(TestCase):
+    def test_spur_model_default_and_explicit_override_do_not_use_legacy_benchmark_model(self):
+        with patch.dict('os.environ',{'GEMINI_API_KEY':'configuration-test','GEMINI_VISION_MODEL':'legacy',
+                                     'GEMINI_SPUR_FALLBACK_MODEL':''}):
+            self.assertEqual(spur_model(),'gemini-3.1-flash-lite')
+            self.assertTrue(is_configured())
+        with patch.dict('os.environ',{'GEMINI_SPUR_FALLBACK_MODEL':' explicit-test-model '}):
+            self.assertEqual(spur_model(),'explicit-test-model')
+
+    def test_temporary_network_failure_retries_without_fabricating_boxes(self):
+        response={'candidates':[{'finishReason':'STOP','content':{'parts':[{'text':'{"boxes": [[100,200,400,600]]}'}]}}]}
+        with patch('core.vision_api.urllib.request.urlopen',side_effect=[TimeoutError(),BytesIO(json.dumps(response).encode())]) as call,patch('core.vision_api.time.sleep'):
+            result=locate_spurs(Image.new('RGB',(201,101)),api_key='retry-contract-key',model='retry-test-model',max_attempts=2)
+        self.assertEqual(call.call_count,2)
+        self.assertEqual(result['attempts'],2)
+        self.assertEqual(result['status'],'completed')
+
     def test_gemini3_requests_use_bounded_thinking_and_record_policy(self):
         response={'candidates':[{'finishReason':'STOP','content':{'parts':[{'text':'{"boxes": []}'}]}}]}
         with patch('core.vision_api.urllib.request.urlopen',return_value=BytesIO(json.dumps(response).encode())) as request:

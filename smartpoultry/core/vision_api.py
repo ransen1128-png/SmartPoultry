@@ -30,12 +30,17 @@ PROMPT = (
 
 PROMPT_HASH = hashlib.sha256(PROMPT.encode()).hexdigest()
 REQUEST_POLICY_HASH = hashlib.sha256(b'20261116:gemini-3-low-thinking;other-model-default').hexdigest()
+DEFAULT_SPUR_MODEL = 'gemini-3.1-flash-lite'
+
+
+def spur_model():
+    """Same tested model for web assistance, independent of offline benchmarks."""
+    return os.environ.get('GEMINI_SPUR_FALLBACK_MODEL', '').strip() or DEFAULT_SPUR_MODEL
 
 
 def is_configured():
     """Readiness for the form; never makes an API request."""
-    return bool((os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY'))
-                and (os.environ.get('GEMINI_SPUR_FALLBACK_MODEL') or os.environ.get('GEMINI_VISION_MODEL')))
+    return bool(os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY'))
 
 _MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 _MAX_CACHE = 128

@@ -5,11 +5,10 @@ for training. The age model and its input remain unchanged.
 """
 import copy
 import math
-import os
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from .vision_api import locate_spurs
+from .vision_api import locate_spurs, spur_model
 
 
 def _valid_box(box, width, height):
@@ -87,8 +86,9 @@ def assist_missed_spurs(source, anatomy, pixels_per_cm=None):
             from .free_inference import check_image_size
             check_image_size(raw)
             image = ImageOps.exif_transpose(raw).convert('RGB')
-        api = locate_spurs(image, model=os.environ.get('GEMINI_SPUR_FALLBACK_MODEL') or None,
-                           timeout=20, max_attempts=1)
+        model = spur_model()
+        api = locate_spurs(image, model=model, timeout=20, max_attempts=2)
+        api.setdefault('model', model)
         result['api_spur_assistance'] = copy.deepcopy(api)
         accepted = []
         agreements = 0
