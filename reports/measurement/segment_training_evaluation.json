@@ -1,0 +1,41 @@
+{
+  "task": "segment",
+  "status": "executed_experimental_candidate",
+  "deployed": false,
+  "dataset": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\derived\\measurement_v1",
+  "checkpoint": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\runs\\measurement_segment_v1\\weights\\best.pt",
+  "metrics": {
+    "val": {
+      "metrics/precision(B)": 0.8373244858632487,
+      "metrics/recall(B)": 0.5454545454545454,
+      "metrics/mAP50(B)": 0.5975444099378882,
+      "metrics/mAP50-95(B)": 0.45425193023613675,
+      "metrics/precision(M)": 0.8373244858632487,
+      "metrics/recall(M)": 0.5454545454545454,
+      "metrics/mAP50(M)": 0.5954288106429412,
+      "metrics/mAP50-95(M)": 0.372108292060088,
+      "fitness": 0.8263602222962247
+    },
+    "test": {
+      "metrics/precision(B)": 0.8972314198817648,
+      "metrics/recall(B)": 0.2857142857142857,
+      "metrics/mAP50(B)": 0.4047977011494252,
+      "metrics/mAP50-95(B)": 0.2849241025643131,
+      "metrics/precision(M)": 0.8972314198817648,
+      "metrics/recall(M)": 0.2857142857142857,
+      "metrics/mAP50(M)": 0.4032250344827586,
+      "metrics/mAP50-95(M)": 0.16023859345682673,
+      "fitness": 0.44516269602113984
+    }
+  },
+  "age_models_unchanged": true,
+  "age_fingerprints": {
+    "spur_age\\experiments\\20261109T074656355731Z\\candidate.pth": "0567ac8785559c380591f85ccc8ef0f6b980bb18ff3ca688e514016ae919d389",
+    "spur_age\\experiments\\20261109T074813049131Z\\candidate.pth": "0567ac8785559c380591f85ccc8ef0f6b980bb18ff3ca688e514016ae919d389",
+    "spur_age\\experiments\\finetune_20261112T062415Z\\candidate.pth": "91ec42527a3d958e75cb105bc31deffa2f96b5ce82aa3e7fd2c8b3d7015bb61c",
+    "spur_age\\models\\spur_age_model.pth": "caf542a63c69a003f85ddeddb6777480e61601f13f3f2d58a82ef0c9cd6ef2b7",
+    "spur_age\\models\\backups\\resnet18_caf542a63c69a003f85ddeddb6777480e61601f13f3f2d58a82ef0c9cd6ef2b7.pth": "caf542a63c69a003f85ddeddb6777480e61601f13f3f2d58a82ef0c9cd6ef2b7"
+  },
+  "independent_annotation_verification": false,
+  "limitation": "Assistant visual endpoint labels; source-family holdouts and unresolved animal identities. No claim of exact clinical endpoints or physical length."
+}

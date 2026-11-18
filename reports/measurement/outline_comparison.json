@@ -1,0 +1,62 @@
+{
+  "baseline_val": {
+    "checkpoint_sha256": "e2e91c19fb1839e908db87679ce2c20f39bb863ab71ff9022ae1bcbb39956fbe",
+    "metrics": {
+      "metrics/precision(B)": 1.0,
+      "metrics/recall(B)": 0.7064214097743676,
+      "metrics/mAP50(B)": 0.7765955282112845,
+      "metrics/mAP50-95(B)": 0.4654450619669547,
+      "metrics/precision(M)": 0.8715285248153333,
+      "metrics/recall(M)": 0.618690671787151,
+      "metrics/mAP50(M)": 0.6831038034213686,
+      "metrics/mAP50-95(M)": 0.36725312285099126,
+      "fitness": 0.832698184817946
+    },
+    "mask_confidence_threshold": 0.34134134134134136
+  },
+  "baseline_test": {
+    "checkpoint_sha256": "e2e91c19fb1839e908db87679ce2c20f39bb863ab71ff9022ae1bcbb39956fbe",
+    "metrics": {
+      "metrics/precision(B)": 0.7469748414687465,
+      "metrics/recall(B)": 0.2857142857142857,
+      "metrics/mAP50(B)": 0.4078048780487804,
+      "metrics/mAP50-95(B)": 0.31788974514893364,
+      "metrics/precision(M)": 0.7469748414687465,
+      "metrics/recall(M)": 0.2857142857142857,
+      "metrics/mAP50(M)": 0.4069606666666666,
+      "metrics/mAP50-95(M)": 0.23219609692461898,
+      "fitness": 0.5500858420735526
+    },
+    "mask_confidence_threshold": 0.7937937937937938
+  },
+  "candidate_val": {
+    "checkpoint_sha256": "070a1f3a57929e7d9cb4fa8482efe9c2874b61ce2e14a4327c838d8a760479e3",
+    "metrics": {
+      "metrics/precision(B)": 0.8373241392951412,
+      "metrics/recall(B)": 0.5454545454545454,
+      "metrics/mAP50(B)": 0.5975444099378882,
+      "metrics/mAP50-95(B)": 0.45425193023613675,
+      "metrics/precision(M)": 0.8373241392951412,
+      "metrics/recall(M)": 0.5454545454545454,
+      "metrics/mAP50(M)": 0.5954288106429412,
+      "metrics/mAP50-95(M)": 0.372108292060088,
+      "fitness": 0.8263602222962247
+    },
+    "mask_confidence_threshold": 0.6186186186186187
+  },
+  "candidate_test": {
+    "checkpoint_sha256": "070a1f3a57929e7d9cb4fa8482efe9c2874b61ce2e14a4327c838d8a760479e3",
+    "metrics": {
+      "metrics/precision(B)": 0.8972318120019717,
+      "metrics/recall(B)": 0.2857142857142857,
+      "metrics/mAP50(B)": 0.4047977011494252,
+      "metrics/mAP50-95(B)": 0.2849241025643131,
+      "metrics/precision(M)": 0.8972318120019717,
+      "metrics/recall(M)": 0.2857142857142857,
+      "metrics/mAP50(M)": 0.4032250344827586,
+      "metrics/mAP50-95(M)": 0.16023859345682673,
+      "fitness": 0.44516269602113984
+    },
+    "mask_confidence_threshold": 0.8678678678678678
+  }
+}

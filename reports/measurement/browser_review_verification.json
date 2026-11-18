@@ -1,0 +1,14 @@
+{
+  "manual_measurement_editor": "passed",
+  "dataset_editor_images": 151,
+  "dataset_review_download": "passed",
+  "saved_and_reopened": "passed",
+  "source": "synthetic UI fixture; no training data generated",
+  "length_px": 130.83,
+  "test_scale_pixels_per_cm": 10,
+  "physical_length_cm_under_test_scale": 13.083,
+  "model_outputs_preserved": true,
+  "javascript_errors": [],
+  "neural_imports_blocked": true,
+  "database": "isolated temporary SQLite; no customer data changed"
+}

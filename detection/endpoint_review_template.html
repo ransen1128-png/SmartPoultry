@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spur dataset annotation review</title>
+<style>body{font:16px system-ui;margin:24px;background:#f3f6fa;color:#16304d}main{max-width:1100px;margin:auto}button,select,input{font:inherit;padding:9px;margin:4px;border:1px solid #bacbde;border-radius:6px}button{cursor:pointer;background:white}svg{width:min(90vw,700px);height:auto;background:white;border:1px solid #ccc;touch-action:none}aside{padding:15px;background:white;border-radius:10px;margin-bottom:15px}.tools{display:flex;flex-wrap:wrap}#status{min-height:24px}</style>
+<main><h1>Review existing spur annotations</h1><aside>These are draft visual labels, not verified measurements. Correct the visible outline, mark the attachment base and distal tip, or leave an endpoint unresolved. Previews use the existing 600 × 600 coordinate reference. Original images and age labels stay unchanged. Nothing is uploaded.</aside>
+<div><button id="prev">Previous image</button><select id="images" aria-label="Image"></select><button id="next">Next image</button><select id="instances" aria-label="Spur instance"></select></div>
+<p id="meta"></p><div class="tools"><button id="addSpur">Add visible spur</button><button id="removeSpur">Remove selected instance</button><button data-tool="base">Mark base</button><button data-tool="tip">Mark tip</button><button id="newOutline">Redraw outline</button><button id="undo">Undo outline point</button><button id="unknownBase">Base unresolved</button><button id="unknownTip">Tip unresolved</button></div>
+<p id="status" role="status"></p><svg id="canvas" viewBox="0 0 600 600"><image id="photo" width="600" height="600"></image><g id="shapes"></g></svg>
+<p><label><input type="checkbox" id="exclude"> Exclude this image from training; retain it for review.</label></p>
+<p><label><input type="checkbox" id="negative"> I inspected this image and verified that no spur is visibly identifiable. This is a visible-region negative label, not anatomical absence.</label></p>
+<p><label><input type="checkbox" id="approved"> I reviewed all visible spur instances in this image and corrected or marked unresolved endpoints.</label></p>
+<p><button id="export">Download reviewed annotation JSON</button> Save it as <code>detection/endpoint_reviews.reviewed.json</code>. The downloaded file does not overwrite originals or activate a model.</p>
+<p>Export the reviewed training set with <code>python detection/export_measurement_annotations.py --labels detection/endpoint_reviews.reviewed.json --output detection/derived/measurement_reviewed_v2</code>. Only approved images are eligible, and every split must remain represented.</p></main>
+<script id="data" type="application/json">__REVIEW_DATA__</script><script>
+const data=JSON.parse(document.getElementById('data').textContent),doc=data.document,items=data.items;
+let position=0,instance=0,tool='base';const by=id=>document.getElementById(id),svg=by('canvas'),ns='http://www.w3.org/2000/svg';
+const current=()=>doc.images[String(items[position].index)],point=()=>current().spurs[instance];
+items.forEach((item,i)=>{const option=document.createElement('option');option.value=i;option.textContent=`Image ${item.index} · ${item.split}${item.issues.length?' · geometry review needed':''}`;by('images').appendChild(option);});
+function draw(){by('shapes').replaceChildren();by('photo').setAttribute('href',items[position].image);by('meta').textContent=`Image ${items[position].index} · ${items[position].split} · ${items[position].family}. Review every visible instance before approving. Initial draft flags: ${items[position].issues.join('; ')||'none'}.`;
+ const add=(tag,attributes,text)=>{const e=document.createElementNS(ns,tag);Object.entries(attributes).forEach(([k,v])=>e.setAttribute(k,v));if(text)e.textContent=text;by('shapes').appendChild(e);};
+ const p=point();if(p){add('polygon',{points:p.polygon.map(v=>v.join(',')).join(' '),fill:'#00bcd4','fill-opacity':.2,stroke:'#00bcd4','stroke-width':2});
+ for(const [name,color] of [['base','#148b41'],['tip','#df3030']])if(p[name]){add('circle',{cx:p[name][0],cy:p[name][1],r:5,fill:color});add('text',{x:p[name][0]+7,y:p[name][1],fill:color,'font-size':18,stroke:'white','stroke-width':.5,'paint-order':'stroke'},name);}}
+ by('approved').checked=!!current().reviewed_by_human;by('exclude').checked=!!current().exclude_from_training;
+ by('negative').checked=!!current().negative_visible_spur_verified;
+ by('status').textContent=p?`Spur ${instance+1}/${current().spurs.length}; tool: ${tool}; base: ${p.base?'marked':'unresolved'}; tip: ${p.tip?'marked':'unresolved'}.`:'No labeled instances. Add a visible spur, verify a visible-region negative, or leave this image excluded/unapproved.';
+}
+function load(){by('images').value=position;by('instances').replaceChildren();current().spurs.forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`Spur ${i+1}`;by('instances').appendChild(o);});instance=0;draw();}
+function changed(){current().reviewed_by_human=false;draw();}
+by('images').onchange=e=>{position=Number(e.target.value);load();};by('instances').onchange=e=>{instance=Number(e.target.value);draw();};
+by('prev').onclick=()=>{position=Math.max(0,position-1);load();};by('next').onclick=()=>{position=Math.min(items.length-1,position+1);load();};
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{tool=b.dataset.tool;draw();});
+by('addSpur').onclick=()=>{current().spurs.push({polygon:[],base:null,tip:null});current().negative_visible_spur_verified=false;current().reviewed_by_human=false;load();instance=current().spurs.length-1;by('instances').value=instance;tool='polygon';draw();};
+by('removeSpur').onclick=()=>{if(!point())return;current().spurs.splice(instance,1);current().reviewed_by_human=false;load();};
+by('newOutline').onclick=()=>{if(!point())return;tool='polygon';point().polygon=[];changed();};by('undo').onclick=()=>{if(!point())return;point().polygon.pop();changed();};
+by('unknownBase').onclick=()=>{if(!point())return;point().base=null;changed();};by('unknownTip').onclick=()=>{if(!point())return;point().tip=null;changed();};
+svg.onpointerdown=event=>{if(!point())return;const p=new DOMPoint(event.clientX,event.clientY).matrixTransform(svg.getScreenCTM().inverse());const xy=[Math.round(Math.min(600,Math.max(0,p.x))),Math.round(Math.min(600,Math.max(0,p.y)))];if(tool==='polygon'){if(point().polygon.length>=240)return;point().polygon.push(xy);}else point()[tool]=xy;changed();};
+by('exclude').onchange=e=>{current().exclude_from_training=e.target.checked;current().reviewed_by_human=false;draw();};
+by('negative').onchange=e=>{if(e.target.checked && current().spurs.length){e.target.checked=false;by('status').textContent='Remove the instance labels only if you reviewed them as incorrect before marking a negative.';return;}current().negative_visible_spur_verified=e.target.checked;current().reviewed_by_human=false;draw();};
+by('approved').onchange=e=>{if(e.target.checked && !current().exclude_from_training && (current().spurs.some(p=>p.polygon.length<3)||(!current().spurs.length&&!current().negative_visible_spur_verified))){e.target.checked=false;by('status').textContent='Review visible instances, explicitly verify a visible-region negative, or exclude the image.';return;}current().reviewed_by_human=e.target.checked;};
+by('export').onclick=()=>{doc.review_status='human_reviewed_entries';doc.independent_annotation_verification=false;const url=URL.createObjectURL(new Blob([JSON.stringify(doc,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='endpoint_reviews.reviewed.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};load();
+</script></html>

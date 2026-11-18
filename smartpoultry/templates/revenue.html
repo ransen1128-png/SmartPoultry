@@ -61,7 +61,7 @@
 <details class="card mb-4" id="legacy-reconciliation"><summary class="card-header">Reconcile older sales with production</summary>
 <div class="card-body"><p>Confirm the actual batch used by each older sale. Only matching units and sufficient stock are offered; no conversion is assumed.</p><div id="legacySales"></div><p id="legacyError" class="text-danger" role="alert"></p></div></details>
 <div class="modal fade" id="addRevenueModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Add Revenue</h5>
@@ -82,10 +82,13 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div id="revenueOrderItems">
+                    <section class="revenue-order-item border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2"><h6 class="order-item-title mb-0">Order item 1</h6><button type="button" class="remove-order-item btn btn-sm btn-outline-danger" hidden>Remove</button></div>
                     <div class="mb-3">
                         <label class="form-label">Available production</label>
                         <select class="form-select" name="production" required></select>
-                        <small id="productionAvailable" class="text-muted"></small>
+                        <small class="production-available text-muted"></small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Quantity</label>
@@ -95,6 +98,9 @@
                         <label class="form-label">Price per Unit</label>
                         <input type="number" class="form-control" name="price_per_unit" min="0" step="0.01" required>
                     </div>
+                    </section>
+                    </div>
+                    <button type="button" id="addRevenueOrderItem" class="btn btn-outline-primary mb-3"><i class="bi bi-plus-circle"></i> Add another item</button>
                     <div class="mb-3">
                         <label class="form-label">Date</label>
                         <input type="date" class="form-control" name="date" required>
@@ -142,19 +148,48 @@
     document.addEventListener('DOMContentLoaded',loadLegacySales);
     const revenueForm = document.getElementById('addRevenueForm');
     let productionStock = [];
+    const orderItems = document.getElementById('revenueOrderItems');
+    const orderItemTemplate = orderItems.firstElementChild.cloneNode(true);
+    function refreshOrderItemLabels() {
+        orderItems.querySelectorAll('.revenue-order-item').forEach((row,index)=>{
+            row.querySelector('.order-item-title').textContent='Order item '+(index+1);
+            row.querySelector('.remove-order-item').hidden=orderItems.children.length===1;
+        });
+        document.getElementById('addRevenueOrderItem').disabled=orderItems.children.length>=50;
+    }
+    document.getElementById('addRevenueOrderItem').addEventListener('click',()=>{
+        if(orderItems.children.length>=50)return;
+        orderItems.append(orderItemTemplate.cloneNode(true));
+        refreshOrderItemLabels();updateProductionChoices();
+    });
+    orderItems.addEventListener('click',event=>{
+        const button=event.target.closest('.remove-order-item');
+        if(button && orderItems.children.length>1){button.closest('.revenue-order-item').remove();refreshOrderItemLabels();updateAvailableQuantity();}
+    });
+    orderItems.addEventListener('change',updateAvailableQuantity);
+    orderItems.addEventListener('input',updateAvailableQuantity);
     function updateProductionChoices() {
-        const selected = revenueForm.elements.production.value;
         const options = productionStock.filter(item => String(item.branch || '') === revenueForm.elements.branch.value);
-        revenueForm.elements.production.replaceChildren(new Option(options.length ? 'Choose production stock...' : 'No available production for this branch', ''));
-        options.forEach(item => revenueForm.elements.production.add(new Option(`${item.product}${item.revenue_type==='eggs'?' ('+(item.egg_size_label || 'size not recorded')+')':''} - ${item.flock} - ${item.date} - ${item.available_quantity} available`,item.id)));
-        if (options.some(item => String(item.id) === selected)) revenueForm.elements.production.value = selected;
+        orderItems.querySelectorAll('[name="production"]').forEach(select=>{
+            const selected=select.value;
+            select.replaceChildren(new Option(options.length ? 'Choose production stock...' : 'No available production for this branch', ''));
+            options.forEach(item => select.add(new Option(`${item.product}${item.revenue_type==='eggs'?' ('+(item.egg_size_label || 'size not recorded')+')':''} - ${item.flock} - ${item.date} - ${item.available_quantity} available`,item.id)));
+            if(options.some(item=>String(item.id)===selected))select.value=selected;
+        });
         updateAvailableQuantity();
     }
     function updateAvailableQuantity() {
-        const item = productionStock.find(item => String(item.id) === revenueForm.elements.production.value);
-        revenueForm.elements.quantity.max = item ? item.available_quantity : '';
-        revenueForm.elements.date.min = item ? item.date : '';
-        document.getElementById('productionAvailable').textContent = item ? `Available to sell: ${item.available_quantity}` : '';
+        const rows=Array.from(orderItems.children);let earliest='';
+        rows.forEach(row=>{
+            const select=row.querySelector('[name="production"]'),quantity=row.querySelector('[name="quantity"]');
+            const item=productionStock.find(item=>String(item.id)===select.value);
+            const reserved=rows.filter(other=>other!==row && other.querySelector('[name="production"]').value===select.value).reduce((sum,other)=>sum+Number(other.querySelector('[name="quantity"]').value || 0),0);
+            const available=item?Math.max(0,Number((Number(item.available_quantity)-reserved).toFixed(2))):null;
+            quantity.max=available===null?'':available;
+            row.querySelector('.production-available').textContent=item?'Available for this item: '+available:'';
+            if(item && item.date>earliest)earliest=item.date;
+        });
+        revenueForm.elements.date.min=earliest;
     }
     async function loadProductionStock() {
         try {
@@ -165,7 +200,6 @@
         } catch (error) { document.getElementById('revenueError').textContent = error.message; }
     }
     revenueForm.elements.branch.addEventListener('change', updateProductionChoices);
-    revenueForm.elements.production.addEventListener('change', updateAvailableQuantity);
     document.getElementById('addRevenueModal').addEventListener('show.bs.modal', loadProductionStock);
     function loadRevenue() {
         fetch('/api/revenue/')
@@ -214,16 +248,18 @@
         this.disabled = true;
         const formData = new FormData(form);
         
-        fetch('/api/revenue/', {
+        fetch('/api/revenue/order/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
-                production: parseInt(formData.get('production')),
-                quantity: parseFloat(formData.get('quantity')),
-                price_per_unit: parseFloat(formData.get('price_per_unit')),
+                items: Array.from(orderItems.children).map(row=>({
+                    production:Number(row.querySelector('[name="production"]').value),
+                    quantity:row.querySelector('[name="quantity"]').value,
+                    price_per_unit:row.querySelector('[name="price_per_unit"]').value
+                })),
                 date: formData.get('date'),
                 buyer_name:formData.get('buyer_name'),
                 buyer_contact:formData.get('buyer_contact'),
@@ -233,13 +269,15 @@
         })
         .then(async response => {
             const data = await response.json();
-            if (!response.ok) throw new Error(Object.entries(data).map(([field,value]) => `${field}: ${value}`).join('; '));
+            if (!response.ok) throw new Error(Object.entries(data).map(([field,value]) => `${field}: ${typeof value==='object'?JSON.stringify(value):value}`).join('; '));
             return data;
         })
         .then(data => {
             bootstrap.Modal.getInstance(document.getElementById('addRevenueModal')).hide();
             loadRevenue();
             form.reset();
+            orderItems.replaceChildren(orderItemTemplate.cloneNode(true));
+            refreshOrderItemLabels();
             loadProductionStock();
         })
         .catch(error => { document.getElementById('revenueError').textContent = error.message; })

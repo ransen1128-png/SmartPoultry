@@ -230,6 +230,24 @@
         document.getElementById('distributionQuantity').max=item.quantity;
     }
 
+    function showDistributionBlocked(message) {
+        const inventoryId=selectedInventoryId;
+        const values=Object.fromEntries(new FormData(document.getElementById('distributionForm')));
+        const notification=document.getElementById('appDialog');
+        notification.addEventListener('hidden.bs.modal',()=>{
+            showDistributionModal(inventoryId,true);
+            const form=document.getElementById('distributionForm');
+            Object.entries(values).forEach(([name,value])=>{if(form.elements[name])form.elements[name].value=value;});
+            distributionFeedback(message);
+        },{once:true});
+        // Finish the save state before switching dialogs; Bootstrap supports one at a time.
+        distributionSaving=false;
+        distributionModal.addEventListener('hidden.bs.modal',()=>{
+            showAppDialog(message,'Cannot distribute inventory');
+        },{once:true});
+        bootstrap.Modal.getInstance(distributionModal).hide();
+    }
+
     document.getElementById('allDistributionHistoryBtn').addEventListener('click', () => {
         showDistributionModal(null, false);
     });
@@ -275,6 +293,12 @@
                 .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`)
                 .join('\n') || 'Unable to save distribution.';
             distributionFeedback(message);
+            if(data.branch){
+                const reason=Array.isArray(data.branch)?data.branch.join(' '):String(data.branch);
+                const branchName=form.elements.branch.selectedOptions[0]?.textContent || 'This branch';
+                showDistributionBlocked(branchName+': '+reason);
+                return;
+            }
             if(data.quantity){
                 try{await loadInventory();const latest=inventoryItems.get(inventoryId);if(latest)updateDistributionAvailable(latest);}
                 catch(refreshError){distributionFeedback(message+' Stock could not refresh; reload the page to see current availability.');}

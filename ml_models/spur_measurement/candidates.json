@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "purpose": "review_suggestions_only",
+  "independent_annotation_verification": false,
+  "pose": {
+    "filename": "detection/runs/measurement_pose_v1/weights/best.pt",
+    "sha256": "956b60d604784466f3a3296d1348043f237522c84610cdfb4e9f570e1562f6b8",
+    "threshold": 0.16116116116116116
+  },
+  "segment": {
+    "filename": "ml_models/poultry_vision/segment_e2e91c19fb1839e9.pt",
+    "sha256": "e2e91c19fb1839e908db87679ce2c20f39bb863ab71ff9022ae1bcbb39956fbe",
+    "threshold": 0.34134134134134136
+  },
+  "evaluation": "detection/runs/measurement_pose_v1/direct_endpoint_evaluation.json"
+}

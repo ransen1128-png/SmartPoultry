@@ -1,0 +1,41 @@
+{
+  "task": "pose",
+  "status": "executed_experimental_candidate",
+  "deployed": false,
+  "dataset": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\derived\\measurement_v1",
+  "checkpoint": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\detection\\runs\\measurement_pose_v1\\weights\\best.pt",
+  "metrics": {
+    "val": {
+      "metrics/precision(B)": 0.7771024298602862,
+      "metrics/recall(B)": 0.6341534068154823,
+      "metrics/mAP50(B)": 0.6244405597670842,
+      "metrics/mAP50-95(B)": 0.3662213294958722,
+      "metrics/precision(P)": 1.0,
+      "metrics/recall(P)": 0.8089696816491275,
+      "metrics/mAP50(P)": 0.8589273835920177,
+      "metrics/mAP50-95(P)": 0.7508567045927652,
+      "fitness": 1.1170780340886375
+    },
+    "test": {
+      "metrics/precision(B)": 0.9711327099754119,
+      "metrics/recall(B)": 0.2857142857142857,
+      "metrics/mAP50(B)": 0.3484754623091037,
+      "metrics/mAP50-95(B)": 0.22768963278159832,
+      "metrics/precision(P)": 0.9711327099754119,
+      "metrics/recall(P)": 0.2857142857142857,
+      "metrics/mAP50(P)": 0.41201027207953034,
+      "metrics/mAP50-95(P)": 0.3501975229948435,
+      "fitness": 0.5778871557764418
+    }
+  },
+  "age_models_unchanged": true,
+  "age_fingerprints": {
+    "spur_age\\experiments\\20261109T074656355731Z\\candidate.pth": "0567ac8785559c380591f85ccc8ef0f6b980bb18ff3ca688e514016ae919d389",
+    "spur_age\\experiments\\20261109T074813049131Z\\candidate.pth": "0567ac8785559c380591f85ccc8ef0f6b980bb18ff3ca688e514016ae919d389",
+    "spur_age\\experiments\\finetune_20261112T062415Z\\candidate.pth": "91ec42527a3d958e75cb105bc31deffa2f96b5ce82aa3e7fd2c8b3d7015bb61c",
+    "spur_age\\models\\spur_age_model.pth": "caf542a63c69a003f85ddeddb6777480e61601f13f3f2d58a82ef0c9cd6ef2b7",
+    "spur_age\\models\\backups\\resnet18_caf542a63c69a003f85ddeddb6777480e61601f13f3f2d58a82ef0c9cd6ef2b7.pth": "caf542a63c69a003f85ddeddb6777480e61601f13f3f2d58a82ef0c9cd6ef2b7"
+  },
+  "independent_annotation_verification": false,
+  "limitation": "Assistant visual endpoint labels; source-family holdouts and unresolved animal identities. No claim of exact clinical endpoints or physical length."
+}

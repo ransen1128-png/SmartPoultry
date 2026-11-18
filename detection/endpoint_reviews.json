@@ -1,0 +1,662 @@
+{
+  "schema_version": 1,
+  "coordinate_space": "600x600 EXIF-oriented annotation reference",
+  "reviewer": "Codex visual inspection of the actual reference photographs",
+  "review_status": "assistant_visual_review; independent human verification pending",
+  "policy": "Base is the center of the visible spur attachment; tip is the visible distal end. Null means unresolved, not an invented coordinate. These are visual labels, not physical measurements.",
+  "images": {
+    "4": {
+      "spurs": [
+        {
+          "base": [
+            178,
+            237
+          ],
+          "tip": [
+            227,
+            134
+          ]
+        },
+        {
+          "base": [
+            397,
+            259
+          ],
+          "tip": [
+            313,
+            213
+          ]
+        }
+      ]
+    },
+    "15": {
+      "spurs": [
+        {
+          "base": null,
+          "tip": [
+            303,
+            169
+          ]
+        }
+      ],
+      "note": "Tool obscures attachment; exclude complete endpoint measurement."
+    },
+    "17": {
+      "spurs": [
+        {
+          "base": [
+            203,
+            276
+          ],
+          "tip": [
+            251,
+            162
+          ]
+        },
+        {
+          "base": [
+            376,
+            241
+          ],
+          "tip": [
+            276,
+            147
+          ]
+        }
+      ]
+    },
+    "22": {
+      "spurs": [
+        {
+          "base": [
+            194,
+            315
+          ],
+          "tip": [
+            188,
+            76
+          ]
+        },
+        {
+          "base": [
+            367,
+            288
+          ],
+          "tip": [
+            414,
+            18
+          ]
+        }
+      ]
+    },
+    "32": {
+      "spurs": [
+        {
+          "base": [
+            140,
+            188
+          ],
+          "tip": [
+            231,
+            121
+          ]
+        },
+        {
+          "base": [
+            392,
+            218
+          ],
+          "tip": [
+            310,
+            199
+          ]
+        }
+      ]
+    },
+    "35": {
+      "spurs": [
+        {
+          "base": [
+            305,
+            420
+          ],
+          "tip": [
+            409,
+            348
+          ]
+        },
+        {
+          "base": [
+            340,
+            355
+          ],
+          "tip": [
+            376,
+            314
+          ]
+        }
+      ]
+    },
+    "41": {
+      "spurs": [
+        {
+          "base": [
+            232,
+            327
+          ],
+          "tip": [
+            395,
+            277
+          ]
+        },
+        {
+          "base": [
+            500,
+            220
+          ],
+          "tip": [
+            555,
+            83
+          ]
+        }
+      ]
+    },
+    "48": {
+      "spurs": [
+        {
+          "base": [
+            198,
+            300
+          ],
+          "tip": [
+            306,
+            311
+          ]
+        },
+        {
+          "base": [
+            429,
+            298
+          ],
+          "tip": [
+            317,
+            319
+          ]
+        }
+      ]
+    },
+    "63": {
+      "spurs": [
+        {
+          "base": [
+            195,
+            287
+          ],
+          "tip": null
+        },
+        {
+          "base": [
+            395,
+            399
+          ],
+          "tip": null
+        }
+      ],
+      "note": "Rear tip blurred; foreground distal end hidden behind other leg. No complete endpoints."
+    },
+    "72": {
+      "spurs": [
+        {
+          "base": [
+            281,
+            145
+          ],
+          "tip": [
+            243,
+            61
+          ]
+        },
+        {
+          "base": [
+            370,
+            424
+          ],
+          "tip": [
+            327,
+            315
+          ]
+        }
+      ]
+    },
+    "76": {
+      "spurs": [
+        {
+          "base": [
+            326,
+            375
+          ],
+          "tip": [
+            146,
+            223
+          ]
+        },
+        {
+          "base": null,
+          "tip": [
+            70,
+            69
+          ]
+        }
+      ],
+      "note": "Second spur attachment outside frame."
+    },
+    "77": {
+      "spurs": [
+        {
+          "base": [
+            305,
+            287
+          ],
+          "tip": null
+        },
+        {
+          "base": [
+            405,
+            329
+          ],
+          "tip": [
+            487,
+            285
+          ]
+        }
+      ],
+      "note": "Rear spur distal edge occluded by foreground leg."
+    },
+    "82": {
+      "spurs": [
+        {
+          "base": [
+            162,
+            286
+          ],
+          "tip": [
+            551,
+            233
+          ]
+        }
+      ]
+    },
+    "83": {
+      "spurs": [
+        {
+          "base": [
+            92,
+            357
+          ],
+          "tip": [
+            173,
+            394
+          ]
+        },
+        {
+          "base": [
+            434,
+            379
+          ],
+          "tip": [
+            338,
+            404
+          ]
+        }
+      ]
+    },
+    "90": {
+      "spurs": [
+        {
+          "base": [
+            299,
+            255
+          ],
+          "tip": [
+            203,
+            180
+          ]
+        },
+        {
+          "base": [
+            266,
+            327
+          ],
+          "tip": null
+        }
+      ],
+      "note": "Foreground stump has no unambiguous sharp tip."
+    },
+    "107": {
+      "spurs": [
+        {
+          "base": [
+            132,
+            324
+          ],
+          "tip": [
+            236,
+            294
+          ]
+        },
+        {
+          "base": [
+            516,
+            314
+          ],
+          "tip": [
+            417,
+            246
+          ]
+        }
+      ]
+    },
+    "134": {
+      "spurs": [
+        {
+          "base": [
+            238,
+            219
+          ],
+          "tip": null
+        },
+        {
+          "base": null,
+          "tip": null
+        }
+      ],
+      "note": "Foreground stump has no distinct apex; rear attachment and edge blurred/occluded."
+    },
+    "138": {
+      "spurs": [
+        {
+          "base": [
+            230,
+            343
+          ],
+          "tip": [
+            270,
+            347
+          ]
+        }
+      ],
+      "note": "Small visible distal end; independent review needed."
+    },
+    "144": {
+      "spurs": [
+        {
+          "base": [
+            234,
+            196
+          ],
+          "tip": null
+        },
+        {
+          "base": [
+            360,
+            195
+          ],
+          "tip": [
+            376,
+            342
+          ]
+        }
+      ],
+      "note": "Tool obscures first spur tip."
+    },
+    "145": {
+      "spurs": [
+        {
+          "base": [
+            180,
+            365
+          ],
+          "tip": null
+        },
+        {
+          "base": [
+            400,
+            407
+          ],
+          "tip": null
+        }
+      ],
+      "note": "Rounded first end and second distal end behind the other shank are not unambiguous tip targets."
+    },
+    "148": {
+      "spurs": [
+        {
+          "base": [
+            154,
+            228
+          ],
+          "tip": [
+            236,
+            106
+          ]
+        },
+        {
+          "base": [
+            399,
+            212
+          ],
+          "tip": [
+            274,
+            126
+          ]
+        }
+      ]
+    },
+    "28": {
+      "spurs": [
+        {
+          "base": [
+            235,
+            248
+          ],
+          "tip": [
+            275,
+            250
+          ]
+        },
+        {
+          "base": [
+            364,
+            186
+          ],
+          "tip": [
+            324,
+            181
+          ]
+        }
+      ]
+    },
+    "36": {
+      "spurs": [
+        {
+          "base": [
+            134,
+            332
+          ],
+          "tip": [
+            216,
+            255
+          ]
+        },
+        {
+          "base": [
+            372,
+            374
+          ],
+          "tip": [
+            278,
+            353
+          ]
+        }
+      ]
+    },
+    "62": {
+      "spurs": [
+        {
+          "base": [
+            129,
+            353
+          ],
+          "tip": null
+        },
+        {
+          "base": [
+            453,
+            383
+          ],
+          "tip": [
+            309,
+            377
+          ]
+        }
+      ],
+      "note": "First spur is a flat cut stump; no distinct distal apex."
+    },
+    "99": {
+      "spurs": [
+        {
+          "base": [
+            129,
+            270
+          ],
+          "tip": [
+            150,
+            188
+          ]
+        },
+        {
+          "base": [
+            307,
+            255
+          ],
+          "tip": [
+            187,
+            132
+          ]
+        }
+      ]
+    },
+    "116": {
+      "spurs": [
+        {
+          "base": [
+            237,
+            196
+          ],
+          "tip": [
+            310,
+            171
+          ]
+        },
+        {
+          "base": [
+            389,
+            277
+          ],
+          "tip": [
+            311,
+            254
+          ]
+        }
+      ]
+    },
+    "29": {
+      "spurs": [
+        {
+          "base": [
+            294,
+            230
+          ],
+          "tip": [
+            104,
+            159
+          ]
+        },
+        {
+          "base": [
+            293,
+            302
+          ],
+          "tip": null
+        }
+      ],
+      "note": "Lower stump has a broad rounded end, not an unambiguous apex."
+    },
+    "102": {
+      "spurs": [
+        {
+          "base": [
+            201,
+            345
+          ],
+          "tip": [
+            286,
+            437
+          ]
+        }
+      ]
+    },
+    "115": {
+      "spurs": [
+        {
+          "base": [
+            318,
+            296
+          ],
+          "tip": [
+            332,
+            146
+          ]
+        }
+      ]
+    },
+    "117": {
+      "spurs": [
+        {
+          "base": [
+            244,
+            282
+          ],
+          "tip": [
+            170,
+            274
+          ]
+        }
+      ]
+    },
+    "131": {
+      "spurs": [
+        {
+          "base": [
+            187,
+            326
+          ],
+          "tip": [
+            164,
+            117
+          ]
+        },
+        {
+          "base": [
+            348,
+            347
+          ],
+          "tip": [
+            215,
+            249
+          ]
+        }
+      ]
+    }
+  }
+}

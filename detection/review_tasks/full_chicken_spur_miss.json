@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-16",
+  "image": "smartpoultry/core/testdata/full_chicken.jpg",
+  "image_sha256": "2ef0d2219ae6987b5fd2aac9d0e3d47b37378d5d27f2f9334e613a9fed23a968",
+  "size": [
+    300,
+    300
+  ],
+  "purpose": "Missed-spur regression review; do not add this regression photograph to training and claim an independent test result on it.",
+  "review_status": "pending_human_review",
+  "training_eligible": false,
+  "annotations": null,
+  "review_instructions": [
+    "Confirm whether the curved pale protrusion behind the visible lower leg is a spur.",
+    "Trace only the visible spur outline and its tight bounding box; label occlusion or an ambiguous base/tip explicitly.",
+    "Review leg boxes and head/feather false positives. Leave uncertain anatomy unlabeled for review, not a fabricated positive or a confirmed negative.",
+    "Review existing annotation candidates for small visible spurs in full-body photographs and explicitly reviewed negative regions/images. Reuse existing photographs; no new dataset collection is required.",
+    "Keep duplicate/source-family groups together across training, validation and testing."
+  ],
+  "age_model_training": false,
+  "physical_scale": null,
+  "api_proposals": [
+    {
+      "model": "gemini-3.1-flash-lite",
+      "xyxy": [
+        148.5,
+        202.5,
+        183.0,
+        223.5
+      ],
+      "source": "Executed API request; prediction only, not a verified annotation"
+    }
+  ]
+}

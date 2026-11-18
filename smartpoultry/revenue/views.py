@@ -12,6 +12,34 @@ class RevenueViewSet(viewsets.ModelViewSet):
     serializer_class = RevenueSerializer
     permission_classes = [IsAuthenticated]
 
+    @action(detail=False, methods=['post'], url_path='order')
+    def order(self, request):
+        """Save every order item together, or roll back the entire order."""
+        from django.db import transaction
+        from uuid import uuid4
+        from production.models import ProductionRecord
+        from .serializers import RevenueOrderSerializer
+        payload = RevenueOrderSerializer(data=request.data)
+        payload.is_valid(raise_exception=True)
+        shared = dict(payload.validated_data)
+        items = shared.pop('items')
+        shared['order_number'] = shared.get('order_number') or 'ORD-' + uuid4().hex.upper()
+        with transaction.atomic():
+            # Consistent lock order also protects cumulative sales from repeated batches.
+            list(ProductionRecord.objects.select_for_update(of=('self',)).filter(
+                user=request.user, pk__in=[item['production'] for item in items]).order_by('pk'))
+            rows = []
+            for index, item in enumerate(items):
+                serializer = self.get_serializer(data={**shared, **item})
+                from rest_framework.exceptions import ValidationError
+                try:
+                    serializer.is_valid(raise_exception=True)
+                    self.perform_create(serializer)
+                    rows.append(serializer.data)
+                except ValidationError as error:
+                    raise ValidationError({'items': {str(index + 1): error.detail}})
+            return Response({'order_number': shared['order_number'], 'items': rows}, status=201)
+
     @action(detail=False, methods=['get'], url_path='legacy-production')
     def legacy_production(self, request):
         from .reconciliation import review_sale

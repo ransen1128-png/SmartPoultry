@@ -1,0 +1,144 @@
+{
+  "images": 8,
+  "model": "gemini-3.1-flash-lite",
+  "box_iou": 0.5,
+  "totals": {
+    "baseline": {
+      "tp": 3,
+      "fp": 2,
+      "fn": 7,
+      "precision": 0.6,
+      "recall": 0.3
+    },
+    "assisted": {
+      "tp": 3,
+      "fp": 3,
+      "fn": 7,
+      "precision": 0.5,
+      "recall": 0.3
+    }
+  },
+  "limitations": "Existing eight-image source-family test; no tuning on these outputs with assistant annotations; not independently verified accuracy or a test of age accuracy. Local successful spur outputs preserved.",
+  "rows": [
+    {
+      "file": "3419855a3278a286ed7544b6.jpg",
+      "baseline": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "5d56dce4307e5d1a6f1b378b.jpg",
+      "baseline": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "6c2000315a45ecb4208da6c7.jpg",
+      "baseline": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "8e29939cba118758c4f319bb.jpg",
+      "baseline": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0
+      },
+      "assisted": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "ae6f268f43f9bd347a7c2084.jpg",
+      "baseline": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "bd470456c7697b3c7089e452.jpg",
+      "baseline": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "api_status": "completed",
+      "api_accepted_regions": 1
+    },
+    {
+      "file": "be5f30cb97262ca3e16ed1cd.jpg",
+      "baseline": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "api_status": "error",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "da4c0583d808b960fff20ee1.jpg",
+      "baseline": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "status": "executed_review_only_candidate",
+  "promoted": false,
+  "endpoint_box_threshold_from_validation": 0.16116116116116116,
+  "endpoint_visibility_threshold": 0.5,
+  "direct_endpoint_metrics": {
+    "val": {
+      "visible_ground_truth_points": 21,
+      "correct_points_at_10pct_spur_box_diagonal": 8,
+      "pck_10pct_including_misses": 0.38095238095238093,
+      "matched_point_count": 12,
+      "mean_matched_endpoint_error_px": 8.243740001074642,
+      "median_matched_endpoint_error_px": 6.017560807056006,
+      "mean_matched_normalized_error": 0.10776119012671759,
+      "missed_spur_objects": 5,
+      "rows": [
+        {
+          "index": 28,
+          "matched_objects": 0,
+          "ground_truth_objects": 2,
+          "endpoint_errors_px": [],
+          "false_positive_boxes": 0
+        },
+        {
+          "index": 36,
+          "matched_objects": 2,
+          "ground_truth_objects": 2,
+          "endpoint_errors_px": [
+            11.358003431330186,
+            6.390314028573617,
+            5.644807585538395,
+            0.35456234436251827
+          ],
+          "false_positive_boxes": 0
+        },
+        {
+          "index": 62,
+          "matched_objects": 0,
+          "ground_truth_objects": 2,
+          "endpoint_errors_px": [],
+          "false_positive_boxes": 1
+        },
+        {
+          "index": 82,
+          "matched_objects": 0,
+          "ground_truth_objects": 1,
+          "endpoint_errors_px": [],
+          "false_positive_boxes": 1
+        },
+        {
+          "index": 99,
+          "matched_objects": 2,
+          "ground_truth_objects": 2,
+          "endpoint_errors_px": [
+            11.983343498070997,
+            21.97723741021011,
+            14.720433240113877,
+            2.70640583813845
+          ],
+          "false_positive_boxes": 0
+        },
+        {
+          "index": 116,
+          "matched_objects": 2,
+          "ground_truth_objects": 2,
+          "endpoint_errors_px": [
+            4.586418140974876,
+            4.983716473282804,
+            12.26021899871372,
+            1.9594190235861508
+          ],
+          "false_positive_boxes": 0
+        }
+      ]
+    },
+    "test": {
+      "visible_ground_truth_points": 13,
+      "correct_points_at_10pct_spur_box_diagonal": 2,
+      "pck_10pct_including_misses": 0.15384615384615385,
+      "matched_point_count": 4,
+      "mean_matched_endpoint_error_px": 20.10385367904219,
+      "median_matched_endpoint_error_px": 17.97276805705788,
+      "mean_matched_normalized_error": 0.07190274958014223,
+      "missed_spur_objects": 5,
+      "rows": [
+        {
+          "index": 29,
+          "matched_objects": 1,
+          "ground_truth_objects": 2,
+          "endpoint_errors_px": [
+            43.00175070084407,
+            15.890417208469495
+          ],
+          "false_positive_boxes": 0
+        },
+        {
+          "index": 102,
+          "matched_objects": 0,
+          "ground_truth_objects": 1,
+          "endpoint_errors_px": [],
+          "false_positive_boxes": 1
+        },
+        {
+          "index": 115,
+          "matched_objects": 0,
+          "ground_truth_objects": 1,
+          "endpoint_errors_px": [],
+          "false_positive_boxes": 0
+        },
+        {
+          "index": 117,
+          "matched_objects": 0,
+          "ground_truth_objects": 1,
+          "endpoint_errors_px": [],
+          "false_positive_boxes": 0
+        },
+        {
+          "index": 131,
+          "matched_objects": 1,
+          "ground_truth_objects": 2,
+          "endpoint_errors_px": [
+            20.055118905646268,
+            1.4681279012089274
+          ],
+          "false_positive_boxes": 0
+        }
+      ]
+    }
+  },
+  "annotation_conflicts": [
+    {
+      "index": 28,
+      "instance": 0,
+      "split": "val",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 28,
+      "instance": 1,
+      "split": "val",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 36,
+      "instance": 0,
+      "split": "val",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 62,
+      "instance": 1,
+      "split": "val",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 99,
+      "instance": 1,
+      "split": "val",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 116,
+      "instance": 0,
+      "split": "val",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 102,
+      "instance": 0,
+      "split": "test",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 117,
+      "instance": 0,
+      "split": "test",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 131,
+      "instance": 0,
+      "split": "test",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    },
+    {
+      "index": 131,
+      "instance": 1,
+      "split": "test",
+      "reason": "Base and tip must lie on or inside the traced spur outline."
+    }
+  ],
+  "outline_model_selected_from_validation": "baseline",
+  "segmentation_comparison": {
+    "baseline_val": {
+      "metrics": {
+        "metrics/precision(B)": 1.0,
+        "metrics/recall(B)": 0.7064214097743676,
+        "metrics/mAP50(B)": 0.7765955282112845,
+        "metrics/mAP50-95(B)": 0.4654450619669547,
+        "metrics/precision(M)": 0.8715285248153333,
+        "metrics/recall(M)": 0.618690671787151,
+        "metrics/mAP50(M)": 0.6831038034213686,
+        "metrics/mAP50-95(M)": 0.36725312285099126,
+        "fitness": 0.832698184817946
+      },
+      "mask_confidence_threshold": 0.34134134134134136
+    },
+    "baseline_test": {
+      "metrics": {
+        "metrics/precision(B)": 0.7469748414687465,
+        "metrics/recall(B)": 0.2857142857142857,
+        "metrics/mAP50(B)": 0.4078048780487804,
+        "metrics/mAP50-95(B)": 0.31788974514893364,
+        "metrics/precision(M)": 0.7469748414687465,
+        "metrics/recall(M)": 0.2857142857142857,
+        "metrics/mAP50(M)": 0.4069606666666666,
+        "metrics/mAP50-95(M)": 0.23219609692461898,
+        "fitness": 0.5500858420735526
+      },
+      "mask_confidence_threshold": 0.7937937937937938
+    },
+    "candidate_val": {
+      "metrics": {
+        "metrics/precision(B)": 0.8373241392951412,
+        "metrics/recall(B)": 0.5454545454545454,
+        "metrics/mAP50(B)": 0.5975444099378882,
+        "metrics/mAP50-95(B)": 0.45425193023613675,
+        "metrics/precision(M)": 0.8373241392951412,
+        "metrics/recall(M)": 0.5454545454545454,
+        "metrics/mAP50(M)": 0.5954288106429412,
+        "metrics/mAP50-95(M)": 0.372108292060088,
+        "fitness": 0.8263602222962247
+      },
+      "mask_confidence_threshold": 0.6186186186186187
+    }
+  },
+  "limitation": "Visual draft labels and source-family holdouts; independent animal identity and endpoint/physical-length accuracy are not established."
+}

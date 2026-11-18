@@ -1,0 +1,144 @@
+{
+  "images": 8,
+  "model": "gemini-3.1-flash-lite",
+  "box_iou": 0.5,
+  "totals": {
+    "baseline": {
+      "tp": 8,
+      "fp": 4,
+      "fn": 5,
+      "precision": 0.6666666666666666,
+      "recall": 0.6153846153846154
+    },
+    "assisted": {
+      "tp": 8,
+      "fp": 4,
+      "fn": 5,
+      "precision": 0.6666666666666666,
+      "recall": 0.6153846153846154
+    }
+  },
+  "limitations": "Existing eight-image source-family validation with assistant annotations; not independently verified accuracy or age accuracy.",
+  "rows": [
+    {
+      "file": "2e56708516b6483fac8958a5.jpg",
+      "baseline": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "3383a9a824940da2c3c82fae.jpg",
+      "baseline": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "4345e5c43721a9b0cf6035ab.jpg",
+      "baseline": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0
+      },
+      "assisted": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "6b77b143e4e73abbbecf48b3.jpg",
+      "baseline": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "6c67257bd5df475c73dd3a6f.jpg",
+      "baseline": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0
+      },
+      "assisted": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "8e871c3d2aafcc422c4f7258.jpg",
+      "baseline": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "ac9a63a4c5a9611ec576eafa.jpg",
+      "baseline": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 0
+      },
+      "assisted": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 0
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    },
+    {
+      "file": "be2fc0ab27e4495cd0081870.jpg",
+      "baseline": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1
+      },
+      "assisted": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1
+      },
+      "api_status": "not_needed",
+      "api_accepted_regions": 0
+    }
+  ]
+}

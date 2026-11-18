@@ -14,7 +14,7 @@ from PIL import Image,ImageOps
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'smartpoultry'))
 load_dotenv(ROOT/'.env',override=False)
-from core.vision_api import locate_spurs,crop_visible_spur,PROMPT_HASH
+from core.vision_api import locate_spurs,crop_visible_spur,PROMPT_HASH,REQUEST_POLICY_HASH
 
 
 def main():
@@ -41,7 +41,7 @@ def main():
     checkpoint_hash=(candidate_entry()['sha256'] if variant=='finetuned' else hashlib.sha256((ROOT/'spur_age/models/spur_age_model.pth').read_bytes()).hexdigest())
     if args.split=='test':
         validation=json.loads((out/'validation.json').read_text())
-        if not (validation['status']=='complete' and validation['api_crop_mae_months']<validation['baseline_mae_months'] and validation['api_model']==model and validation['prompt_sha256']==PROMPT_HASH and validation['checkpoint_sha256']==checkpoint_hash):
+        if not (validation['status']=='complete' and validation['api_crop_mae_months']<validation['baseline_mae_months'] and validation['api_model']==model and validation['prompt_sha256']==PROMPT_HASH and validation.get('request_policy_sha256')==REQUEST_POLICY_HASH and validation['checkpoint_sha256']==checkpoint_hash):
             raise RuntimeError('Run a complete, improved validation comparison first; do not tune on test results.')
     rows=[row for row in all_rows if row['split']==args.split]
     results=[]
@@ -53,7 +53,7 @@ def main():
         stream=BytesIO();image.save(stream,format='PNG');stream.seek(0)
         baseline=predict_rooster_age(stream,model_variant=variant)
         if baseline is None:raise RuntimeError('Current model could not predict')
-        cache_key=hashlib.sha256((row['sha256']+model+PROMPT_HASH).encode()).hexdigest()
+        cache_key=hashlib.sha256((row['sha256']+model+PROMPT_HASH+REQUEST_POLICY_HASH).encode()).hexdigest()
         cached=cache/(cache_key+'.json')
         api=json.loads(cached.read_text()) if cached.exists() else locate_spurs(image,model=model,max_attempts=1)
         if api['status']=='completed':cached.write_text(json.dumps(api,indent=2))
@@ -76,7 +76,7 @@ def main():
     errors=sum(r['api']['status']!='completed' for r in results)
     crops=sum(r['used_crop'] for r in results)
     report={'status':'complete' if not errors and crops and len(results)==len(rows) else 'incomplete_or_no_crops','split':args.split,'n':len(results),
-        'api_model':model,'prompt_sha256':PROMPT_HASH,'checkpoint_sha256':checkpoint_hash,'age_model':variant,
+        'api_model':model,'prompt_sha256':PROMPT_HASH,'request_policy_sha256':REQUEST_POLICY_HASH,'checkpoint_sha256':checkpoint_hash,'age_model':variant,
         'baseline_mae_months':baseline,'api_crop_mae_months':measured,'relative_error_reduction_percent':100*(baseline-measured)/baseline if baseline and not errors and crops and len(results)==len(rows) else None,
         'api_errors':errors,'crops_used':crops,'fixed_policy':'Largest spur box with 15% padding; full-image fallback when no box/error',
         'limitation':'Source-family comparison only. Prior age-model training overlap and unresolved bird identities prevent independent accuracy claims. API boxes are not ground truth.',

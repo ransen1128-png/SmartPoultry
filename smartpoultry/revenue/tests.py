@@ -142,3 +142,48 @@ class ProductionSalesTests(TestCase):
         self.client.force_login(other)
         self.assertEqual(self.client.get(reverse('revenue-legacy-production')).json(),[])
         self.assertEqual(self.client.post(reverse('revenue-reconcile',args=[sale.pk]),{'production':self.production.pk}).status_code,404)
+
+class RevenueOrderTests(TestCase):
+    setUp = ProductionSalesTests.setUp
+
+    def order(self, items, **overrides):
+        return self.client.post(reverse('revenue-order'), {
+            'buyer_name': 'Order buyer', 'buyer_contact': '09123456789',
+            'date': '2026-11-12', 'items': items, **overrides,
+        }, content_type='application/json')
+
+    def item(self, quantity, production=None):
+        return {'production': production or self.production.pk, 'quantity': str(quantity), 'price_per_unit': '5'}
+
+    def test_multiple_items_share_order_and_deduct_cumulative_stock(self):
+        response = self.order([self.item(20), self.item(30)])
+        self.assertEqual(response.status_code, 201, response.content)
+        rows = list(Revenue.objects.order_by('pk'))
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0].order_number, rows[1].order_number)
+        self.assertTrue(rows[0].order_number.startswith('ORD-'))
+        self.assertNotEqual(rows[0].transaction_number, rows[1].transaction_number)
+        self.assertEqual(self.production.available_quantity, 50)
+        self.assertTrue(all(row.buyer_name == 'Order buyer' for row in rows))
+
+    def test_oversold_second_item_rolls_back_whole_order_and_audit(self):
+        from core.models import TransactionRecord
+        before = TransactionRecord.objects.count()
+        response = self.order([self.item(60), self.item(60)])
+        self.assertEqual(response.status_code, 400, response.content)
+        self.assertIn('2', response.data['items'])
+        self.assertFalse(Revenue.objects.exists())
+        self.assertEqual(self.production.available_quantity, 100)
+        self.assertEqual(TransactionRecord.objects.count(), before)
+
+    def test_foreign_production_rolls_back_valid_first_item(self):
+        other = get_user_model().objects.create_user(username='order-outsider')
+        self.client.force_login(other)
+        response = self.order([self.item(1)])
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Revenue.objects.exists())
+
+    def test_empty_items_and_invalid_prices_rejected(self):
+        for items in ([], [dict(self.item(1), price_per_unit='-1')], [self.item(0)]):
+            self.assertEqual(self.order(items).status_code, 400)
+        self.assertFalse(Revenue.objects.exists())

@@ -1,0 +1,12 @@
+{
+  "actual_gemini_geometry_draft": "passed",
+  "image": "existing 300x300 full chicken photograph",
+  "vertices": 6,
+  "base_tip_present": true,
+  "confirmation_initially_unchecked": true,
+  "signed_provenance_present": true,
+  "measurement_not_automatically_saved": true,
+  "existing_analysis_preserved": true,
+  "javascript_errors": [],
+  "database": "isolated temporary SQLite; no customer data changed"
+}

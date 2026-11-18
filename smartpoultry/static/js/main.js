@@ -168,9 +168,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', initScenarioPanels);
 
-// Auto-hide alerts after 5 seconds
+// Only temporary notices may be removed. Forms reuse their alert containers.
 document.addEventListener('DOMContentLoaded', function() {
-    const alerts = document.querySelectorAll('.alert');
+    const alerts = document.querySelectorAll('.alert[data-auto-dismiss]');
     alerts.forEach(alert => {
         setTimeout(() => {
             alert.classList.remove('show');

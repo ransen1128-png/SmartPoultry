@@ -1,0 +1,4712 @@
+{
+  "status": "experimental_assistant_visual_labels",
+  "original_annotated_images": 151,
+  "images": 27,
+  "instances": 49,
+  "complete_endpoint_pairs": 43,
+  "splits": {
+    "train": 16,
+    "val": 6,
+    "test": 5
+  },
+  "source_family_leakage": false,
+  "independent_chicken_ids_verified": false,
+  "independent_annotation_verification": false,
+  "label_provenance": "assistant_visual_review",
+  "annotation_sha256": "09d9bb11646a37295e7ba4d9e900e86bf941481b2d6a837559b9ef429ea0cc45",
+  "annotation_conflicts": [
+    {
+      "index": 17,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 17,
+      "instance": 1,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 28,
+      "instance": 0,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 28,
+      "instance": 1,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 29,
+      "instance": 1,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 35,
+      "instance": 0,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 35,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 36,
+      "instance": 0,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 41,
+      "instance": 0,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 48,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 48,
+      "instance": 1,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 62,
+      "instance": 1,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 83,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 99,
+      "instance": 1,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 102,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 107,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 107,
+      "instance": 1,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 116,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 117,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 131,
+      "instance": 0,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 131,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 131,
+      "instance": 1,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 131,
+      "instance": 1,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 138,
+      "instance": 0,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 148,
+      "instance": 0,
+      "endpoint": "base",
+      "reason": "Endpoint outside visible outline."
+    },
+    {
+      "index": 148,
+      "instance": 0,
+      "endpoint": "tip",
+      "reason": "Endpoint outside visible outline."
+    }
+  ],
+  "excluded": [
+    {
+      "index": 1,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 2,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 3,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 5,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 6,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 7,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 8,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 9,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 10,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 11,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 12,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 13,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 14,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 15,
+      "reason": "Tool obscures attachment; exclude complete endpoint measurement."
+    },
+    {
+      "index": 16,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 18,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 19,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 20,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 21,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 23,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 24,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 25,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 26,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 27,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 30,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 31,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 33,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 34,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 37,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 38,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 39,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 40,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 42,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 43,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 44,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 45,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 46,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 47,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 49,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 50,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 51,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 52,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 53,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 54,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 55,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 56,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 57,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 58,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 59,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 60,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 61,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 63,
+      "reason": "Rear tip blurred; foreground distal end hidden behind other leg. No complete endpoints."
+    },
+    {
+      "index": 64,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 65,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 66,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 67,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 68,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 69,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 70,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 71,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 73,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 74,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 75,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 78,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 79,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 80,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 81,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 84,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 85,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 86,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 87,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 88,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 89,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 91,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 92,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 93,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 94,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 95,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 96,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 97,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 98,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 100,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 101,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 103,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 104,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 105,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 106,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 108,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 109,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 110,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 111,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 112,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 113,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 114,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 118,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 119,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 120,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 121,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 122,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 123,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 124,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 125,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 126,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 127,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 128,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 129,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 130,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 132,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 133,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 134,
+      "reason": "Foreground stump has no distinct apex; rear attachment and edge blurred/occluded."
+    },
+    {
+      "index": 135,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 136,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 137,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 139,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 140,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 141,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 142,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 143,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 145,
+      "reason": "Rounded first end and second distal end behind the other shank are not unambiguous tip targets."
+    },
+    {
+      "index": 146,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 147,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 149,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 150,
+      "reason": "Endpoint review pending; not a negative image."
+    },
+    {
+      "index": 151,
+      "reason": "Endpoint review pending; not a negative image."
+    }
+  ],
+  "rows": [
+    {
+      "index": 4,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\16months (1).jpg",
+      "sha256": "e3b0be5cbb44808192781c048ce956cc244289c18edfaab5c99dc66e67c7ce1e",
+      "pixel_sha256": "08c0a1b925af2a1113ecbbe8a133d547067dc3e785b29a211106ec01a1aa2450",
+      "age_months": "16",
+      "recorded_chicken_id": "CHICKEN_004258",
+      "chicken_id": "CHICKEN_004258",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_003",
+      "content_type": "mixed_unlocalized",
+      "width": 538,
+      "height": 570,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            113,
+            119,
+            204,
+            333
+          ],
+          [
+            382,
+            135,
+            476,
+            359
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              169,
+              229
+            ],
+            [
+              190,
+              203
+            ],
+            [
+              207,
+              168
+            ],
+            [
+              213,
+              133
+            ],
+            [
+              223,
+              128
+            ],
+            [
+              238,
+              132
+            ],
+            [
+              236,
+              166
+            ],
+            [
+              225,
+              199
+            ],
+            [
+              205,
+              227
+            ],
+            [
+              184,
+              246
+            ]
+          ],
+          [
+            [
+              397,
+              243
+            ],
+            [
+              372,
+              239
+            ],
+            [
+              342,
+              224
+            ],
+            [
+              323,
+              208
+            ],
+            [
+              312,
+              208
+            ],
+            [
+              306,
+              219
+            ],
+            [
+              314,
+              239
+            ],
+            [
+              335,
+              258
+            ],
+            [
+              362,
+              270
+            ],
+            [
+              398,
+              276
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              178,
+              237
+            ],
+            "tip": [
+              227,
+              134
+            ]
+          },
+          {
+            "base": [
+              397,
+              259
+            ],
+            "tip": [
+              313,
+              213
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 17,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\13months (1).jpg",
+      "sha256": "f93f3de3f0f8d640ac512c439a22f0bb0fe58ce944b51ed3918ebbdfb4ffa2d4",
+      "pixel_sha256": "2691812d5f329b041466b875d2fbd66310c55e26c974819c1f605c796e030180",
+      "age_months": "13",
+      "recorded_chicken_id": "CHICKEN_002278",
+      "chicken_id": "CHICKEN_002278",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_008",
+      "content_type": "mixed_unlocalized",
+      "width": 800,
+      "height": 500,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            144,
+            89,
+            216,
+            435
+          ],
+          [
+            373,
+            87,
+            444,
+            352
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              204,
+              256
+            ],
+            [
+              222,
+              243
+            ],
+            [
+              234,
+              218
+            ],
+            [
+              246,
+              181
+            ],
+            [
+              252,
+              161
+            ],
+            [
+              251,
+              187
+            ],
+            [
+              247,
+              222
+            ],
+            [
+              237,
+              251
+            ],
+            [
+              222,
+              275
+            ],
+            [
+              202,
+              294
+            ]
+          ],
+          [
+            [
+              381,
+              222
+            ],
+            [
+              353,
+              218
+            ],
+            [
+              330,
+              205
+            ],
+            [
+              307,
+              183
+            ],
+            [
+              287,
+              159
+            ],
+            [
+              274,
+              145
+            ],
+            [
+              278,
+              169
+            ],
+            [
+              289,
+              195
+            ],
+            [
+              306,
+              218
+            ],
+            [
+              329,
+              241
+            ],
+            [
+              352,
+              254
+            ],
+            [
+              378,
+              258
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              203,
+              276
+            ],
+            "tip": [
+              251,
+              162
+            ]
+          },
+          {
+            "base": [
+              376,
+              241
+            ],
+            "tip": [
+              276,
+              147
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 22,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\18months (1).jpg",
+      "sha256": "a9717081c4a857b91c27ec73be16a48b4af4061eaf0e33f77a36134cbed525d9",
+      "pixel_sha256": "2d28402138ae91145ebcb8c9a449fa98dbc52764d77c02f00d45ff640ac216f9",
+      "age_months": "18",
+      "recorded_chicken_id": "CHICKEN_005194",
+      "chicken_id": "CHICKEN_005194",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_012",
+      "content_type": "mixed_unlocalized",
+      "width": 480,
+      "height": 640,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            144,
+            228,
+            227,
+            362
+          ],
+          [
+            330,
+            194,
+            411,
+            354
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              183,
+              313
+            ],
+            [
+              208,
+              297
+            ],
+            [
+              230,
+              270
+            ],
+            [
+              244,
+              238
+            ],
+            [
+              246,
+              210
+            ],
+            [
+              238,
+              168
+            ],
+            [
+              222,
+              131
+            ],
+            [
+              196,
+              101
+            ],
+            [
+              182,
+              81
+            ],
+            [
+              190,
+              72
+            ],
+            [
+              211,
+              81
+            ],
+            [
+              236,
+              105
+            ],
+            [
+              262,
+              143
+            ],
+            [
+              279,
+              181
+            ],
+            [
+              286,
+              221
+            ],
+            [
+              277,
+              260
+            ],
+            [
+              254,
+              291
+            ],
+            [
+              223,
+              321
+            ],
+            [
+              198,
+              330
+            ]
+          ],
+          [
+            [
+              360,
+              298
+            ],
+            [
+              333,
+              279
+            ],
+            [
+              309,
+              248
+            ],
+            [
+              295,
+              217
+            ],
+            [
+              291,
+              185
+            ],
+            [
+              296,
+              151
+            ],
+            [
+              314,
+              113
+            ],
+            [
+              341,
+              77
+            ],
+            [
+              371,
+              47
+            ],
+            [
+              398,
+              28
+            ],
+            [
+              415,
+              17
+            ],
+            [
+              405,
+              34
+            ],
+            [
+              382,
+              61
+            ],
+            [
+              362,
+              96
+            ],
+            [
+              349,
+              130
+            ],
+            [
+              339,
+              165
+            ],
+            [
+              335,
+              199
+            ],
+            [
+              344,
+              233
+            ],
+            [
+              365,
+              264
+            ],
+            [
+              379,
+              280
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              194,
+              315
+            ],
+            "tip": [
+              188,
+              76
+            ]
+          },
+          {
+            "base": [
+              367,
+              288
+            ],
+            "tip": [
+              414,
+              18
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 28,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\2months (1).jpg",
+      "sha256": "cff02d41e3284b0b357fc0c1b5583418d5a3659b7fb542b5e7f93378d155e1bf",
+      "pixel_sha256": "3383a9a824940da2c3c82fae194903ad6b816c8dd16a7d1fd6ed62a40b2c1358",
+      "age_months": "2",
+      "recorded_chicken_id": "CHICKEN_009901",
+      "chicken_id": "CHICKEN_009901",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_015",
+      "content_type": "mixed_unlocalized",
+      "width": 598,
+      "height": 513,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            186,
+            88,
+            245,
+            335
+          ],
+          [
+            354,
+            45,
+            414,
+            328
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              235,
+              234
+            ],
+            [
+              247,
+              237
+            ],
+            [
+              264,
+              242
+            ],
+            [
+              276,
+              249
+            ],
+            [
+              272,
+              256
+            ],
+            [
+              258,
+              261
+            ],
+            [
+              238,
+              264
+            ]
+          ],
+          [
+            [
+              363,
+              172
+            ],
+            [
+              350,
+              173
+            ],
+            [
+              335,
+              178
+            ],
+            [
+              324,
+              182
+            ],
+            [
+              324,
+              187
+            ],
+            [
+              337,
+              194
+            ],
+            [
+              350,
+              199
+            ],
+            [
+              365,
+              199
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "val",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              235,
+              248
+            ],
+            "tip": [
+              275,
+              250
+            ]
+          },
+          {
+            "base": [
+              364,
+              186
+            ],
+            "tip": [
+              324,
+              181
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 29,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\12months (292).jpg",
+      "sha256": "5e70cd03d296a5f93f374b75da7737d9e07a2ac9bff2afc0f92c2556196ff352",
+      "pixel_sha256": "3419855a3278a286ed7544b66ddf87542cd87fdd9d2bd8f58ddc2ed4fe6b9b04",
+      "age_months": "12",
+      "recorded_chicken_id": "CHICKEN_001955",
+      "chicken_id": "CHICKEN_001955",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_016",
+      "content_type": "mixed_unlocalized",
+      "width": 1000,
+      "height": 1500,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            150,
+            56,
+            285,
+            310
+          ],
+          [
+            298,
+            45,
+            443,
+            400
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              295,
+              217
+            ],
+            [
+              257,
+              215
+            ],
+            [
+              218,
+              203
+            ],
+            [
+              179,
+              189
+            ],
+            [
+              148,
+              177
+            ],
+            [
+              122,
+              165
+            ],
+            [
+              103,
+              158
+            ],
+            [
+              112,
+              173
+            ],
+            [
+              137,
+              193
+            ],
+            [
+              166,
+              212
+            ],
+            [
+              198,
+              226
+            ],
+            [
+              235,
+              237
+            ],
+            [
+              294,
+              246
+            ]
+          ],
+          [
+            [
+              291,
+              284
+            ],
+            [
+              266,
+              280
+            ],
+            [
+              237,
+              280
+            ],
+            [
+              203,
+              284
+            ],
+            [
+              169,
+              286
+            ],
+            [
+              144,
+              286
+            ],
+            [
+              136,
+              294
+            ],
+            [
+              141,
+              301
+            ],
+            [
+              169,
+              302
+            ],
+            [
+              204,
+              305
+            ],
+            [
+              240,
+              311
+            ],
+            [
+              270,
+              322
+            ],
+            [
+              293,
+              322
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "test",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              294,
+              230
+            ],
+            "tip": [
+              104,
+              159
+            ]
+          },
+          {
+            "base": [
+              293,
+              302
+            ],
+            "tip": null
+          }
+        ],
+        "note": "Lower stump has a broad rounded end, not an unambiguous apex."
+      }
+    },
+    {
+      "index": 32,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\14months (1).jpg",
+      "sha256": "d00384b73a6decb0754e1d2741b173e4d34f545133e3f6a5ab054c2741b91c9c",
+      "pixel_sha256": "36ddec734fb62816ff515a9381ad8e4d7dba41e8a92b77402140fce6896e2c51",
+      "age_months": "14",
+      "recorded_chicken_id": "CHICKEN_003178",
+      "chicken_id": "CHICKEN_003178",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_017",
+      "content_type": "mixed_unlocalized",
+      "width": 300,
+      "height": 300,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            86,
+            18,
+            151,
+            290
+          ],
+          [
+            327,
+            48,
+            492,
+            300
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              138,
+              174
+            ],
+            [
+              161,
+              162
+            ],
+            [
+              186,
+              147
+            ],
+            [
+              212,
+              130
+            ],
+            [
+              232,
+              119
+            ],
+            [
+              229,
+              129
+            ],
+            [
+              213,
+              150
+            ],
+            [
+              191,
+              170
+            ],
+            [
+              166,
+              187
+            ],
+            [
+              140,
+              198
+            ]
+          ],
+          [
+            [
+              386,
+              200
+            ],
+            [
+              353,
+              196
+            ],
+            [
+              320,
+              195
+            ],
+            [
+              308,
+              199
+            ],
+            [
+              317,
+              208
+            ],
+            [
+              337,
+              220
+            ],
+            [
+              362,
+              230
+            ],
+            [
+              398,
+              236
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              140,
+              188
+            ],
+            "tip": [
+              231,
+              121
+            ]
+          },
+          {
+            "base": [
+              392,
+              218
+            ],
+            "tip": [
+              310,
+              199
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 35,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\22months (1).jpg",
+      "sha256": "be9a6ecb04d4b0890d2d8d47284ef9e335261bddcff7d0b485928d3f93c62771",
+      "pixel_sha256": "419d106809e0a81d0bbe5eae55c24fa80bc865cc5f534290a76a459a8f525000",
+      "age_months": "22",
+      "recorded_chicken_id": "CHICKEN_007570",
+      "chicken_id": "CHICKEN_007570",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_018",
+      "content_type": "mixed_unlocalized",
+      "width": 638,
+      "height": 480,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "chickens": [
+          [
+            74,
+            0,
+            577,
+            569
+          ]
+        ],
+        "legs": [
+          [
+            252,
+            306,
+            320,
+            488
+          ],
+          [
+            303,
+            289,
+            347,
+            366
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              307,
+              405
+            ],
+            [
+              327,
+              402
+            ],
+            [
+              349,
+              389
+            ],
+            [
+              370,
+              372
+            ],
+            [
+              389,
+              356
+            ],
+            [
+              406,
+              347
+            ],
+            [
+              402,
+              368
+            ],
+            [
+              391,
+              391
+            ],
+            [
+              374,
+              411
+            ],
+            [
+              354,
+              425
+            ],
+            [
+              330,
+              434
+            ],
+            [
+              307,
+              436
+            ]
+          ],
+          [
+            [
+              337,
+              348
+            ],
+            [
+              348,
+              342
+            ],
+            [
+              360,
+              332
+            ],
+            [
+              370,
+              319
+            ],
+            [
+              377,
+              313
+            ],
+            [
+              376,
+              328
+            ],
+            [
+              369,
+              343
+            ],
+            [
+              355,
+              358
+            ],
+            [
+              340,
+              362
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true,
+        "note": "Cropped chicken body with two visible curved spurs."
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              305,
+              420
+            ],
+            "tip": [
+              409,
+              348
+            ]
+          },
+          {
+            "base": [
+              340,
+              355
+            ],
+            "tip": [
+              376,
+              314
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 36,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (116).jpg",
+      "sha256": "de0c71b44ecee5788fa41d60c128db39931da00b427a0b22c3d3c89f14070091",
+      "pixel_sha256": "4345e5c43721a9b0cf6035ab27c55e0477f82431d5c7eb453d152b711a6d5a0e",
+      "age_months": "5",
+      "recorded_chicken_id": "CHICKEN_011388",
+      "chicken_id": "CHICKEN_011388",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_019",
+      "content_type": "mixed_unlocalized",
+      "width": 353,
+      "height": 441,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            0,
+            205,
+            142,
+            412
+          ],
+          [
+            370,
+            271,
+            475,
+            479
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              131,
+              306
+            ],
+            [
+              156,
+              292
+            ],
+            [
+              182,
+              275
+            ],
+            [
+              207,
+              254
+            ],
+            [
+              218,
+              252
+            ],
+            [
+              222,
+              260
+            ],
+            [
+              216,
+              281
+            ],
+            [
+              205,
+              302
+            ],
+            [
+              181,
+              322
+            ],
+            [
+              149,
+              343
+            ]
+          ],
+          [
+            [
+              373,
+              356
+            ],
+            [
+              343,
+              352
+            ],
+            [
+              311,
+              347
+            ],
+            [
+              285,
+              347
+            ],
+            [
+              275,
+              353
+            ],
+            [
+              280,
+              365
+            ],
+            [
+              299,
+              379
+            ],
+            [
+              330,
+              386
+            ],
+            [
+              372,
+              391
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "val",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              134,
+              332
+            ],
+            "tip": [
+              216,
+              255
+            ]
+          },
+          {
+            "base": [
+              372,
+              374
+            ],
+            "tip": [
+              278,
+              353
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 41,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\17months (272).jpg",
+      "sha256": "1e4cbb17213f728d064689d25968c08fccf5a6c06eec4728cc68a8e2c7ce403d",
+      "pixel_sha256": "4a1b31abaa1a4c7ecc4242ac6d325542d6ca0caf601cf67d3d42d49f539339f7",
+      "age_months": "17",
+      "recorded_chicken_id": "CHICKEN_004862",
+      "chicken_id": "CHICKEN_004862",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_020",
+      "content_type": "mixed_unlocalized",
+      "width": 1024,
+      "height": 736,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            178,
+            190,
+            268,
+            405
+          ],
+          [
+            448,
+            78,
+            524,
+            315
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              233,
+              315
+            ],
+            [
+              265,
+              310
+            ],
+            [
+              300,
+              307
+            ],
+            [
+              334,
+              302
+            ],
+            [
+              364,
+              290
+            ],
+            [
+              395,
+              277
+            ],
+            [
+              390,
+              295
+            ],
+            [
+              366,
+              314
+            ],
+            [
+              337,
+              330
+            ],
+            [
+              298,
+              342
+            ],
+            [
+              261,
+              343
+            ],
+            [
+              234,
+              340
+            ]
+          ],
+          [
+            [
+              500,
+              204
+            ],
+            [
+              520,
+              205
+            ],
+            [
+              537,
+              197
+            ],
+            [
+              547,
+              178
+            ],
+            [
+              552,
+              152
+            ],
+            [
+              551,
+              118
+            ],
+            [
+              550,
+              85
+            ],
+            [
+              555,
+              79
+            ],
+            [
+              563,
+              106
+            ],
+            [
+              568,
+              138
+            ],
+            [
+              568,
+              167
+            ],
+            [
+              565,
+              196
+            ],
+            [
+              555,
+              220
+            ],
+            [
+              540,
+              233
+            ],
+            [
+              519,
+              240
+            ],
+            [
+              500,
+              237
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              232,
+              327
+            ],
+            "tip": [
+              395,
+              277
+            ]
+          },
+          {
+            "base": [
+              500,
+              220
+            ],
+            "tip": [
+              555,
+              83
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 48,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\16months (156).jpg",
+      "sha256": "9ac2a73152b775a3f6a06fcc683fbb825902116dccca0fff0460d2ec7eaf82bf",
+      "pixel_sha256": "51ac7fa436f6ce27b4ee1a1db38f9341cea455bf0b1cbf203fd77aa9d9618b00",
+      "age_months": "16",
+      "recorded_chicken_id": "CHICKEN_004265",
+      "chicken_id": "CHICKEN_004265",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_022",
+      "content_type": "mixed_unlocalized",
+      "width": 300,
+      "height": 300,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            154,
+            291,
+            219,
+            408
+          ],
+          [
+            421,
+            279,
+            477,
+            412
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              192,
+              286
+            ],
+            [
+              221,
+              286
+            ],
+            [
+              252,
+              290
+            ],
+            [
+              283,
+              299
+            ],
+            [
+              308,
+              310
+            ],
+            [
+              291,
+              315
+            ],
+            [
+              260,
+              314
+            ],
+            [
+              230,
+              313
+            ],
+            [
+              198,
+              314
+            ]
+          ],
+          [
+            [
+              430,
+              283
+            ],
+            [
+              398,
+              289
+            ],
+            [
+              365,
+              296
+            ],
+            [
+              336,
+              306
+            ],
+            [
+              316,
+              318
+            ],
+            [
+              338,
+              321
+            ],
+            [
+              369,
+              316
+            ],
+            [
+              399,
+              312
+            ],
+            [
+              431,
+              311
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              198,
+              300
+            ],
+            "tip": [
+              306,
+              311
+            ]
+          },
+          {
+            "base": [
+              429,
+              298
+            ],
+            "tip": [
+              317,
+              319
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 62,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (10).jpg",
+      "sha256": "4357cb0c582209c1c0a9a5a78963f541f3c4b804ac7b536d5680e305809bcd31",
+      "pixel_sha256": "6b77b143e4e73abbbecf48b3c01336dee9287003577cb2d7df6cf793ad1ca5b6",
+      "age_months": "5",
+      "recorded_chicken_id": "CHICKEN_011362",
+      "chicken_id": "CHICKEN_011362",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_027",
+      "content_type": "mixed_unlocalized",
+      "width": 424,
+      "height": 722,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            0,
+            194,
+            176,
+            390
+          ],
+          [
+            393,
+            235,
+            548,
+            411
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              113,
+              337
+            ],
+            [
+              99,
+              336
+            ],
+            [
+              85,
+              341
+            ],
+            [
+              80,
+              351
+            ],
+            [
+              89,
+              360
+            ],
+            [
+              105,
+              367
+            ],
+            [
+              122,
+              364
+            ],
+            [
+              130,
+              354
+            ],
+            [
+              127,
+              344
+            ]
+          ],
+          [
+            [
+              457,
+              365
+            ],
+            [
+              427,
+              370
+            ],
+            [
+              398,
+              374
+            ],
+            [
+              368,
+              377
+            ],
+            [
+              335,
+              375
+            ],
+            [
+              309,
+              373
+            ],
+            [
+              321,
+              383
+            ],
+            [
+              352,
+              390
+            ],
+            [
+              388,
+              394
+            ],
+            [
+              423,
+              392
+            ],
+            [
+              461,
+              388
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "val",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              129,
+              353
+            ],
+            "tip": null
+          },
+          {
+            "base": [
+              453,
+              383
+            ],
+            "tip": [
+              309,
+              377
+            ]
+          }
+        ],
+        "note": "First spur is a flat cut stump; no distinct distal apex."
+      }
+    },
+    {
+      "index": 72,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (110).jpg",
+      "sha256": "91fe2e76c6cd1d4dec31a5c3472a6f092150ce30f21d456e498e9e44e2017ff9",
+      "pixel_sha256": "7a217d42203d7464259254b427d6034e2e00a3b0e8eab3dc0c59ca2f3d5ec369",
+      "age_months": "5",
+      "recorded_chicken_id": "CHICKEN_011376",
+      "chicken_id": "CHICKEN_011376",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_033",
+      "content_type": "mixed_unlocalized",
+      "width": 480,
+      "height": 640,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            0,
+            110,
+            417,
+            193
+          ],
+          [
+            0,
+            439,
+            492,
+            552
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              264,
+              134
+            ],
+            [
+              268,
+              117
+            ],
+            [
+              267,
+              98
+            ],
+            [
+              258,
+              78
+            ],
+            [
+              242,
+              60
+            ],
+            [
+              249,
+              65
+            ],
+            [
+              268,
+              75
+            ],
+            [
+              289,
+              93
+            ],
+            [
+              304,
+              115
+            ],
+            [
+              306,
+              139
+            ],
+            [
+              295,
+              152
+            ],
+            [
+              278,
+              154
+            ]
+          ],
+          [
+            [
+              346,
+              420
+            ],
+            [
+              343,
+              397
+            ],
+            [
+              339,
+              375
+            ],
+            [
+              331,
+              351
+            ],
+            [
+              322,
+              326
+            ],
+            [
+              327,
+              315
+            ],
+            [
+              345,
+              334
+            ],
+            [
+              365,
+              355
+            ],
+            [
+              383,
+              379
+            ],
+            [
+              395,
+              402
+            ],
+            [
+              397,
+              421
+            ],
+            [
+              379,
+              432
+            ],
+            [
+              357,
+              430
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              281,
+              145
+            ],
+            "tip": [
+              243,
+              61
+            ]
+          },
+          {
+            "base": [
+              370,
+              424
+            ],
+            "tip": [
+              327,
+              315
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 76,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\19months (1).jpg",
+      "sha256": "f61c6133ad1c0043e6fcceb275b65b88e382af7bc965991c2953fbccc6ee9a6b",
+      "pixel_sha256": "7fc2b47903f7b354511badaf51049b68cad859dff83c771b72209d4a468c04c3",
+      "age_months": "19",
+      "recorded_chicken_id": "CHICKEN_005662",
+      "chicken_id": "CHICKEN_005662",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_003",
+      "content_type": "mixed_unlocalized",
+      "width": 387,
+      "height": 516,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            295,
+            160,
+            405,
+            552
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              327,
+              353
+            ],
+            [
+              295,
+              348
+            ],
+            [
+              264,
+              340
+            ],
+            [
+              236,
+              329
+            ],
+            [
+              210,
+              315
+            ],
+            [
+              185,
+              296
+            ],
+            [
+              166,
+              272
+            ],
+            [
+              153,
+              248
+            ],
+            [
+              146,
+              223
+            ],
+            [
+              143,
+              238
+            ],
+            [
+              147,
+              270
+            ],
+            [
+              157,
+              300
+            ],
+            [
+              177,
+              326
+            ],
+            [
+              201,
+              348
+            ],
+            [
+              228,
+              365
+            ],
+            [
+              260,
+              379
+            ],
+            [
+              294,
+              389
+            ],
+            [
+              326,
+              396
+            ]
+          ],
+          [
+            [
+              0,
+              207
+            ],
+            [
+              21,
+              188
+            ],
+            [
+              41,
+              157
+            ],
+            [
+              58,
+              123
+            ],
+            [
+              67,
+              93
+            ],
+            [
+              69,
+              68
+            ],
+            [
+              80,
+              76
+            ],
+            [
+              86,
+              102
+            ],
+            [
+              83,
+              132
+            ],
+            [
+              74,
+              162
+            ],
+            [
+              59,
+              191
+            ],
+            [
+              35,
+              220
+            ],
+            [
+              0,
+              246
+            ]
+          ]
+        ],
+        "visibility": "partial",
+        "complete": true,
+        "note": "Secondary spur intersects left image boundary; annotate visible portion only."
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              326,
+              375
+            ],
+            "tip": [
+              146,
+              223
+            ]
+          },
+          {
+            "base": null,
+            "tip": [
+              70,
+              69
+            ]
+          }
+        ],
+        "note": "Second spur attachment outside frame."
+      }
+    },
+    {
+      "index": 77,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\13months (368).jpg",
+      "sha256": "0c86d123587f199c0bfde63ad733b98d98bbcd268964adc10ea473d6c0366047",
+      "pixel_sha256": "8252c4a78c014522dd185a815aa4d41a6b855830a14edd184746f05520d1820b",
+      "age_months": "13",
+      "recorded_chicken_id": "CHICKEN_002468",
+      "chicken_id": "CHICKEN_002468",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_034",
+      "content_type": "mixed_unlocalized",
+      "width": 1600,
+      "height": 1167,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            247,
+            175,
+            325,
+            373
+          ],
+          [
+            352,
+            229,
+            412,
+            431
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              307,
+              273
+            ],
+            [
+              314,
+              287
+            ],
+            [
+              326,
+              299
+            ],
+            [
+              342,
+              305
+            ],
+            [
+              363,
+              303
+            ],
+            [
+              359,
+              312
+            ],
+            [
+              344,
+              317
+            ],
+            [
+              328,
+              316
+            ],
+            [
+              315,
+              308
+            ],
+            [
+              306,
+              294
+            ],
+            [
+              301,
+              282
+            ]
+          ],
+          [
+            [
+              405,
+              315
+            ],
+            [
+              426,
+              311
+            ],
+            [
+              450,
+              303
+            ],
+            [
+              472,
+              294
+            ],
+            [
+              488,
+              284
+            ],
+            [
+              483,
+              300
+            ],
+            [
+              469,
+              314
+            ],
+            [
+              449,
+              329
+            ],
+            [
+              430,
+              338
+            ],
+            [
+              405,
+              343
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              305,
+              287
+            ],
+            "tip": null
+          },
+          {
+            "base": [
+              405,
+              329
+            ],
+            "tip": [
+              487,
+              285
+            ]
+          }
+        ],
+        "note": "Rear spur distal edge occluded by foreground leg."
+      }
+    },
+    {
+      "index": 82,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\23months (1).jpg",
+      "sha256": "5a1c76f6a03deee5dd2d7b0731b7136e6bed377b79523868a8db0c10fc13beed",
+      "pixel_sha256": "8e871c3d2aafcc422c4f72586e8ca80fdb53a410e8f2584aa3ae311497145eb4",
+      "age_months": "23",
+      "recorded_chicken_id": "CHICKEN_008362",
+      "chicken_id": "CHICKEN_008362",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_036",
+      "content_type": "mixed_unlocalized",
+      "width": 491,
+      "height": 407,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            76,
+            102,
+            205,
+            474
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              167,
+              272
+            ],
+            [
+              191,
+              287
+            ],
+            [
+              223,
+              298
+            ],
+            [
+              260,
+              308
+            ],
+            [
+              305,
+              316
+            ],
+            [
+              352,
+              319
+            ],
+            [
+              398,
+              314
+            ],
+            [
+              442,
+              304
+            ],
+            [
+              481,
+              288
+            ],
+            [
+              515,
+              265
+            ],
+            [
+              542,
+              242
+            ],
+            [
+              552,
+              232
+            ],
+            [
+              546,
+              254
+            ],
+            [
+              533,
+              277
+            ],
+            [
+              513,
+              302
+            ],
+            [
+              488,
+              325
+            ],
+            [
+              458,
+              345
+            ],
+            [
+              423,
+              360
+            ],
+            [
+              381,
+              369
+            ],
+            [
+              335,
+              370
+            ],
+            [
+              290,
+              363
+            ],
+            [
+              248,
+              350
+            ],
+            [
+              209,
+              334
+            ],
+            [
+              176,
+              314
+            ],
+            [
+              158,
+              294
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "val",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              162,
+              286
+            ],
+            "tip": [
+              551,
+              233
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 83,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (118).jpg",
+      "sha256": "f28e7a755a2969e64fbace5a81b3240ed3d99b0aa3993892da88613c9c361275",
+      "pixel_sha256": "8eb85a20ad908f857d5557aeed9e831ec2abc6eb34592d2c3cfede6f1aa0bd40",
+      "age_months": "5",
+      "recorded_chicken_id": "CHICKEN_011392",
+      "chicken_id": "CHICKEN_011392",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_037",
+      "content_type": "mixed_unlocalized",
+      "width": 401,
+      "height": 498,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            0,
+            63,
+            107,
+            459
+          ],
+          [
+            413,
+            119,
+            517,
+            469
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              93,
+              342
+            ],
+            [
+              108,
+              352
+            ],
+            [
+              129,
+              366
+            ],
+            [
+              152,
+              379
+            ],
+            [
+              172,
+              390
+            ],
+            [
+              173,
+              398
+            ],
+            [
+              151,
+              399
+            ],
+            [
+              128,
+              393
+            ],
+            [
+              106,
+              385
+            ],
+            [
+              85,
+              372
+            ]
+          ],
+          [
+            [
+              432,
+              361
+            ],
+            [
+              410,
+              373
+            ],
+            [
+              387,
+              385
+            ],
+            [
+              361,
+              394
+            ],
+            [
+              337,
+              404
+            ],
+            [
+              350,
+              410
+            ],
+            [
+              374,
+              410
+            ],
+            [
+              400,
+              407
+            ],
+            [
+              430,
+              399
+            ],
+            [
+              442,
+              391
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              92,
+              357
+            ],
+            "tip": [
+              173,
+              394
+            ]
+          },
+          {
+            "base": [
+              434,
+              379
+            ],
+            "tip": [
+              338,
+              404
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 90,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (1).jpg",
+      "sha256": "e6944d3144c2adbdc86b23dec3e679f0aa2a9985a35c832abe23e81b8c823a66",
+      "pixel_sha256": "9de24829961a80a57be774e789103608f7a391a29b1fe812801f3cace5e2f611",
+      "age_months": "6",
+      "recorded_chicken_id": "CHICKEN_012188",
+      "chicken_id": "CHICKEN_012188",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_038",
+      "content_type": "mixed_unlocalized",
+      "width": 2400,
+      "height": 1600,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            214,
+            9,
+            299,
+            335
+          ],
+          [
+            298,
+            34,
+            376,
+            420
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              299,
+              236
+            ],
+            [
+              272,
+              233
+            ],
+            [
+              248,
+              222
+            ],
+            [
+              226,
+              205
+            ],
+            [
+              207,
+              184
+            ],
+            [
+              202,
+              178
+            ],
+            [
+              207,
+              198
+            ],
+            [
+              218,
+              222
+            ],
+            [
+              235,
+              243
+            ],
+            [
+              258,
+              260
+            ],
+            [
+              281,
+              269
+            ],
+            [
+              299,
+              273
+            ]
+          ],
+          [
+            [
+              267,
+              319
+            ],
+            [
+              250,
+              320
+            ],
+            [
+              234,
+              323
+            ],
+            [
+              221,
+              329
+            ],
+            [
+              220,
+              336
+            ],
+            [
+              231,
+              341
+            ],
+            [
+              248,
+              340
+            ],
+            [
+              266,
+              335
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true,
+        "note": "Long rear spur and short blunt foreground spur/stump."
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              299,
+              255
+            ],
+            "tip": [
+              203,
+              180
+            ]
+          },
+          {
+            "base": [
+              266,
+              327
+            ],
+            "tip": null
+          }
+        ],
+        "note": "Foreground stump has no unambiguous sharp tip."
+      }
+    },
+    {
+      "index": 99,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\11months (127).jpg",
+      "sha256": "04e7525620a2c7adc237a396857a16e3d76556b854f1a106a8f620a7d8632bbc",
+      "pixel_sha256": "ac9a63a4c5a9611ec576eafaf59ed95f1c9be5a4ca6e89ce09021d28be14e8f0",
+      "age_months": "11",
+      "recorded_chicken_id": "CHICKEN_001000",
+      "chicken_id": "CHICKEN_001000",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_040",
+      "content_type": "mixed_unlocalized",
+      "width": 612,
+      "height": 405,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            61,
+            0,
+            143,
+            408
+          ],
+          [
+            299,
+            0,
+            383,
+            447
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              120,
+              235
+            ],
+            [
+              128,
+              226
+            ],
+            [
+              137,
+              206
+            ],
+            [
+              145,
+              188
+            ],
+            [
+              152,
+              188
+            ],
+            [
+              155,
+              199
+            ],
+            [
+              154,
+              227
+            ],
+            [
+              150,
+              255
+            ],
+            [
+              141,
+              280
+            ],
+            [
+              128,
+              293
+            ],
+            [
+              118,
+              292
+            ],
+            [
+              113,
+              279
+            ]
+          ],
+          [
+            [
+              312,
+              227
+            ],
+            [
+              283,
+              225
+            ],
+            [
+              259,
+              215
+            ],
+            [
+              237,
+              198
+            ],
+            [
+              216,
+              176
+            ],
+            [
+              201,
+              153
+            ],
+            [
+              191,
+              133
+            ],
+            [
+              190,
+              157
+            ],
+            [
+              195,
+              185
+            ],
+            [
+              201,
+              211
+            ],
+            [
+              214,
+              237
+            ],
+            [
+              233,
+              257
+            ],
+            [
+              258,
+              272
+            ],
+            [
+              284,
+              280
+            ],
+            [
+              312,
+              280
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "val",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              129,
+              270
+            ],
+            "tip": [
+              150,
+              188
+            ]
+          },
+          {
+            "base": [
+              307,
+              255
+            ],
+            "tip": [
+              187,
+              132
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 102,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (1).jpg",
+      "sha256": "d6a16bbca3b697c758a5bd5e5462ab20ca51e7f1be4de3633782f504b84f819a",
+      "pixel_sha256": "ae6f268f43f9bd347a7c2084afc6c70c5714423f214c8a45fd16ce45e2d415ff",
+      "age_months": "4",
+      "recorded_chicken_id": "CHICKEN_010190",
+      "chicken_id": "CHICKEN_010190",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_041",
+      "content_type": "mixed_unlocalized",
+      "width": 415,
+      "height": 739,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            0,
+            246,
+            229,
+            362
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              200,
+              332
+            ],
+            [
+              223,
+              345
+            ],
+            [
+              245,
+              365
+            ],
+            [
+              266,
+              396
+            ],
+            [
+              282,
+              425
+            ],
+            [
+              287,
+              437
+            ],
+            [
+              274,
+              428
+            ],
+            [
+              253,
+              407
+            ],
+            [
+              235,
+              384
+            ],
+            [
+              216,
+              365
+            ],
+            [
+              198,
+              354
+            ]
+          ]
+        ],
+        "visibility": "partial",
+        "complete": true,
+        "note": "Visible small spur protruding below held shank."
+      },
+      "split": "test",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              201,
+              345
+            ],
+            "tip": [
+              286,
+              437
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 107,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\6months (10).jpg",
+      "sha256": "4364af5f8d99c7783405e06589759be9dfbad9a3dd065c3a435b8e4f3ddd8449",
+      "pixel_sha256": "b4e92944dfdce6987e87f4c26af03c12dfe1d9b5cdf5bb7733f491ac08541d8a",
+      "age_months": "6",
+      "recorded_chicken_id": "CHICKEN_012190",
+      "chicken_id": "CHICKEN_012190",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_043",
+      "content_type": "mixed_unlocalized",
+      "width": 480,
+      "height": 640,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            43,
+            136,
+            154,
+            600
+          ],
+          [
+            501,
+            181,
+            600,
+            600
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              132,
+              301
+            ],
+            [
+              160,
+              300
+            ],
+            [
+              189,
+              294
+            ],
+            [
+              220,
+              289
+            ],
+            [
+              235,
+              292
+            ],
+            [
+              237,
+              300
+            ],
+            [
+              220,
+              312
+            ],
+            [
+              195,
+              324
+            ],
+            [
+              164,
+              337
+            ],
+            [
+              130,
+              347
+            ]
+          ],
+          [
+            [
+              519,
+              296
+            ],
+            [
+              493,
+              287
+            ],
+            [
+              468,
+              275
+            ],
+            [
+              443,
+              262
+            ],
+            [
+              416,
+              245
+            ],
+            [
+              420,
+              262
+            ],
+            [
+              435,
+              283
+            ],
+            [
+              458,
+              305
+            ],
+            [
+              483,
+              319
+            ],
+            [
+              513,
+              331
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              132,
+              324
+            ],
+            "tip": [
+              236,
+              294
+            ]
+          },
+          {
+            "base": [
+              516,
+              314
+            ],
+            "tip": [
+              417,
+              246
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 115,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\12months (238).jpg",
+      "sha256": "9c7ec3fe697bdf7afabd41adc15ff0caef060882f62f88b78d9de9f4d2df7190",
+      "pixel_sha256": "bd470456c7697b3c7089e452d46d29e64108211c1b9e002a985aa98e26a83c09",
+      "age_months": "12",
+      "recorded_chicken_id": "CHICKEN_001895",
+      "chicken_id": "CHICKEN_001895",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_046",
+      "content_type": "mixed_unlocalized",
+      "width": 515,
+      "height": 388,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            0,
+            370,
+            331,
+            600
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              308,
+              296
+            ],
+            [
+              300,
+              278
+            ],
+            [
+              301,
+              250
+            ],
+            [
+              300,
+              221
+            ],
+            [
+              303,
+              193
+            ],
+            [
+              315,
+              165
+            ],
+            [
+              327,
+              146
+            ],
+            [
+              333,
+              145
+            ],
+            [
+              338,
+              156
+            ],
+            [
+              342,
+              181
+            ],
+            [
+              341,
+              210
+            ],
+            [
+              337,
+              240
+            ],
+            [
+              333,
+              268
+            ],
+            [
+              333,
+              296
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "test",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              318,
+              296
+            ],
+            "tip": [
+              332,
+              146
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 116,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (102).jpg",
+      "sha256": "2b3a27c4eb1ce832d1bf973eeea4ce3403387cd6d9b8d0ee14358f725861bce6",
+      "pixel_sha256": "be2fc0ab27e4495cd0081870489172a48475f43a7f579e022dacafbedd888093",
+      "age_months": "4",
+      "recorded_chicken_id": "CHICKEN_010210",
+      "chicken_id": "CHICKEN_010210",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_047",
+      "content_type": "mixed_unlocalized",
+      "width": 300,
+      "height": 300,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            142,
+            0,
+            252,
+            324
+          ],
+          [
+            279,
+            0,
+            473,
+            412
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              224,
+              171
+            ],
+            [
+              247,
+              170
+            ],
+            [
+              278,
+              166
+            ],
+            [
+              304,
+              167
+            ],
+            [
+              311,
+              175
+            ],
+            [
+              298,
+              192
+            ],
+            [
+              278,
+              205
+            ],
+            [
+              250,
+              219
+            ],
+            [
+              230,
+              224
+            ]
+          ],
+          [
+            [
+              386,
+              259
+            ],
+            [
+              366,
+              249
+            ],
+            [
+              342,
+              244
+            ],
+            [
+              320,
+              247
+            ],
+            [
+              310,
+              254
+            ],
+            [
+              318,
+              267
+            ],
+            [
+              341,
+              282
+            ],
+            [
+              364,
+              292
+            ],
+            [
+              392,
+              295
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "val",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              237,
+              196
+            ],
+            "tip": [
+              310,
+              171
+            ]
+          },
+          {
+            "base": [
+              389,
+              277
+            ],
+            "tip": [
+              311,
+              254
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 117,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\4months (10).jpg",
+      "sha256": "92ff7d6295ead1b5126e71f361c036dde366e36f3382c8d0fab2df9520c0aacd",
+      "pixel_sha256": "be5f30cb97262ca3e16ed1cdd37b397dbdf1e58b56ff7c90cb3a7bf302a5a9d3",
+      "age_months": "4",
+      "recorded_chicken_id": "CHICKEN_010192",
+      "chicken_id": "CHICKEN_010192",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_048",
+      "content_type": "mixed_unlocalized",
+      "width": 480,
+      "height": 640,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            257,
+            81,
+            351,
+            346
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              246,
+              260
+            ],
+            [
+              222,
+              265
+            ],
+            [
+              196,
+              268
+            ],
+            [
+              175,
+              268
+            ],
+            [
+              169,
+              273
+            ],
+            [
+              179,
+              281
+            ],
+            [
+              201,
+              291
+            ],
+            [
+              223,
+              298
+            ],
+            [
+              244,
+              301
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "test",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              244,
+              282
+            ],
+            "tip": [
+              170,
+              274
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 131,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\15months (1).jpg",
+      "sha256": "22870cdf599b88a76b442fa01bc8cf26eb4eac4a824516b268866be112b08abb",
+      "pixel_sha256": "da4c0583d808b960fff20ee1b08b2988d88220661ef0ab23403332d097169b09",
+      "age_months": "15",
+      "recorded_chicken_id": "CHICKEN_003790",
+      "chicken_id": "CHICKEN_003790",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_054",
+      "content_type": "mixed_unlocalized",
+      "width": 612,
+      "height": 408,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            109,
+            176,
+            177,
+            476
+          ],
+          [
+            334,
+            170,
+            407,
+            487
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              109,
+              322
+            ],
+            [
+              96,
+              297
+            ],
+            [
+              89,
+              266
+            ],
+            [
+              85,
+              231
+            ],
+            [
+              81,
+              194
+            ],
+            [
+              82,
+              153
+            ],
+            [
+              87,
+              120
+            ],
+            [
+              82,
+              148
+            ],
+            [
+              75,
+              183
+            ],
+            [
+              71,
+              217
+            ],
+            [
+              74,
+              250
+            ],
+            [
+              81,
+              281
+            ],
+            [
+              93,
+              314
+            ],
+            [
+              108,
+              337
+            ]
+          ],
+          [
+            [
+              348,
+              329
+            ],
+            [
+              325,
+              332
+            ],
+            [
+              302,
+              330
+            ],
+            [
+              280,
+              322
+            ],
+            [
+              260,
+              309
+            ],
+            [
+              244,
+              288
+            ],
+            [
+              232,
+              266
+            ],
+            [
+              221,
+              243
+            ],
+            [
+              224,
+              268
+            ],
+            [
+              232,
+              297
+            ],
+            [
+              248,
+              324
+            ],
+            [
+              269,
+              345
+            ],
+            [
+              295,
+              359
+            ],
+            [
+              323,
+              363
+            ],
+            [
+              347,
+              357
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "test",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              187,
+              326
+            ],
+            "tip": [
+              164,
+              117
+            ]
+          },
+          {
+            "base": [
+              348,
+              347
+            ],
+            "tip": [
+              215,
+              249
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 138,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\5months (1).jpg",
+      "sha256": "fa4e5f36b8deb48fbadbcf45232e0d4c3659d00efd0ca198b0a268f80bb0a207",
+      "pixel_sha256": "e3beaa3e8b4a666f1c06162b41c430093971158805b121f00127aa343efbb941",
+      "age_months": "5",
+      "recorded_chicken_id": "CHICKEN_011360",
+      "chicken_id": "CHICKEN_011360",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_056",
+      "content_type": "mixed_unlocalized",
+      "width": 600,
+      "height": 900,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            174,
+            224,
+            289,
+            401
+          ],
+          [
+            277,
+            244,
+            369,
+            424
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              232,
+              334
+            ],
+            [
+              248,
+              335
+            ],
+            [
+              266,
+              342
+            ],
+            [
+              271,
+              347
+            ],
+            [
+              263,
+              352
+            ],
+            [
+              247,
+              352
+            ],
+            [
+              229,
+              348
+            ]
+          ]
+        ],
+        "visibility": "partial",
+        "complete": true,
+        "note": "Visible rear-leg spur; foreground side is hidden, no absence inferred."
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              230,
+              343
+            ],
+            "tip": [
+              270,
+              347
+            ]
+          }
+        ],
+        "note": "Small visible distal end; independent review needed."
+      }
+    },
+    {
+      "index": 144,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\14months (491).jpg",
+      "sha256": "0059345efaf5d744f40128d150b3c47f27b73a4062388e0b0b72263fa0612a22",
+      "pixel_sha256": "f2550ec1f1644085c2c935743bf12c7b95e64f3170d052032a896e7c6da30366",
+      "age_months": "14",
+      "recorded_chicken_id": "CHICKEN_003508",
+      "chicken_id": "CHICKEN_003508",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_059",
+      "content_type": "mixed_unlocalized",
+      "width": 423,
+      "height": 472,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            209,
+            65,
+            470,
+            205
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              212,
+              190
+            ],
+            [
+              234,
+              181
+            ],
+            [
+              253,
+              190
+            ],
+            [
+              266,
+              213
+            ],
+            [
+              275,
+              248
+            ],
+            [
+              278,
+              286
+            ],
+            [
+              273,
+              327
+            ],
+            [
+              266,
+              361
+            ],
+            [
+              257,
+              386
+            ],
+            [
+              249,
+              396
+            ],
+            [
+              241,
+              385
+            ],
+            [
+              237,
+              355
+            ],
+            [
+              232,
+              318
+            ],
+            [
+              227,
+              277
+            ],
+            [
+              218,
+              237
+            ]
+          ],
+          [
+            [
+              347,
+              177
+            ],
+            [
+              367,
+              176
+            ],
+            [
+              386,
+              187
+            ],
+            [
+              399,
+              212
+            ],
+            [
+              405,
+              242
+            ],
+            [
+              401,
+              269
+            ],
+            [
+              391,
+              296
+            ],
+            [
+              376,
+              306
+            ],
+            [
+              379,
+              324
+            ],
+            [
+              376,
+              344
+            ],
+            [
+              368,
+              343
+            ],
+            [
+              357,
+              328
+            ],
+            [
+              349,
+              307
+            ],
+            [
+              346,
+              278
+            ],
+            [
+              346,
+              248
+            ],
+            [
+              340,
+              211
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true,
+        "note": "Trimming photo; tool is background, not spur."
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              234,
+              196
+            ],
+            "tip": null
+          },
+          {
+            "base": [
+              360,
+              195
+            ],
+            "tip": [
+              376,
+              342
+            ]
+          }
+        ],
+        "note": "Tool obscures first spur tip."
+      }
+    },
+    {
+      "index": 148,
+      "image": "C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\spur_age\\dataset\\images\\10months (100).jpg",
+      "sha256": "22a8e0ebf46f587d628d046357d30b97f75a69e1b0f1679bb04285a9db57035f",
+      "pixel_sha256": "f7fd2cd4e66b17f45ceef3989bbeec6e24c6c8c43ed5e3bb70b3dbea24af7acd",
+      "age_months": "10",
+      "recorded_chicken_id": "CHICKEN_000003",
+      "chicken_id": "CHICKEN_000003",
+      "identity_verified": "unresolved",
+      "age_verified": "yes",
+      "record_reference": "User explicitly confirmed existing ages on 2026-11-09",
+      "source_family": "visual_family_003",
+      "content_type": "mixed_unlocalized",
+      "width": 549,
+      "height": 558,
+      "coordinate_system": "Visual review coordinates on 600x600 oriented reference; converted to original pixels on export.",
+      "annotations": {
+        "legs": [
+          [
+            91,
+            78,
+            174,
+            349
+          ],
+          [
+            367,
+            72,
+            469,
+            361
+          ]
+        ],
+        "spurs": [
+          [
+            [
+              152,
+              216
+            ],
+            [
+              177,
+              212
+            ],
+            [
+              199,
+              203
+            ],
+            [
+              216,
+              188
+            ],
+            [
+              230,
+              167
+            ],
+            [
+              235,
+              145
+            ],
+            [
+              234,
+              125
+            ],
+            [
+              232,
+              109
+            ],
+            [
+              239,
+              105
+            ],
+            [
+              248,
+              112
+            ],
+            [
+              254,
+              132
+            ],
+            [
+              256,
+              155
+            ],
+            [
+              252,
+              177
+            ],
+            [
+              240,
+              199
+            ],
+            [
+              220,
+              219
+            ],
+            [
+              195,
+              234
+            ],
+            [
+              165,
+              245
+            ]
+          ],
+          [
+            [
+              398,
+              194
+            ],
+            [
+              372,
+              197
+            ],
+            [
+              348,
+              194
+            ],
+            [
+              326,
+              185
+            ],
+            [
+              307,
+              172
+            ],
+            [
+              293,
+              151
+            ],
+            [
+              282,
+              124
+            ],
+            [
+              274,
+              122
+            ],
+            [
+              271,
+              133
+            ],
+            [
+              273,
+              155
+            ],
+            [
+              283,
+              180
+            ],
+            [
+              300,
+              202
+            ],
+            [
+              324,
+              218
+            ],
+            [
+              350,
+              227
+            ],
+            [
+              378,
+              229
+            ],
+            [
+              400,
+              225
+            ]
+          ]
+        ],
+        "visibility": "clear",
+        "complete": true
+      },
+      "split": "train",
+      "endpoint_review": {
+        "spurs": [
+          {
+            "base": [
+              154,
+              228
+            ],
+            "tip": [
+              236,
+              106
+            ]
+          },
+          {
+            "base": [
+              399,
+              212
+            ],
+            "tip": [
+              274,
+              126
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "marker": "smartpoultry-spur-api-parity-2026-11-16",
+  "spur_measurement": {
+    "review_editor": true,
+    "curved_pixel_measurement": true,
+    "physical_length_requires_known_scale": true,
+    "gemini_configured": true,
+    "gemini_spur_model": "gemini-3.1-flash-lite"
+  },
+  "runtime": "onnx",
+  "database_engine": "django.db.backends.postgresql"
+}

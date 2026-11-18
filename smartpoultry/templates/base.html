@@ -166,7 +166,7 @@
     {% endif %}
 
             {% if messages %}
-                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <div class="alert alert-info alert-dismissible fade show" role="alert" data-auto-dismiss>
                     {% for message in messages %}
                         {{ message }}
                     {% endfor %}
@@ -275,7 +275,7 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}?v=20261118-alert-lifecycle"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

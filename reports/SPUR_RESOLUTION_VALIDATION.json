@@ -1,0 +1,105 @@
+{
+  "date": "2026-11-16",
+  "split": "existing validation only",
+  "images_per_evaluation": 8,
+  "new_training_executed": false,
+  "active_models_changed": false,
+  "results": [
+    {
+      "task": "detect",
+      "size": 512,
+      "metrics": {
+        "metrics/precision(B)": 0.6418285171527099,
+        "metrics/recall(B)": 0.5025641025641026,
+        "metrics/mAP50(B)": 0.5742896006069649,
+        "metrics/mAP50-95(B)": 0.23170026133648863,
+        "fitness": 0.23170026133648863
+      },
+      "class_thresholds": {
+        "0": {
+          "threshold": 0.8068068068068068,
+          "f1": 0.46780461528104617,
+          "precision": 0.4689481271485561,
+          "recall": 0.4666666666666667
+        },
+        "1": {
+          "threshold": 0.8708708708708709,
+          "f1": 0.681404573966305,
+          "precision": 0.9276687499313458,
+          "recall": 0.5384615384615384
+        }
+      }
+    },
+    {
+      "task": "detect",
+      "size": 1024,
+      "metrics": {
+        "metrics/precision(B)": 0.3305591184138863,
+        "metrics/recall(B)": 0.2669597249923572,
+        "metrics/mAP50(B)": 0.22863226355053518,
+        "metrics/mAP50-95(B)": 0.09152820755918702,
+        "fitness": 0.09152820755918702
+      },
+      "class_thresholds": {
+        "0": {
+          "threshold": 0.6546546546546547,
+          "f1": 0.16905457672799898,
+          "precision": 0.11324388356992128,
+          "recall": 0.3333333333333333
+        },
+        "1": {
+          "threshold": 0.4804804804804805,
+          "f1": 0.37723250237989364,
+          "precision": 0.2903071743131465,
+          "recall": 0.5384615384615384
+        }
+      }
+    },
+    {
+      "task": "segment",
+      "size": 512,
+      "metrics": {
+        "metrics/precision(B)": 0.7955506509695092,
+        "metrics/recall(B)": 0.5999830225867625,
+        "metrics/mAP50(B)": 0.6077008087774295,
+        "metrics/mAP50-95(B)": 0.3437386686884297,
+        "metrics/precision(M)": 0.8320409161960537,
+        "metrics/recall(M)": 0.46153846153846156,
+        "metrics/mAP50(M)": 0.5158729269555118,
+        "metrics/mAP50-95(M)": 0.26747718441454627,
+        "fitness": 0.611215853102976
+      },
+      "class_thresholds": {
+        "0": {
+          "threshold": 0.6056056056056056,
+          "f1": 0.5937306840353663,
+          "precision": 0.8320409161960537,
+          "recall": 0.46153846153846156
+        }
+      }
+    },
+    {
+      "task": "segment",
+      "size": 1024,
+      "metrics": {
+        "metrics/precision(B)": 0.30039174322315804,
+        "metrics/recall(B)": 0.46244248436113394,
+        "metrics/mAP50(B)": 0.2964463180525597,
+        "metrics/mAP50-95(B)": 0.15879972030862172,
+        "metrics/precision(M)": 0.25061524699045307,
+        "metrics/recall(M)": 0.38461538461538464,
+        "metrics/mAP50(M)": 0.20583394837022453,
+        "metrics/mAP50-95(M)": 0.09763672234671557,
+        "fitness": 0.25643644265533727
+      },
+      "class_thresholds": {
+        "0": {
+          "threshold": 0.1061061061061061,
+          "f1": 0.3034818373542265,
+          "precision": 0.25061524699045307,
+          "recall": 0.38461538461538464
+        }
+      }
+    }
+  ]
+}

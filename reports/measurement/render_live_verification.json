@@ -1,0 +1,33 @@
+{
+  "commit": "3f64c46",
+  "marker": "smartpoultry-spur-review-2026-11-16",
+  "live_status": 200,
+  "spur_measurement": {
+    "review_editor": true,
+    "curved_pixel_measurement": true,
+    "physical_length_requires_known_scale": true,
+    "gemini_configured": true
+  },
+  "runtime": "onnx",
+  "memory_limit_mb": 512.0,
+  "database_engine": "django.db.backends.postgresql",
+  "checks": [
+    {
+      "path": "/login/",
+      "status": 200,
+      "destination": "https://smartpoultry-l3qo.onrender.com/login/"
+    },
+    {
+      "path": "/static/js/spur_measurement_review.js",
+      "status": 200,
+      "destination": "https://smartpoultry-l3qo.onrender.com/static/js/spur_measurement_review.js",
+      "matches_pushed_asset": true
+    },
+    {
+      "path": "/rooster-age-estimator/1/review-spur/",
+      "status": 200,
+      "destination": "https://smartpoultry-l3qo.onrender.com/login/?next=/rooster-age-estimator/1/review-spur/"
+    }
+  ],
+  "limit": "Authenticated live review save and external API call were not performed; isolated browser checks passed. No production data changed."
+}

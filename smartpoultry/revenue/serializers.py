@@ -4,6 +4,21 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from production.models import ProductionRecord
 
 
+class RevenueOrderItemSerializer(serializers.Serializer):
+    production = serializers.IntegerField(min_value=1)
+    quantity = serializers.DecimalField(max_digits=10, decimal_places=2, min_value=0.01)
+    price_per_unit = serializers.DecimalField(max_digits=10, decimal_places=2, min_value=0)
+
+
+class RevenueOrderSerializer(serializers.Serializer):
+    buyer_name = serializers.CharField(max_length=255)
+    buyer_contact = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    buyer_address = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    order_number = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    date = serializers.DateField()
+    items = RevenueOrderItemSerializer(many=True, allow_empty=False, max_length=50)
+
+
 class RevenueSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(source='branch.name', read_only=True)
     revenue_type_display = serializers.CharField(source='get_revenue_type_display',read_only=True)
