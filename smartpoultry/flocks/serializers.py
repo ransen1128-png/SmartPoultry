@@ -35,7 +35,7 @@ class FlockSerializer(serializers.ModelSerializer):
         placement=attrs.get('placement_date',getattr(self.instance,'placement_date',None))
         breed=attrs.get('breed',getattr(self.instance,'breed',None))
         if breed=='broilers' and not placement and (self.instance is None or self.instance.placement_date):
-            raise serializers.ValidationError({'placement_date':'Enter the broiler delivery / hatch date. Harvest and sale start after 42 days.'})
+            raise serializers.ValidationError({'placement_date':'Enter the broiler delivery / hatch date. Harvest and sale start after 25 days.'})
         if placement and placement>timezone.localdate():
             raise serializers.ValidationError({'placement_date':'Delivery / hatch date cannot be in the future.'})
         branch = attrs.get('branch', getattr(self.instance, 'branch', None))

@@ -4,14 +4,57 @@ async function pagedInventoryRecords(url) {
     while(url) {const response=await fetch(url);if(!response.ok)throw new Error('Unable to load records.');const data=await response.json();rows.push(...(data.results || []));url=data.next;}
     return rows;
 }
+const inventoryMassUnits=[['kg','Kilograms (kg)'],['g','Grams (g)'],['lb','Pounds (lb)'],['oz','Ounces (oz)']];
+const inventoryLiquidUnits=[['ml','Milliliters (mL)'],['L','Liters (L)']];
+const inventoryPackageChoices=[['sacks','Sacks'],['bags','Bags'],['bottles','Bottles (liquid)'],['jugs','Jugs (liquid)'],['cans','Cans (liquid)'],['boxes','Boxes'],['containers','Containers'],['pcs','Pieces'],['kg','Kilograms (bulk)'],['g','Grams (bulk)'],['lb','Pounds (bulk)'],['ml','Milliliters (bulk)'],['L','Liters (bulk)']];
+function setInventorySelect(select,choices,value,placeholder) {
+    select.replaceChildren(new Option(placeholder,''));
+    choices.forEach(([value,label])=>select.add(new Option(label,value)));
+    // Preserve existing labels when editing older inventory; no quantity conversion.
+    if(value && !choices.some(([option])=>option===value))select.add(new Option(value+' (existing)',value));
+    select.value=value || '';
+}
+function updateInventoryContentUnits(stock,size,content,existingValue) {
+    const unit=stock.value.toLowerCase();
+    const liquid=['bottles','bottle','jugs','jug','cans','can'].includes(unit);
+    const dry=['sacks','sack','bags','bag'].includes(unit);
+    const choices=liquid?inventoryLiquidUnits:dry?inventoryMassUnits:[...inventoryMassUnits,...inventoryLiquidUnits];
+    const selected=existingValue!==undefined?existingValue:
+        size.value?(choices.some(([value])=>value===content.value)?content.value:choices[0][0]):'';
+    setInventorySelect(content,choices,selected,'Choose content unit (optional)');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+    for(const [stockId,sizeId,contentId] of [['newStockUnit','newPackageSize','newContentUnit'],['packagingStockUnit','packagingSize','packagingContentUnit']]){
+        const stock=document.getElementById(stockId),size=document.getElementById(sizeId),content=document.getElementById(contentId);
+        setInventorySelect(stock,inventoryPackageChoices,'','Choose package type...');
+        updateInventoryContentUnits(stock,size,content);
+        stock.addEventListener('change',()=>updateInventoryContentUnits(stock,size,content));
+        size.addEventListener('input',()=>updateInventoryContentUnits(stock,size,content));
+    }
+    document.getElementById('addInventoryForm').addEventListener('reset',()=>{
+        setTimeout(()=>updateInventoryContentUnits(document.getElementById('newStockUnit'),document.getElementById('newPackageSize'),document.getElementById('newContentUnit'),''),0);
+    });
+});
 let packagingReturnToHistory=false;
+function showLowStockDialog(message,dialog) {
+    if(!message)return;
+    const show=()=>showAppDialog(message,'Low stock - restock needed');
+    if(dialog && dialog.classList.contains('show')){
+        dialog.addEventListener('hidden.bs.modal',show,{once:true});
+        bootstrap.Modal.getInstance(dialog).hide();
+    }else show();
+}
+function inventoryRestockMessage(item) {
+    return item.name+': '+formatQuantity(item.quantity,item.unit,item.package_size,item.content_unit)+
+        ' remaining; minimum '+item.minimum_stock+' '+item.unit+'. Stock is low. Please restock this item.';
+}
 function editPackaging(id) {
     const item=inventoryItems.get(Number(id));
     document.getElementById('packagingItemId').value=id;
     document.getElementById('packagingItemName').textContent=item.name+' — '+Number(item.quantity)+' stock units recorded';
-    document.getElementById('packagingStockUnit').value=item.unit;
+    setInventorySelect(document.getElementById('packagingStockUnit'),inventoryPackageChoices,item.unit,'Choose package type...');
     document.getElementById('packagingSize').value=item.package_size ?? '';
-    document.getElementById('packagingContentUnit').value=item.content_unit || '';
+    updateInventoryContentUnits(document.getElementById('packagingStockUnit'),document.getElementById('packagingSize'),document.getElementById('packagingContentUnit'),item.content_unit || '');
     document.getElementById('packagingError').textContent='';
     const history=document.getElementById('distributionModal');
     packagingReturnToHistory=history.classList.contains('show');
@@ -45,7 +88,11 @@ async function saveMinimum() {
     try {
         const response=await fetch('/api/inventory/items/'+document.getElementById('minimumItemId').value+'/',{method:'PATCH',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify({minimum_stock:value===''?null:value})});
         if(!response.ok)throw new Error('Unable to update minimum stock.');
-        bootstrap.Modal.getInstance(document.getElementById('minimumStockModal')).hide();await loadInventory();
+        const item=await response.json();
+        const dialog=document.getElementById('minimumStockModal');
+        if(item.is_low_stock)showLowStockDialog(inventoryRestockMessage(item),dialog);
+        else bootstrap.Modal.getInstance(dialog).hide();
+        await loadInventory();
     } catch(error) {showAppDialog(error.message,'Inventory');}finally {button.disabled=false;}
 }
 function requestReversal(distribution) {

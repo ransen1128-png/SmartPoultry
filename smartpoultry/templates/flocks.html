@@ -74,7 +74,7 @@
                             <option value="broilers">Broilers</option>
                         </select>
                     </div>
-                    <div class="mb-3" id="placementDateField" hidden><label class="form-label" for="flockPlacementDate">Delivery / hatch date</label><input type="date" class="form-control" id="flockPlacementDate" name="placement_date"><small class="text-muted">For bought broilers, enter the actual delivery date; for your own chicks, enter the hatch date. Harvest and sale require 42 days. Expected readiness: days 42–60.</small><p id="flockReadinessWindow" class="text-muted mb-0"></p></div>
+                    <div class="mb-3" id="placementDateField" hidden><label class="form-label" for="flockPlacementDate">Delivery / hatch date</label><input type="date" class="form-control" id="flockPlacementDate" name="placement_date"><small class="text-muted">For bought broilers, enter the actual delivery date; for your own chicks, enter the hatch date. Harvest and sale require 25 days. Expected readiness: days 25–60.</small><p id="flockReadinessWindow" class="text-muted mb-0"></p></div>
                     <div class="mb-3">
                         <label class="form-label" for="flockSource">Flock source</label>
                         <select class="form-select" name="acquisition_source" id="flockSource" required onchange="updateFlockPurchaseFields()"><option value="">Choose source...</option><option value="own">Raised on my farm</option><option value="purchased">Bought</option><option value="unknown" id="unknownFlockSource" hidden>Not recorded (existing flock)</option></select>
@@ -156,7 +156,7 @@
         const input=document.getElementById('flockPlacementDate');input.required=broiler;
         const date=new Date();input.max=new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,10);
         let text='';
-        if(broiler && input.value){const start=new Date(input.value+'T00:00:00Z');const end=new Date(start);start.setUTCDate(start.getUTCDate()+42);end.setUTCDate(end.getUTCDate()+60);text='Ready from '+start.toISOString().slice(0,10)+'; expected window ends '+end.toISOString().slice(0,10)+'.';}
+        if(broiler && input.value){const start=new Date(input.value+'T00:00:00Z');const end=new Date(start);start.setUTCDate(start.getUTCDate()+25);end.setUTCDate(end.getUTCDate()+60);text='Ready from '+start.toISOString().slice(0,10)+'; expected window ends '+end.toISOString().slice(0,10)+'.';}
         document.getElementById('flockReadinessWindow').textContent=text;
     }
     document.getElementById('flockPlacementDate').addEventListener('input',updateFlockReadinessFields);

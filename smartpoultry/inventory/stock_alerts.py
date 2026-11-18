@@ -11,6 +11,7 @@ def stock_warning_message(item, distribution=None):
         message+=f' Remaining contents: {item.total_content} {item.content_unit}.'
     if distribution is not None:
         message+=f' After distributing {distribution.quantity} {item.unit} to {distribution.branch.name}.'
+    message+=' Stock is low. Please restock this item.'
     return message
 
 

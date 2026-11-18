@@ -44,7 +44,7 @@ class Flock(models.Model):
 
     @property
     def ready_from(self):
-        return self.placement_date+timedelta(days=42) if self.breed=='broilers' and self.placement_date else None
+        return self.placement_date+timedelta(days=25) if self.breed=='broilers' and self.placement_date else None
 
     @property
     def readiness_window_end(self):
@@ -56,7 +56,7 @@ class Flock(models.Model):
             raise ValidationError({'date':'Set this broiler flock’s delivery / hatch date in Flocks before harvesting or selling.'})
         if on_date is None:return
         if on_date<self.ready_from:
-            raise ValidationError({'date':f'Broilers require at least 42 days after delivery / hatch. Earliest harvest or sale: {self.ready_from:%Y-%m-%d}; expected window: {self.ready_from:%Y-%m-%d} to {self.readiness_window_end:%Y-%m-%d}.'})
+            raise ValidationError({'date':f'Broilers require at least 25 days after delivery / hatch. Earliest harvest or sale: {self.ready_from:%Y-%m-%d}; expected window: {self.ready_from:%Y-%m-%d} to {self.readiness_window_end:%Y-%m-%d}.'})
         if on_date>timezone.localdate():
             raise ValidationError({'date':'A broiler harvest or sale cannot be recorded in advance. Record it on the actual date.'})
 

@@ -26,12 +26,12 @@ class BroilerReadinessTests(TestCase):
     def production(self,days):
         return {'branch':self.branch.pk,'flock':self.flock.pk,'product_type':'meat_ready','quantity':'2','unit':'birds','date':(self.start+timedelta(days=days)).isoformat()}
 
-    def test_harvest_day_zero_and_41_rejected_without_side_effects(self,clock):
+    def test_harvest_day_zero_and_24_rejected_without_side_effects(self,clock):
         expense_count=Expense.objects.count();notification_count=Notification.objects.count()
-        for day in (0,41):
+        for day in (0,24):
             response=self.client.post(reverse('production-list'),self.production(day))
             self.assertEqual(response.status_code,400,response.content)
-            self.assertIn('42 days',str(response.data))
+            self.assertIn('25 days',str(response.data))
             form=ProductionRecordForm(self.production(day),user=self.user)
             self.assertFalse(form.is_valid())
             with self.assertRaises(ValidationError):
@@ -41,23 +41,23 @@ class BroilerReadinessTests(TestCase):
         self.assertEqual(Expense.objects.count(),expense_count)
         self.assertEqual(Notification.objects.count(),notification_count)
 
-    def test_day_42_day_60_and_later_allowed(self,clock):
-        for day in (42,60,61):
+    def test_day_25_day_60_and_later_allowed(self,clock):
+        for day in (25,42,60,61):
             response=self.client.post(reverse('production-list'),self.production(day))
             self.assertEqual(response.status_code,201,response.content)
-        self.flock.refresh_from_db();self.assertEqual(self.flock.quantity,94)
+        self.flock.refresh_from_db();self.assertEqual(self.flock.quantity,92)
 
     def test_sale_cannot_bypass_readiness_using_old_production(self,clock):
         ProductionRecord.objects.bulk_create([ProductionRecord(user=self.user,branch=self.branch,flock=self.flock,product_type='meat_ready',quantity=10,unit='birds',date=self.start)])
         batch=ProductionRecord.objects.get(user=self.user)
         with self.assertRaises(ValidationError):batch.apply_bird_transfer(self.user)
         self.flock.refresh_from_db();self.assertEqual(self.flock.quantity,100)
-        for day in (0,41,200):
+        for day in (0,24,200):
             response=self.client.post(reverse('revenue-list'),{'production':batch.pk,'quantity':'2','price_per_unit':'100','date':(self.start+timedelta(days=day)).isoformat(),'buyer_name':'Buyer'})
             self.assertEqual(response.status_code,400,response.content)
         self.assertEqual(batch.available_quantity,10)
         self.assertFalse(Revenue.objects.filter(user=self.user).exists())
-        response=self.client.post(reverse('revenue-list'),{'production':batch.pk,'quantity':'2','price_per_unit':'100','date':(self.start+timedelta(days=42)).isoformat(),'buyer_name':'Buyer'})
+        response=self.client.post(reverse('revenue-list'),{'production':batch.pk,'quantity':'2','price_per_unit':'100','date':(self.start+timedelta(days=25)).isoformat(),'buyer_name':'Buyer'})
         self.assertEqual(response.status_code,201,response.content)
         self.assertEqual(batch.available_quantity,8)
 
@@ -85,5 +85,5 @@ class BroilerReadinessTests(TestCase):
             self.assertEqual(result.status_code,400,result.content)
         result=self.client.post(reverse('flock-list'),{**payload,'placement_date':'2026-11-14'})
         self.assertEqual(result.status_code,201,result.content)
-        self.assertEqual(result.data['ready_from'],'2026-12-26')
+        self.assertEqual(result.data['ready_from'],'2026-12-09')
         self.assertEqual(result.data['readiness_window_end'],'2027-01-13')
