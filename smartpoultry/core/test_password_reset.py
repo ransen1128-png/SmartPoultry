@@ -21,6 +21,7 @@ from .email_backend import ResendEmailBackend, EmailDeliveryError
     EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
     DEFAULT_FROM_EMAIL='SmartPoultry <noreply@example.com>',
     PASSWORD_RESET_BASE_URL='', PASSWORD_RESET_TIMEOUT=1800,
+    PASSWORD_RESET_METHOD='email',
     PASSWORD_HASHERS=['django.contrib.auth.hashers.MD5PasswordHasher'],
 )
 class PasswordResetTests(TestCase):

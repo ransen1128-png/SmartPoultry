@@ -1,0 +1,16 @@
+{% extends 'password_reset_base.html' %}
+{% block heading %}Answer Your Recovery Questions{% endblock %}
+{% block description %}Both answers must match the answers you saved during registration. Capitalization and extra spaces are ignored.{% endblock %}
+{% block reset_content %}
+    {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {% for question in question_labels %}
+            <div class="mb-3"><label for="answer_{{ forloop.counter }}" class="form-label">{{ question }}</label><input id="answer_{{ forloop.counter }}" name="{% if forloop.first %}answer_one{% else %}answer_two{% endif %}" class="form-control" type="password" maxlength="200" autocomplete="off" required></div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100 mb-3">Verify Answers</button>
+    </form>
+    <p class="text-muted small">If recovery questions were not set up for your account, request administrator help.</p>
+    <a href="{% url 'request_admin_password_reset' %}" class="btn btn-outline-primary w-100 mb-3">Request Administrator Help</a>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary w-100">Back to Login</a>
+{% endblock %}

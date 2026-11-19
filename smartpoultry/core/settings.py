@@ -86,6 +86,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.admin_notifications.context',
             ],
         },
     },
@@ -119,6 +120,7 @@ RESEND_API_KEY = os.getenv('RESEND_API_KEY', '').strip()
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', '').strip()
 EMAIL_TIMEOUT = 10
 PASSWORD_RESET_TIMEOUT = 30 * 60
+PASSWORD_RESET_METHOD = os.getenv('PASSWORD_RESET_METHOD', 'questions').strip().lower()
 # A canonical origin keeps reset links on this deployment, behind Render's proxy.
 PASSWORD_RESET_BASE_URL = os.getenv(
     'PASSWORD_RESET_BASE_URL',

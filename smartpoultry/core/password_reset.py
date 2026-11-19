@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseRedirect
@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from django.utils.crypto import salted_hmac
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
+from django import forms
 
 from .email_backend import EmailDeliveryError
 
@@ -46,15 +47,51 @@ class ResetPasswordForm(SetPasswordForm):
             field.widget.attrs['class'] = 'form-control'
 
 
+class RecoveryIdentityForm(ResetEmailForm):
+    username = forms.CharField(label='Username', max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'username'}))
+
+
 @method_decorator(never_cache, name='dispatch')
 class RequestPasswordResetView(PasswordResetView):
+    recovery_method = None
     template_name = 'forgot_password.html'
     form_class = ResetEmailForm
     email_template_name = 'emails/password_reset.txt'
     subject_template_name = 'emails/password_reset_subject.txt'
     success_url = reverse_lazy('password_reset_done')
 
+    def mode(self):
+        return self.recovery_method or settings.PASSWORD_RESET_METHOD
+
+    def get_form_class(self):
+        return RecoveryIdentityForm if self.mode() == 'questions' else self.form_class
+
+    def get_context_data(self, **kwargs):
+        return {**super().get_context_data(**kwargs), 'admin_assisted_reset': self.mode() == 'admin', 'question_recovery': self.mode() == 'questions'}
+
     def form_valid(self, form):
+        self.request.session['reset_request_method'] = self.mode()
+        if self.mode() == 'questions':
+            self.request.session.pop('recovery_grant', None)
+            from django.utils import timezone
+            self.request.session['recovery_challenge'] = {
+                'email': form.cleaned_data['email'], 'username': form.cleaned_data['username'],
+                'expires': timezone.now().timestamp() + 600,
+            }
+            return HttpResponseRedirect(reverse_lazy('recovery_questions'))
+        if self.mode() == 'admin':
+            from .models import PasswordResetRequest
+            from django.db import transaction
+            # Lock matching users to prevent concurrent duplicate requests.
+            # Return the same result for unknown and disabled email addresses.
+            from django.contrib.auth import get_user_model
+            with transaction.atomic():
+                for user in get_user_model().objects.select_for_update().filter(
+                    email__iexact=form.cleaned_data['email'], is_active=True, is_active_user=True,
+                ):
+                    PasswordResetRequest.objects.get_or_create(user=user, status='pending')
+            return HttpResponseRedirect(self.success_url)
+
         if settings.EMAIL_BACKEND == 'core.email_backend.ResendEmailBackend' and not (
             settings.RESEND_API_KEY and settings.DEFAULT_FROM_EMAIL
         ):
@@ -84,6 +121,13 @@ class RequestPasswordResetView(PasswordResetView):
                 subject_template_name=self.subject_template_name,
             )
         return HttpResponseRedirect(self.success_url)
+
+
+class ResetRequestDoneView(PasswordResetDoneView):
+    template_name = 'password_reset_done.html'
+
+    def get_context_data(self, **kwargs):
+        return {**super().get_context_data(**kwargs), 'admin_assisted_reset': self.request.session.get('reset_request_method', settings.PASSWORD_RESET_METHOD) == 'admin'}
 
 
 class ConfirmPasswordResetView(PasswordResetConfirmView):

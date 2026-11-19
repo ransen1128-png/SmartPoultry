@@ -9,8 +9,10 @@ from . import views
 from .measurement_review import review_spur
 from .spur_cache_service import service as spur_cache_service, connection_page
 from . import business_views
-from django.contrib.auth.views import PasswordResetDoneView, PasswordResetCompleteView
-from .password_reset import RequestPasswordResetView, ConfirmPasswordResetView
+from django.contrib.auth.views import PasswordResetCompleteView
+from .password_reset import RequestPasswordResetView, ConfirmPasswordResetView, ResetRequestDoneView
+from . import admin_notifications
+from . import recovery_questions
 
 urlpatterns = [
     path('revenue/<int:sale_id>/receipt/',business_views.sales_receipt,name='sales_receipt'),
@@ -22,7 +24,10 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('login/', views.index, name='login'),
     path('forgot-password/', RequestPasswordResetView.as_view(), name='forgot_password'),
-    path('forgot-password/sent/', PasswordResetDoneView.as_view(template_name='password_reset_done.html'), name='password_reset_done'),
+    path('forgot-password/admin-help/', RequestPasswordResetView.as_view(recovery_method='admin'), name='request_admin_password_reset'),
+    path('forgot-password/questions/', recovery_questions.answer_questions, name='recovery_questions'),
+    path('forgot-password/new-password/', recovery_questions.change_password, name='question_password_reset'),
+    path('forgot-password/sent/', ResetRequestDoneView.as_view(), name='password_reset_done'),
     path('reset-password/<uidb64>/<token>/', ConfirmPasswordResetView.as_view(), name='password_reset_confirm'),
     path('reset-password/complete/', PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
     path('register/', views.register, name='register'),
@@ -42,6 +47,8 @@ urlpatterns = [
     path('settings/', views.settings_view, name='settings'),
     path('feedback/', views.feedback_view, name='feedback'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-dashboard/notifications/', admin_notifications.poll, name='admin_notifications_poll'),
+    path('admin-dashboard/password-requests/', admin_notifications.requests_page, name='admin_password_reset_requests'),
     path('admin-dashboard/users/<int:user_id>/toggle/', views.admin_toggle_user, name='admin_toggle_user'),
     path('admin-dashboard/users/<int:user_id>/delete/', views.admin_delete_user, name='admin_delete_user'),
     path('admin-dashboard/users/<int:user_id>/reset-password/', views.admin_reset_user_password, name='admin_reset_user_password'),

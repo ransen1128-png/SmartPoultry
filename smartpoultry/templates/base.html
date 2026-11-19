@@ -48,10 +48,23 @@
                         <p>Welcome back, Administrator!</p>
                     </div>
                     <div class="topbar-spacer"></div>
-                    <a class="admin-bell" href="{% url 'admin_feedback' %}" aria-label="Feedback">
-                        <i class="bi bi-bell"></i>
-                        <span>{{ stats.new_feedback|default:"0" }}</span>
-                    </a>
+                    <div class="dropdown">
+                        <a class="admin-bell" href="#" id="adminNotificationBell" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications" data-poll-url="{% url 'admin_notifications_poll' %}">
+                            <i class="bi bi-bell"></i>
+                            <span id="adminNotificationCount" {% if not admin_notifications.count %}hidden{% endif %}>{{ admin_notifications.count|default:'0' }}</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end p-2 shadow" aria-labelledby="adminNotificationBell" style="width: min(360px, calc(100vw - 32px));">
+                            <h6 class="dropdown-header">Notifications</h6>
+                            <div id="adminResetNotificationItems">
+                                {% for item in admin_notifications.requests %}
+                                    <a class="dropdown-item text-wrap py-2" href="{{ item.url }}"><i class="bi bi-key me-2"></i>Password reset requested by {{ item.username }}</a>
+                                {% empty %}<p class="text-muted small px-3 mb-2">No pending password reset requests.</p>{% endfor %}
+                            </div>
+                            <a class="dropdown-item py-2" href="{% url 'admin_password_reset_requests' %}">View password reset requests</a>
+                            <hr class="dropdown-divider">
+                            <a class="dropdown-item py-2" href="{% url 'admin_feedback' %}">Feedback <span id="adminFeedbackCount" class="badge bg-primary ms-1">{{ admin_notifications.feedback_count|default:'0' }}</span></a>
+                        </div>
+                    </div>
                     <div class="dropdown">
                         <a class="admin-user dropdown-toggle" href="#" id="adminAccountDropdown" role="button" data-bs-toggle="dropdown">
                             <span class="admin-user-initial">{{ user.username|first|upper }}</span>
@@ -279,6 +292,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src="{% static 'js/main.js' %}?v=20261118-alert-lifecycle"></script>
     <script src="{% static 'js/financial_requests.js' %}?v=1"></script>
+    {% if user.is_staff or user.is_superuser %}<script src="{% static 'js/admin_notifications.js' %}?v=1"></script>{% endif %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

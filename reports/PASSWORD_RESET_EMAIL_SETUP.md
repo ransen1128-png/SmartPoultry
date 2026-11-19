@@ -1,5 +1,26 @@
 # Password reset email setup
 
+The default recovery method is now **questions**, which needs no domain or
+email provider. New registrations save two distinct questions and hashed answers.
+Both answers must match before the password form is accessible. Five incorrect
+attempts lock question verification for 15 minutes, persisted in the database.
+A verified reset session lasts ten minutes and is invalidated by a password
+change. Administrators must also enter the correct answers when resetting an
+account that has recovery questions; saved answers are never displayed.
+
+Existing accounts have no invented recovery answers. They can choose **Request
+Administrator Help**. Pending requests appear on the admin bell, which refreshes
+every 30 seconds and when opened. The administrator verifies the person through
+their existing contact details before resetting. Resolving a request removes it
+from the pending bell and keeps it in request history. Duplicate pending requests
+for the same account are collapsed. This fallback requires no email service.
+
+To enable the optional email flow below, set `PASSWORD_RESET_METHOD=email` in
+both `.env` and Render's Environment. Use `questions` for the default free flow,
+or `admin` for administrator help only. Apply migrations on deployment:
+`python smartpoultry/manage.py migrate`. Render's current start command already
+runs migrations.
+
 SmartPoultry uses Django's password reset tokens and the Resend HTTPS email API.
 The forgot-password page accepts an email only; changing a password requires the
 single-use emailed link. Links expire after 30 minutes. Resetting does not sign

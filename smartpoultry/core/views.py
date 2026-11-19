@@ -19,6 +19,7 @@ from django.http import FileResponse, Http404, HttpResponseForbidden, JsonRespon
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import capfirst
+from django.views.decorators.debug import sensitive_post_parameters
 from PIL import Image, ImageFilter, ImageStat, UnidentifiedImageError
 from notifications.utils import create_activity_notification
 from .forms import MortalityRecordForm, ProductionRecordForm
@@ -116,12 +117,15 @@ def index(request):
     return render(request, 'index.html', {'error': error})
 
 
+@sensitive_post_parameters('password', 'password2', 'answer_one', 'answer_two')
 def register(request):
     """User registration page view."""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     error = None
+    from .recovery_questions import RecoverySetupForm
+    recovery_form = RecoverySetupForm(request.POST if request.method == 'POST' else None)
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
@@ -135,13 +139,16 @@ def register(request):
             error = 'Username already taken.'
         elif User.objects.filter(email=email).exists():
             error = 'Email already registered.'
+        elif not recovery_form.is_valid():
+            error = 'Complete both recovery questions and answers below.'
         else:
-            user = User.objects.create_user(username=username, email=email, password=password)
-            user.is_active = True
-            user.save()
+            from django.db import transaction
+            with transaction.atomic():
+                user = User.objects.create_user(username=username, email=email, password=password)
+                recovery_form.save(user)
             messages.success(request, 'Your account has been created.', extra_tags='account-created')
             return redirect('login')
-    return render(request, 'register.html', {'error': error})
+    return render(request, 'register.html', {'error': error, 'recovery_form': recovery_form})
 
 
 def logout_view(request):
@@ -605,13 +612,32 @@ def admin_delete_user(request, user_id):
 
 
 @admin_required
+@sensitive_post_parameters('new_password', 'confirm_password', 'answer_one', 'answer_two')
 def admin_reset_user_password(request, user_id):
     target_user = get_object_or_404(User, pk=user_id)
+    if not request.user.is_superuser and (target_user.is_staff or target_user.is_superuser):
+        return HttpResponseForbidden('Only a superuser can reset an administrator password.')
+    from .models import PasswordResetRequest
+    pending_requests = PasswordResetRequest.objects.filter(user=target_user, status='pending')
+    identity_required = pending_requests.exists()
+    from .models import AccountRecovery
+    from .recovery_questions import verify_answers, question_labels
+    recovery_profile = AccountRecovery.objects.filter(user=target_user).first()
     if request.method == 'POST':
         new_password = request.POST.get('new_password', '')
         confirm_password = request.POST.get('confirm_password', '')
 
-        if new_password != confirm_password:
+        answers_verified = True
+        if recovery_profile:
+            from django.db import transaction
+            with transaction.atomic():
+                recovery_profile = AccountRecovery.objects.select_for_update().get(pk=recovery_profile.pk)
+                answers_verified = verify_answers(recovery_profile, request.POST.get('answer_one', '')[:200], request.POST.get('answer_two', '')[:200])
+        if not answers_verified:
+            messages.error(request, 'Recovery answers could not be verified. After five incorrect attempts, wait 15 minutes.')
+        elif not recovery_profile and identity_required and request.POST.get('identity_verified') != 'yes':
+            messages.error(request, 'Verify the user through their existing contact details before resetting the password.')
+        elif new_password != confirm_password:
             messages.error(request, 'Passwords do not match.')
         else:
             try:
@@ -619,12 +645,16 @@ def admin_reset_user_password(request, user_id):
             except ValidationError as exc:
                 messages.error(request, ' '.join(exc.messages))
             else:
-                target_user.set_password(new_password)
-                target_user.save()
+                from django.db import transaction
+                with transaction.atomic():
+                    target_user = User.objects.select_for_update().get(pk=target_user.pk)
+                    target_user.set_password(new_password)
+                    target_user.save(update_fields=['password'])
+                    pending_requests.update(status='resolved', resolved_at=timezone.now(), resolved_by=request.user)
                 messages.success(request, f'Password reset for {target_user.username}.')
                 return redirect('admin_dashboard')
 
-    return render(request, 'admin_reset_password.html', {'target_user': target_user})
+    return render(request, 'admin_reset_password.html', {'target_user': target_user, 'identity_required': identity_required, 'has_recovery_questions': bool(recovery_profile), 'question_labels': question_labels(recovery_profile)})
 
 
 @admin_required

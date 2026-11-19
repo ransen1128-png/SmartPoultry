@@ -3,6 +3,28 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
 
+class AccountRecovery(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='account_recovery')
+    question_one = models.CharField(max_length=24)
+    question_two = models.CharField(max_length=24)
+    answer_one_hash = models.CharField(max_length=256)
+    answer_two_hash = models.CharField(max_length=256)
+    failed_attempts = models.PositiveSmallIntegerField(default=0)
+    locked_until = models.DateTimeField(null=True, blank=True)
+
+
+class PasswordResetRequest(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='password_reset_requests')
+    status = models.CharField(max_length=12, choices=[('pending', 'Pending'), ('resolved', 'Resolved')], default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolved_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='handled_password_resets')
+
+    class Meta:
+        ordering = ['-created_at']
+        constraints = [models.UniqueConstraint(fields=['user'], condition=models.Q(status='pending'), name='one_pending_password_reset_per_user')]
+
+
 class SpurPredictionCache(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     cache_key = models.CharField(max_length=64)
