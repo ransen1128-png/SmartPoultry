@@ -110,7 +110,7 @@ def index(request):
                 if is_admin_user(user):
                     return redirect('admin_dashboard')
                 return redirect('dashboard')
-            error = 'Invalid login credentials. Please try again.'
+            error = 'Invalid email or password. Please try again.'
         else:
             error = 'Email and password are required.'
     return render(request, 'index.html', {'error': error})
@@ -139,7 +139,7 @@ def register(request):
             user = User.objects.create_user(username=username, email=email, password=password)
             user.is_active = True
             user.save()
-            messages.success(request, 'Account created successfully. Please log in.')
+            messages.success(request, 'Your account has been created.', extra_tags='account-created')
             return redirect('login')
     return render(request, 'register.html', {'error': error})
 
@@ -982,6 +982,7 @@ def analyze_rooster_photo(photo):
 
 def _present_rooster_estimate(record, number=1):
     """Present persisted results without rerunning models or rewriting history."""
+    from .evaluation_status import tested_age_range
     from core.poultry_vision import assess_chicken_evidence, summarize_anatomy
     analysis = record.analysis or {}
     anatomy = analysis.get('anatomy') or {
@@ -1026,6 +1027,7 @@ def _present_rooster_estimate(record, number=1):
         'chicken_detection_status': detection['status'], 'chicken_boxes': detection['boxes'],
         **assessment,
         'estimated_age_range': record.estimated_age_range,
+        'tested_age_range': tested_age_range(analysis.get('age_prediction')),
         'spur_observations': record.spur_observations.replace(old_body_label, body_label),
         'image_assessment': quality.get('summary', 'Image quality was not recorded.'),
         'reasoning': record.reasoning, 'confidence': record.confidence, 'limitations': record.limitations,

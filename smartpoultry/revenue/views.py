@@ -5,14 +5,16 @@ from .models import Revenue
 from .serializers import RevenueSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from core.idempotency import IdempotentCreateMixin, idempotent
 
 
-class RevenueViewSet(viewsets.ModelViewSet):
+class RevenueViewSet(IdempotentCreateMixin, viewsets.ModelViewSet):
     """ViewSet for managing revenue."""
     serializer_class = RevenueSerializer
     permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=['post'], url_path='order')
+    @idempotent
     def order(self, request):
         """Save every order item together, or roll back the entire order."""
         from django.db import transaction
@@ -24,6 +26,7 @@ class RevenueViewSet(viewsets.ModelViewSet):
         shared = dict(payload.validated_data)
         items = shared.pop('items')
         shared['order_number'] = shared.get('order_number') or 'ORD-' + uuid4().hex.upper()
+        self.order_group=uuid4()
         with transaction.atomic():
             # Consistent lock order also protects cumulative sales from repeated batches.
             list(ProductionRecord.objects.select_for_update(of=('self',)).filter(
@@ -86,7 +89,7 @@ class RevenueViewSet(viewsets.ModelViewSet):
         return Revenue.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        revenue = serializer.save(user=self.request.user)
+        revenue = serializer.save(user=self.request.user,**({'order_group':self.order_group} if hasattr(self,'order_group') else {}))
         create_activity_notification(
             self.request.user,
             f"Successfully added {revenue.get_revenue_type_display().lower()} revenue",

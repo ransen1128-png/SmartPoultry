@@ -32,12 +32,14 @@ class Revenue(models.Model):
     buyer_contact = models.CharField(max_length=255,blank=True)
     buyer_address = models.CharField(max_length=500,blank=True)
     order_number = models.CharField(max_length=100,blank=True)
+    order_group = models.UUIDField(null=True,blank=True,editable=False,db_index=True)
     transaction_number = models.CharField(max_length=40,unique=True,null=True,blank=True,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         if self._state.adding:
+            if self.order_group is None:self.order_group=uuid4()
             if not self.order_number.strip():
                 self.order_number='ORD-'+uuid4().hex.upper()
             self.transaction_number='TXN-'+uuid4().hex.upper()

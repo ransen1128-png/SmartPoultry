@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ValidationError as ModelError
+from core.idempotency import IdempotentCreateMixin, idempotent
 
 
 class InventoryViewSet(viewsets.ModelViewSet):
@@ -45,9 +46,42 @@ class FeedTypeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
-class InventoryDistributionViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+class InventoryUsageViewSet(IdempotentCreateMixin, mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    from .serializers import InventoryUsageSerializer
+    serializer_class=InventoryUsageSerializer
+    permission_classes=[IsAuthenticated]
+
+    def get_queryset(self):
+        from .models import InventoryUsage
+        return InventoryUsage.objects.filter(user=self.request.user).select_related('distribution__inventory','distribution__branch')
+
+    def perform_create(self,serializer):serializer.save(user=self.request.user)
+
+    @action(detail=True,methods=['post'])
+    @idempotent
+    def reverse(self,request,pk=None):
+        reason=request.data.get('reason','')
+        if not isinstance(reason,str):raise ValidationError({'reason':'Enter a reversal reason.'})
+        try:row=self.get_object().reverse(request.user,reason)
+        except ModelError as error:raise ValidationError(error.message_dict)
+        return Response(self.get_serializer(row).data)
+
+
+class InventoryDistributionViewSet(IdempotentCreateMixin, mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = InventoryDistributionSerializer
     permission_classes = [IsAuthenticated]
+
+    @action(detail=False,methods=['get'],url_path='branch-stock')
+    def branch_stock(self,request):
+        from django.db.models import Sum, Q
+        from decimal import Decimal
+        lots=self.get_queryset().filter(reversed_at__isnull=True).annotate(
+            used=Sum('usages__quantity',filter=Q(usages__voided_at__isnull=True)))
+        return Response([{'id':lot.pk,'branch':lot.branch_id,'branch_name':lot.branch.name,
+            'item_name':lot.inventory.name,'date':lot.date,'received':str(lot.quantity),
+            'used':str(lot.used or Decimal('0')),'remaining':str(lot.quantity-(lot.used or Decimal('0'))),
+            'unit':lot.unit_snapshot,'package_size':lot.package_size_snapshot,'content_unit':lot.content_unit_snapshot,
+            'active':lot.branch.status=='active'} for lot in lots])
 
     def create(self,request,*args,**kwargs):
         from django.db import transaction
@@ -66,6 +100,7 @@ class InventoryDistributionViewSet(mixins.ListModelMixin, mixins.CreateModelMixi
         serializer.save(user=self.request.user)
 
     @action(detail=True,methods=['post'])
+    @idempotent
     def reverse(self,request,pk=None):
         distribution=self.get_object()
         reason=request.data.get('reason','')

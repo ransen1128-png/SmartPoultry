@@ -1,6 +1,28 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from .models import Inventory, InventoryDistribution, FeedType
+from .models import InventoryUsage
+
+
+class InventoryUsageSerializer(serializers.ModelSerializer):
+    item_name=serializers.CharField(source='distribution.inventory.name',read_only=True)
+    branch_name=serializers.CharField(source='distribution.branch.name',read_only=True)
+    unit=serializers.CharField(source='distribution.unit_snapshot',read_only=True)
+
+    def validate_distribution(self,value):
+        if value.user_id!=self.context['request'].user.pk:
+            raise serializers.ValidationError('Select a distribution from your account.')
+        return value
+
+    def create(self,validated_data):
+        try:return InventoryUsage.objects.create(**validated_data)
+        except DjangoValidationError as error:
+            raise serializers.ValidationError(error.message_dict if hasattr(error,'message_dict') else error.messages)
+
+    class Meta:
+        model=InventoryUsage
+        fields=['id','distribution','item_name','branch_name','unit','quantity','date','reason','voided_at','void_reason']
+        read_only_fields=['voided_at','void_reason']
 
 
 class FeedTypeSerializer(serializers.ModelSerializer):
@@ -36,6 +58,11 @@ class InventorySerializer(serializers.ModelSerializer):
 
 
 class InventoryDistributionSerializer(serializers.ModelSerializer):
+    remaining_quantity = serializers.SerializerMethodField()
+
+    def get_remaining_quantity(self,distribution):
+        return str(Inventory.objects.values_list('quantity',flat=True).get(pk=distribution.inventory_id))
+
     stock_warning = serializers.CharField(read_only=True,default=None)
     item_name = serializers.CharField(source='inventory.name', read_only=True)
     branch_name = serializers.CharField(source='branch.name', read_only=True)
@@ -65,5 +92,5 @@ class InventoryDistributionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InventoryDistribution
-        fields = ['id', 'inventory', 'item_name', 'branch', 'branch_name', 'quantity', 'unit', 'date', 'created_at','expense_id','expense_amount','cost_per_unit','flock','flock_name','cost_snapshot','reversed_at','reversal_reason','package_size_snapshot','content_unit_snapshot','stock_warning']
+        fields = ['id', 'inventory', 'item_name', 'branch', 'branch_name', 'quantity', 'unit', 'date', 'created_at','expense_id','expense_amount','cost_per_unit','flock','flock_name','cost_snapshot','reversed_at','reversal_reason','package_size_snapshot','content_unit_snapshot','stock_warning','remaining_quantity']
         read_only_fields = ['id', 'item_name', 'branch_name', 'unit', 'created_at','cost_snapshot','reversed_at','reversal_reason','package_size_snapshot','content_unit_snapshot']

@@ -138,6 +138,8 @@ class InventoryDistribution(models.Model):
             inventory = Inventory.objects.select_for_update().get(pk=self.inventory_id)
             if self.reversed_at:
                 return super().delete(*args,**kwargs)
+            if self.usages.exists():
+                raise ValidationError('Distributions with usage history must be reversed, not deleted.')
             from .expense_allocation import reverse_allocation
             reverse_allocation(self, inventory)
             inventory.quantity += self.quantity
@@ -154,6 +156,8 @@ class InventoryDistribution(models.Model):
             current=type(self).objects.select_for_update().get(pk=self.pk)
             if current.reversed_at:
                 return current
+            if current.usages.filter(voided_at__isnull=True).exists():
+                raise ValidationError({'reason':'Reverse the recorded branch usage before reversing this distribution.'})
             current.reversed_by=actor
             current.reversal_reason=reason.strip()
             from .expense_allocation import reverse_allocation
@@ -162,7 +166,57 @@ class InventoryDistribution(models.Model):
             inventory.save(update_fields=['quantity','total_value','last_updated'])
             current.reversed_at=timezone.now()
             type(self).objects.filter(pk=current.pk).update(reversed_at=current.reversed_at,reversed_by=actor,reversal_reason=current.reversal_reason)
+            from core.audit import record_explicit_change
+            record_explicit_change(current,{'reversed_at':None,'reversal_reason':''},
+                {'reversed_at':current.reversed_at.isoformat(),'reversal_reason':current.reversal_reason},'reversed')
             return current
 
     class Meta:
         ordering = ['-date', '-created_at']
+
+
+class InventoryUsage(models.Model):
+    """Consumption of a distributed lot, in that lot's original stock units."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    distribution = models.ForeignKey(InventoryDistribution, on_delete=models.PROTECT, related_name='usages')
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(default=timezone.localdate)
+    reason = models.CharField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+    voided_at = models.DateTimeField(null=True, editable=False)
+    void_reason = models.CharField(max_length=500, blank=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            raise ValidationError('Usage is retained in history. Reverse an incorrect entry instead.')
+        with transaction.atomic():
+            lot = InventoryDistribution.objects.get(pk=self.distribution_id)
+            Inventory.objects.select_for_update().get(pk=lot.inventory_id)
+            lot.refresh_from_db()
+            if lot.user_id != self.user_id or lot.reversed_at or lot.branch.status != 'active':
+                raise ValidationError({'distribution':'Select an active distribution from your account and branch.'})
+            if self.date < lot.date or self.date > timezone.localdate():
+                raise ValidationError({'date':'Usage date must be between distribution date and today.'})
+            used = lot.usages.filter(voided_at__isnull=True).aggregate(total=models.Sum('quantity'))['total'] or 0
+            if self.quantity <= 0 or self.quantity > lot.quantity-used:
+                raise ValidationError({'quantity':f'Only {lot.quantity-used} {lot.unit_snapshot} remain in this branch lot.'})
+            if not self.reason.strip():
+                raise ValidationError({'reason':'Enter what this stock was used for.'})
+            super().save(*args, **kwargs)
+
+    def reverse(self, actor, reason):
+        if actor.pk != self.user_id or not reason.strip() or len(reason)>500:
+            raise ValidationError({'reason':'Select your own usage and enter a reversal reason of 1-500 characters.'})
+        with transaction.atomic():
+            Inventory.objects.select_for_update().get(pk=self.distribution.inventory_id)
+            current=type(self).objects.get(pk=self.pk)
+            if not current.voided_at:
+                current.voided_at=timezone.now();current.void_reason=reason.strip()
+                from core.audit import record_explicit_change
+                record_explicit_change(current, {'voided_at':None,'void_reason':''},
+                    {'voided_at':current.voided_at.isoformat(),'void_reason':current.void_reason}, 'reversed')
+                type(self).objects.filter(pk=self.pk).update(voided_at=current.voided_at,void_reason=current.void_reason)
+            return current
+
+    class Meta:
+        ordering = ['-date','-pk']

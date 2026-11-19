@@ -1,0 +1,39 @@
+{
+  "scope": "Local implementation; not pushed or deployed in this task",
+  "backend_tests": {
+    "total": 85,
+    "passed": 84,
+    "skipped_sqlite_concurrency": 1
+  },
+  "isolated_postgresql": {
+    "tests_passed": 8,
+    "simultaneous_retry_created_one_distribution": true
+  },
+  "calibration_protocol_tests": 3,
+  "unseen_leakage_gate_tests": 3,
+  "desktop_backup": {
+    "started_utc": "20261118T131950Z-eb5ba3",
+    "status": "completed",
+    "restore_verified": true,
+    "verified_tables": 39,
+    "verified_rows": 732
+  },
+  "render_backup_external_url_configured": true,
+  "independent_age_evaluation_executed": false,
+  "reason": "Existing source photos are in the known corpus; no verified unseen-bird manifest or provenance register is available.",
+  "estimator_regression_tests_passed": 16,
+  "browser": {
+    "desktop_and_mobile": true,
+    "real_usage_and_receipts_in_isolated_database": true,
+    "javascript_errors": [],
+    "lost_response_after_commit_retry_after_reload_deducted_once": true
+  },
+  "backup_scheduler_restarted_and_heartbeat_verified": true,
+  "render_backup": {
+    "started_utc": "20261118T140834Z-565ad9",
+    "status": "completed",
+    "restore_verified": true,
+    "verified_tables": 36,
+    "verified_rows": 333
+  }
+}

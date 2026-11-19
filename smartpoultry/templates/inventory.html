@@ -156,12 +156,16 @@
                 </div>
             </div>
 
+<section class="card mt-4"><div class="card-body"><h2 class="h5">Branch stock balances</h2><p class="text-muted">Each row is a distributed lot. Record actual use to track what remains at the branch. Its expense was assigned when distributed.</p><div class="table-responsive"><table class="table"><thead><tr><th>Branch</th><th>Item / lot</th><th>Received</th><th>Used</th><th>Remaining</th><th>Actions</th></tr></thead><tbody id="branchStockBody"></tbody></table></div><p id="branchStockError" class="text-danger" role="alert"></p></div></section>
+<details class="card mt-3"><summary class="card-header">Branch usage history</summary><div class="card-body table-responsive"><table class="table"><thead><tr><th>Branch</th><th>Item</th><th>Date</th><th>Used</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody id="branchUsageBody"></tbody></table></div></details>
+<div class="modal fade" id="branchUsageModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h2 class="modal-title h5" id="branchUsageTitle">Record branch use</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><p id="branchUsageLabel"></p><form id="branchUsageForm"><div id="branchUsageQuantityFields"><label class="form-label" for="branchUsageQuantity">Quantity in stock units</label><input type="number" class="form-control mb-3" id="branchUsageQuantity" min="0.01" step="0.01" required><label class="form-label" for="branchUsageDate">Date used</label><input type="date" class="form-control mb-3" id="branchUsageDate" max="{{ today|date:'Y-m-d' }}" required></div><label class="form-label" for="branchUsageReason">Reason</label><textarea class="form-control" id="branchUsageReason" maxlength="500" required></textarea></form><p id="branchUsageError" class="text-danger" role="alert"></p></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" id="branchUsageSave" class="btn btn-primary">Save</button></div></div></div></div>
 {% endblock %}
 {% block extra_js %}
 <script>
     const inventoryItems = new Map();
     let selectedInventoryId = null;
     let distributionSaving=false;
+    let distributionConfirming=false;
     let distributionNeedsReload=false;
     function distributionFeedback(message,kind='danger') {
         const feedback=document.getElementById('distributionFeedback');
@@ -185,12 +189,18 @@
         return number.toString();
     }
 
-    function formatQuantity(value, unit, packageSize = null, contentUnit = '') {
-        const normalizedUnit = String(unit || '').trim();
+    function formatQuantity(value, unit, packageSize = null, contentUnit = '', includeTotal = true) {
+        let normalizedUnit = String(unit || '').trim();
+        // Older records sometimes kept the size inside a label such as "25kgs sacks".
+        const legacy=normalizedUnit.match(/^(\d+(?:\.\d+)?)\s*(kgs?|g|lbs?|ml|l)\s+(sacks?|bags?|bottles?)$/i);
+        if(packageSize==null && !contentUnit && legacy && Number(legacy[1])>0){
+            packageSize=legacy[1];contentUnit=legacy[2].toLowerCase().replace(/^kgs$/,'kg').replace(/^lbs$/,'lb');
+            normalizedUnit=legacy[3].toLowerCase();
+        }
         const stock = `${formatWholeQuantity(value)} ${normalizedUnit}`.trim();
         if(packageSize == null || !contentUnit)return stock;
         const total=Number((Number(value)*Number(packageSize)).toFixed(5));
-        return `${stock} × ${formatWholeQuantity(packageSize)} ${contentUnit} (${formatWholeQuantity(total)} ${contentUnit} total)`;
+        return `${stock} of ${formatWholeQuantity(packageSize)} ${contentUnit}`+(includeTotal?` (${formatWholeQuantity(total)} ${contentUnit} total)`:'');
     }
 
     function openDistribution(inventoryId) {
@@ -225,7 +235,7 @@
 
     function updateDistributionAvailable(item) {
         document.getElementById('distributionAvailable').textContent =
-            `Available: ${formatQuantity(item.quantity, item.unit,item.package_size,item.content_unit)}`;
+            `Available: ${formatQuantity(item.quantity, item.unit,item.package_size,item.content_unit,false)}`;
         document.querySelector('label[for="distributionQuantity"]').textContent='Quantity to distribute ('+item.unit+')';
         document.getElementById('distributionQuantity').max=item.quantity;
     }
@@ -248,13 +258,35 @@
         bootstrap.Modal.getInstance(distributionModal).hide();
     }
 
+    function confirmAllDistribution(item) {
+        const inventoryId=selectedInventoryId;
+        const values=Object.fromEntries(new FormData(document.getElementById('distributionForm')));
+        const branch=document.getElementById('distributionBranch').selectedOptions[0].textContent;
+        distributionConfirming=true;
+        return new Promise(resolve=>{
+            const confirmation=document.getElementById('appConfirmDialog');let accepted=false;
+            confirmation.addEventListener('hidden.bs.modal',()=>{
+                distributionModal.addEventListener('shown.bs.modal',()=>{
+                    distributionConfirming=false;resolve(accepted);
+                },{once:true});
+                showDistributionModal(inventoryId,true);
+                const form=document.getElementById('distributionForm');
+                Object.entries(values).forEach(([name,value])=>{form.elements[name].value=value;});
+            },{once:true});
+            distributionModal.addEventListener('hidden.bs.modal',()=>{
+                showAppConfirmDialog('Are you sure you want to distribute all '+formatQuantity(item.quantity,item.unit,item.package_size,item.content_unit)+' of '+item.name+' to '+branch+'? No stock of this item will remain in central inventory.',()=>{accepted=true;},'Distribute all remaining stock?','Distribute all');
+            },{once:true});
+            bootstrap.Modal.getInstance(distributionModal).hide();
+        });
+    }
+
     document.getElementById('allDistributionHistoryBtn').addEventListener('click', () => {
         showDistributionModal(null, false);
     });
     document.getElementById('distributionForm').addEventListener('submit',event=>{event.preventDefault();document.getElementById('saveDistributionBtn').click();});
 
     document.getElementById('saveDistributionBtn').addEventListener('click', async () => {
-        if(distributionSaving || distributionNeedsReload)return;
+        if(distributionSaving || distributionNeedsReload || distributionConfirming)return;
         const form = document.getElementById('distributionForm');
         distributionFeedback('');
         const current=inventoryItems.get(selectedInventoryId);
@@ -264,6 +296,9 @@
         if (!form.reportValidity() || !selectedInventoryId) {
             return;
         }
+        if(current && Number(form.elements.quantity.value)===Number(current.quantity)){
+            if(!await confirmAllDistribution(current))return;
+        }
 
         const formData = new FormData(form);
         const saveButton=document.getElementById('saveDistributionBtn');
@@ -272,8 +307,9 @@
         saveButton.disabled=true;
         let saved=false;
         let lowStockMessage=null;
+        let stockNoticeTitle='Low stock - restock needed';
         try {
-        const response = await fetch('/api/inventory/distributions/', {
+        const response = await safeTransactionFetch('/api/inventory/distributions/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -310,6 +346,10 @@
         document.getElementById('distributionQuantity').value = '';
         distributionFeedback('Distribution saved.','success');
         lowStockMessage=data.stock_warning;
+        const outOfStockMessage=(data.item_name || current?.name || 'This item')+' is out of stock in central inventory. All remaining stock has been distributed. Please restock this item.';
+        if(data.remaining_quantity!=null && Number(data.remaining_quantity)===0){
+            lowStockMessage=outOfStockMessage;stockNoticeTitle='Out of stock - restock needed';
+        }
 
         const warning=document.getElementById('inventoryStockWarning');
         warning.classList.toggle('d-none',!data.stock_warning);
@@ -322,6 +362,7 @@
         if (item) {
             updateDistributionAvailable(item);
             if(Number(item.quantity)<=0) {
+                lowStockMessage=outOfStockMessage;stockNoticeTitle='Out of stock - restock needed';
                 distributionSaving=false;
                 showDistributionModal(inventoryId,false);
                 distributionFeedback('Distribution saved. This item has no remaining stock.','success');
@@ -335,7 +376,7 @@
             distributionFeedback(saved?'Distribution saved, but the stock display could not refresh. Reload this page before distributing again.':'The server response could not be confirmed. Check History and reload this page before trying again.','warning');
         } finally {
             distributionSaving=false;saveButton.disabled=distributionNeedsReload;
-            if(lowStockMessage)showLowStockDialog(lowStockMessage,distributionModal);
+            if(lowStockMessage)showLowStockDialog(lowStockMessage,distributionModal,stockNoticeTitle);
         }
     });
 
@@ -413,7 +454,8 @@
     document.addEventListener('DOMContentLoaded', () => loadInventory());
 </script>
 {% load static %}
-<script src="{% static 'js/inventory_management.js' %}?v=6-restock-dialog"></script>
+<script src="{% static 'js/inventory_management.js' %}?v=8-distribute-all"></script>
+<script src="{% static 'js/branch_stock.js' %}?v=1"></script>
 <div class="modal fade" id="packagingModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Inventory packaging</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><form id="packagingForm"><p id="packagingItemName"></p><input id="packagingItemId" type="hidden"><div class="mb-3"><label for="packagingStockUnit" class="form-label">Stock unit / package type</label><select id="packagingStockUnit" class="form-select" required></select></div><div class="mb-3"><label for="packagingSize" class="form-label">Size per package</label><input id="packagingSize" class="form-control" type="number" min="0.001" step="0.001" placeholder="25"></div><div class="mb-3"><label for="packagingContentUnit" class="form-label">Content unit</label><select id="packagingContentUnit" class="form-select"></select></div><p class="text-muted">Quantity counts the selected stock units, not the total kg/ml. Correcting these labels does not convert stored quantities or change purchase costs. Earlier distribution labels are preserved. Leave size and content unit blank for bulk stock.</p><p id="packagingError" class="text-danger" role="alert"></p></form></div><div class="modal-footer"><button id="savePackagingBtn" class="btn btn-primary" type="button" onclick="savePackaging()">Save packaging</button></div></div></div></div>
 <div class="modal fade" id="minimumStockModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Minimum stock alert</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><form id="minimumStockForm"><p id="minimumItemName"></p><input type="hidden" id="minimumItemId"><label for="minimumValue" class="form-label">Minimum quantity</label><input type="number" min="0" step="0.01" id="minimumValue" class="form-control"><small>Leave blank to disable alerts.</small></form></div><div class="modal-footer"><button class="btn btn-primary" id="saveMinimumBtn" onclick="saveMinimum()">Save minimum</button></div></div></div></div>
 <div class="modal fade" id="reverseDistributionModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Reverse distribution</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><p id="reverseDistributionLabel"></p><p>This restores inventory and returns the assigned expense to the purchase balance. The original record stays in history.</p><form id="reverseDistributionForm"><input type="hidden" id="reverseDistributionId"><label for="reverseReason" class="form-label">Reason</label><textarea id="reverseReason" class="form-control" maxlength="500" required></textarea></form></div><div class="modal-footer"><button class="btn btn-danger" id="confirmReverseBtn" onclick="confirmReversal()">Reverse distribution</button></div></div></div></div>

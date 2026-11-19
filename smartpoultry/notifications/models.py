@@ -24,12 +24,14 @@ class Notification(models.Model):
     related_object_id = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     read_at = models.DateTimeField(null=True, blank=True)
+    deduplication_key = models.CharField(max_length=160, null=True, blank=True, editable=False)
     
     def __str__(self):
         return f"{self.user} - {self.title}"
     
     class Meta:
         ordering = ['-created_at']
+        constraints = [models.UniqueConstraint(fields=['user','deduplication_key'],name='unique_owner_notification_key')]
         indexes = [
             models.Index(fields=['user', '-created_at']),
             models.Index(fields=['is_read', 'user']),

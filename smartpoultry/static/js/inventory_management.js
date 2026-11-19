@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
 });
 let packagingReturnToHistory=false;
-function showLowStockDialog(message,dialog) {
+function showLowStockDialog(message,dialog,title='Low stock - restock needed') {
     if(!message)return;
-    const show=()=>showAppDialog(message,'Low stock - restock needed');
+    const show=()=>showAppDialog(message,title);
     if(dialog && dialog.classList.contains('show')){
         dialog.addEventListener('hidden.bs.modal',show,{once:true});
         bootstrap.Modal.getInstance(dialog).hide();
@@ -135,6 +135,7 @@ async function loadInventory() {
     }
     if(!body.rows.length){const cell=body.insertRow().insertCell();cell.colSpan=8;cell.textContent='No items in stock. Depleted items are available in History.';}
     if(!history.rows.length){const cell=history.insertRow().insertCell();cell.colSpan=7;cell.textContent='No depleted inventory items.';}
+    if(typeof loadBranchStock==='function')await loadBranchStock();
 }
 async function loadDistributionHistory(inventoryId=null) {
     const body=document.getElementById('distributionHistoryBody');body.replaceChildren();

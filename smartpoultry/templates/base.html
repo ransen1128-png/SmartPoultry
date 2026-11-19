@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body data-owner="{{ request.user.pk|default:'' }}">
     {% if user.is_authenticated and user.is_staff or user.is_authenticated and user.is_superuser %}
         <div class="admin-shell">
             <aside class="admin-sidebar">
@@ -125,6 +125,8 @@
                     </a>
 
                     <div class="sidebar-section">Account</div>
+                    <a class="sidebar-link" href="{% url 'activity_history' %}"><i class="bi bi-clock-history"></i> Change History</a>
+                    <a class="sidebar-link" href="{% url 'reliability_status' %}"><i class="bi bi-shield-check"></i> Backup &amp; Evaluation</a>
                     <a class="sidebar-link {% if request.path == '/notifications/' %}active{% endif %}" href="{% url 'notifications_page' %}">
                         <i class="bi bi-bell"></i> Notifications
                     </a>
@@ -276,6 +278,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src="{% static 'js/main.js' %}?v=20261118-alert-lifecycle"></script>
+    <script src="{% static 'js/financial_requests.js' %}?v=1"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

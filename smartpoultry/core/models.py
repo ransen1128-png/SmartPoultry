@@ -138,6 +138,35 @@ class RoosterAgeEstimate(models.Model):
         ordering = ['-created_at']
 
 
+class MutationReceipt(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    scope = models.CharField(max_length=160)
+    key = models.CharField(max_length=100)
+    request_hash = models.CharField(max_length=64)
+    response = models.JSONField()
+    status = models.PositiveSmallIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['user','scope','key'], name='unique_mutation_receipt')]
+
+
+class AuditEvent(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='farm_audit_events')
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='performed_farm_changes')
+    actor_label = models.CharField(max_length=150, blank=True)
+    object_type = models.CharField(max_length=100)
+    object_id = models.PositiveBigIntegerField()
+    action = models.CharField(max_length=20)
+    before = models.JSONField(default=dict)
+    after = models.JSONField(default=dict)
+    reason = models.CharField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at','-pk']
+
+
 class TransactionRecord(models.Model):
     """Immutable ledger entry for financial transactions."""
     TRANSACTION_TYPES = [
@@ -193,6 +222,9 @@ class Branch(models.Model):
         with transaction.atomic(using=using):
             super().save(*args, **kwargs)
             if self.status == 'inactive' and (not kwargs.get('update_fields') or 'status' in kwargs['update_fields']):
+                from .audit import record_explicit_change
+                for flock in self.flocks.using(using).filter(status='active'):
+                    record_explicit_change(flock,{'status':'active'},{'status':'inactive'},'updated')
                 self.flocks.using(using).filter(status='active').update(status='inactive', updated_at=timezone.now())
 
     def __str__(self):

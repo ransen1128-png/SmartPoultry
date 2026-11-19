@@ -9,9 +9,11 @@ async function loadFlocks() {
             const body=flock.in_history?history:current,tr=body.insertRow();
             [flock.branch_name || 'Unassigned',flock.flock_id,flock.breed,flock.quantity,flock.in_history?flock.history_reason:flock.status,flock.acquisition_source_display,flock.acquisition_source==='unknown'?'Not recorded':'₱'+Number(flock.purchase_total).toFixed(2),flock.date_added].forEach(value=>tr.insertCell().textContent=value);
             const actions=tr.insertCell();const edit=document.createElement('button');edit.type='button';edit.className='btn btn-sm btn-info me-1';edit.textContent=flock.in_history?'View / Edit':'Edit';edit.addEventListener('click',()=>editFlock(flock.id));actions.append(edit);
+            tr.insertCell(actions.cellIndex).textContent=flock.days_since_placement==null?'Not recorded':flock.days_since_placement+' days';
+            tr.insertCell(actions.cellIndex).textContent=flock.ready_from?flock.ready_from+' to '+flock.readiness_window_end:'—';
             if(!flock.in_history){const remove=document.createElement('button');remove.type='button';remove.className='btn btn-sm btn-danger';remove.textContent='Delete';remove.addEventListener('click',()=>confirmDeleteFlock(flock.id,flock.flock_id));actions.append(remove);}
         }
-        for(const [body,message] of [[current,'No current flocks.'],[history,'No completed flocks yet.']])if(!body.rows.length){const cell=body.insertRow().insertCell();cell.colSpan=9;cell.textContent=message;}
+        for(const [body,message] of [[current,'No current flocks.'],[history,'No completed flocks yet.']])if(!body.rows.length){const cell=body.insertRow().insertCell();cell.colSpan=11;cell.textContent=message;}
         document.getElementById('flockHistoryBtn').textContent='History ('+records.filter(row=>row.in_history).length+')';
     } catch(error){showMessageDialog(error.message,'Flocks');}
 }

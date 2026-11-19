@@ -49,6 +49,7 @@
                     <th>Quantity</th>
                     <th>Price/Unit</th>
                     <th>Total Amount</th>
+                    <th>Receipt</th>
                 </tr>
             </thead>
             <tbody id="revenueBody">
@@ -224,7 +225,7 @@
                         currentBranch = branchName;
                         const header = document.createElement('tr');
                         header.className = 'table-light';
-                        const cell=header.insertCell();cell.colSpan=9;cell.className='fw-bold';cell.textContent=branchName;
+                        const cell=header.insertCell();cell.colSpan=10;cell.className='fw-bold';cell.textContent=branchName;
                         tbody.appendChild(header);
                     }
 
@@ -232,6 +233,7 @@
                     const buyer=[revenue.buyer_name || 'Not recorded',revenue.buyer_contact,revenue.buyer_address].filter(Boolean).join('\n');
                     const product=(revenue.revenue_type_display || (revenue.revenue_type==='birds'?'Chicken':revenue.revenue_type))+(revenue.revenue_type==='eggs'?' — '+(revenue.egg_size_label || 'size not recorded'):'');
                     [branchName,new Date(revenue.date).toLocaleDateString(),product,buyer,revenue.order_number || 'Not recorded',revenue.transaction_number || 'Not recorded',revenue.quantity,'₱'+Number(revenue.price_per_unit).toFixed(2),'₱'+Number(revenue.total_amount).toFixed(2)].forEach(value=>{const cell=row.insertCell();cell.textContent=value;cell.style.whiteSpace='pre-line';cell.style.overflowWrap='anywhere';});
+                    const receipt=document.createElement('a');receipt.className='btn btn-sm btn-outline-primary';receipt.textContent='View receipt';receipt.href='/revenue/'+revenue.id+'/receipt/';row.insertCell().append(receipt);
                     tbody.appendChild(row);
                     total += parseFloat(revenue.total_amount);
                 });
@@ -248,7 +250,7 @@
         this.disabled = true;
         const formData = new FormData(form);
         
-        fetch('/api/revenue/order/', {
+        safeTransactionFetch('/api/revenue/order/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

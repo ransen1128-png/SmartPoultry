@@ -10,6 +10,11 @@ class FlockSerializer(serializers.ModelSerializer):
     purchase_expense_id = serializers.IntegerField(source='purchase_expense.pk',read_only=True,default=None)
     ready_from = serializers.DateField(read_only=True)
     readiness_window_end = serializers.DateField(read_only=True)
+    days_since_placement = serializers.SerializerMethodField()
+
+    def get_days_since_placement(self,flock):
+        from django.utils import timezone
+        return (timezone.localdate()-flock.placement_date).days if flock.placement_date else None
 
     def create(self,validated_data):
         from django.core.exceptions import ValidationError as ModelError
@@ -70,5 +75,5 @@ class FlockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flock
         fields = ['id', 'branch', 'branch_name', 'flock_id', 'breed', 'quantity', 'status', 'in_history','history_reason','date_added',
-                  'expected_production_date', 'notes', 'created_at', 'updated_at','acquisition_source','acquisition_source_display','purchase_amount','delivery_cost','purchase_date','supplier','purchase_total','purchase_expense_id','placement_date','ready_from','readiness_window_end']
+                  'expected_production_date', 'notes', 'created_at', 'updated_at','acquisition_source','acquisition_source_display','purchase_amount','delivery_cost','purchase_date','supplier','purchase_total','purchase_expense_id','placement_date','ready_from','readiness_window_end','days_since_placement']
         read_only_fields = ['id', 'created_at', 'updated_at']

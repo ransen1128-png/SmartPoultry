@@ -86,4 +86,5 @@ class BroilerReadinessTests(TestCase):
         result=self.client.post(reverse('flock-list'),{**payload,'placement_date':'2026-11-14'})
         self.assertEqual(result.status_code,201,result.content)
         self.assertEqual(result.data['ready_from'],'2026-12-09')
+        self.assertEqual(result.data['days_since_placement'],0)
         self.assertEqual(result.data['readiness_window_end'],'2027-01-13')

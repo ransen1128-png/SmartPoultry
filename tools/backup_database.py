@@ -83,8 +83,10 @@ def verify_restore(binary,dump,expected,destination):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify-restore',action='store_true')
+    parser.add_argument('--database-url-env',help='Environment variable containing a separate PostgreSQL URL; never pass the URL on the command line.')
+    parser.add_argument('--destination',type=Path,default=ROOT/'.database-backups/scheduled')
     args=parser.parse_args()
-    destination=ROOT/'.database-backups/scheduled';destination.mkdir(parents=True,exist_ok=True)
+    destination=args.destination.resolve();destination.mkdir(parents=True,exist_ok=True)
     lockpath=destination/'backup.lock'
     lock=lockpath.open('a+b');lock.write(b'0');lock.flush();lock.seek(0)
     try:
@@ -99,11 +101,18 @@ def main():
     report={'started_utc':stamp,'status':'failed','restore_verified':False}
     try:
         db=settings.DATABASES['default']
+        if args.database_url_env:
+            from core.database import database_settings
+            url=os.environ.get(args.database_url_env)
+            if not url:raise RuntimeError('The selected database URL environment variable is not configured.')
+            db=database_settings({'DATABASE_URL':url,'USE_POSTGRES':'True'},ROOT)
         if not db['ENGINE'].endswith('postgresql'):raise RuntimeError('Configured database must be PostgreSQL.')
         binary=postgres_bin();extension='.exe' if os.name=='nt' else ''
         env=os.environ.copy();env['PGPASSWORD']=db.get('PASSWORD','')
         if db.get('OPTIONS',{}).get('sslmode'):env['PGSSLMODE']=db['OPTIONS']['sslmode']
         connect=dict(host=db.get('HOST') or 'localhost',port=db.get('PORT') or 5432,user=db['USER'],password=db.get('PASSWORD',''),dbname=db['NAME'])
+        report['database_fingerprint']=hashlib.sha256(f"{connect['host']}:{connect['port']}/{connect['dbname']}".encode()).hexdigest()
+        report['source_kind']='external URL' if args.database_url_env else 'configured desktop database'
         if 'PGSSLMODE' in env:connect['sslmode']=env['PGSSLMODE']
         dump=destination/f'backup-{stamp}.dump'
         with psycopg2.connect(**connect) as source:
