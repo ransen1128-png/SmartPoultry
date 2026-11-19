@@ -9,6 +9,8 @@ from . import views
 from .measurement_review import review_spur
 from .spur_cache_service import service as spur_cache_service, connection_page
 from . import business_views
+from django.contrib.auth.views import PasswordResetDoneView, PasswordResetCompleteView
+from .password_reset import RequestPasswordResetView, ConfirmPasswordResetView
 
 urlpatterns = [
     path('revenue/<int:sale_id>/receipt/',business_views.sales_receipt,name='sales_receipt'),
@@ -19,7 +21,10 @@ urlpatterns = [
     path('rooster-age-estimator/shared-cache/', connection_page, name='spur_cache_connection'),
     path('', views.index, name='index'),
     path('login/', views.index, name='login'),
-    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('forgot-password/', RequestPasswordResetView.as_view(), name='forgot_password'),
+    path('forgot-password/sent/', PasswordResetDoneView.as_view(template_name='password_reset_done.html'), name='password_reset_done'),
+    path('reset-password/<uidb64>/<token>/', ConfirmPasswordResetView.as_view(), name='password_reset_confirm'),
+    path('reset-password/complete/', PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
     path('register/', views.register, name='register'),
     path('logout/', views.logout_view, name='logout'),
     path('admin/', admin.site.urls),

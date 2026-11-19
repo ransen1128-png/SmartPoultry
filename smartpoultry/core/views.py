@@ -144,40 +144,6 @@ def register(request):
     return render(request, 'register.html', {'error': error})
 
 
-def forgot_password(request):
-    """Public password reset page for users who forgot their password."""
-    if request.user.is_authenticated:
-        if is_admin_user(request.user):
-            return redirect('admin_dashboard')
-        return redirect('dashboard')
-
-    error = None
-    success = None
-    if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
-        new_password = request.POST.get('new_password', '')
-        confirm_password = request.POST.get('confirm_password', '')
-
-        if not email or not new_password or not confirm_password:
-            error = 'Please fill out all fields.'
-        elif new_password != confirm_password:
-            error = 'Passwords do not match.'
-        else:
-            try:
-                user = User.objects.get(email__iexact=email)
-                validate_password(new_password, user)
-            except User.DoesNotExist:
-                error = 'No account was found with that email address.'
-            except ValidationError as exc:
-                error = ' '.join(exc.messages)
-            else:
-                user.set_password(new_password)
-                user.save()
-                success = 'Password reset successfully. You can now log in with your new password.'
-
-    return render(request, 'forgot_password.html', {'error': error, 'success': success})
-
-
 def logout_view(request):
     logout(request)
     return redirect('login')

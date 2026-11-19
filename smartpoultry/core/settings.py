@@ -113,6 +113,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Use HTTPS email delivery: Render's free plan blocks standard SMTP ports.
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'core.email_backend.ResendEmailBackend')
+RESEND_API_KEY = os.getenv('RESEND_API_KEY', '').strip()
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', '').strip()
+EMAIL_TIMEOUT = 10
+PASSWORD_RESET_TIMEOUT = 30 * 60
+# A canonical origin keeps reset links on this deployment, behind Render's proxy.
+PASSWORD_RESET_BASE_URL = os.getenv(
+    'PASSWORD_RESET_BASE_URL',
+    f'https://{RENDER_EXTERNAL_HOSTNAME}' if RENDER_EXTERNAL_HOSTNAME else '',
+).strip().rstrip('/')
+
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
