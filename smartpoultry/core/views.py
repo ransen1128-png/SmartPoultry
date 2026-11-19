@@ -142,12 +142,17 @@ def register(request):
         elif not recovery_form.is_valid():
             error = 'Complete both recovery questions and answers below.'
         else:
-            from django.db import transaction
-            with transaction.atomic():
-                user = User.objects.create_user(username=username, email=email, password=password)
-                recovery_form.save(user)
-            messages.success(request, 'Your account has been created.', extra_tags='account-created')
-            return redirect('login')
+            try:
+                validate_password(password, User(username=username, email=email))
+            except ValidationError as exc:
+                error = ' '.join(exc.messages)
+            else:
+                from django.db import transaction
+                with transaction.atomic():
+                    user = User.objects.create_user(username=username, email=email, password=password)
+                    recovery_form.save(user)
+                messages.success(request, 'Your account has been created.', extra_tags='account-created')
+                return redirect('login')
     return render(request, 'register.html', {'error': error, 'recovery_form': recovery_form})
 
 

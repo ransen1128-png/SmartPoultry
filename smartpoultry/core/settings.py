@@ -100,6 +100,7 @@ DATABASES = {'default': database_settings(os.environ, BASE_DIR)}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'core.password_validation.PasswordComplexityValidator'},
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
