@@ -110,7 +110,7 @@
                         </td>
                         <td>{{ account.email|default:"-" }}</td>
                         <td>{{ account.phone|default:"-" }}</td>
-                        <td><span class="admin-role">{{ account.get_role_display }}</span></td>
+                        <td><span class="admin-role">{% if account.is_staff or account.is_superuser %}Administrator{% else %}Poultry Farm Owner{% endif %}</span></td>
                         <td>{% if account.farm %}{{ account.farm.name }}{% else %}-{% endif %}</td>
                         <td>
                             {% if account.is_active and account.is_active_user %}
