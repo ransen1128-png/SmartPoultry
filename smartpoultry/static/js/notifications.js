@@ -143,6 +143,7 @@
     // Capture invalid fields once per validation pass, retaining entered values.
     document.addEventListener('invalid', event => {
         const field = event.target;
+        if (field.closest('[data-inline-validation]')) return;
         enqueue({type:'warning',title:field.validity.valueMissing ? 'Please Complete All Required Fields!' : /match/i.test(field.validationMessage) ? 'Passwords Do Not Match!' : 'Invalid Information!',message:safe(field.validationMessage)});
     }, true);
     const submitted = new WeakSet();
@@ -158,11 +159,13 @@
         }
         delete form.dataset.confirmed;
         // Native POST navigation: keep submitter values in the submitted payload.
-        queueMicrotask(() => {
+        // Wait until all submit listeners have completed validation/AJAX handling.
+        // A microtask can run between capture and target listeners.
+        window.setTimeout(() => {
             if (event.defaultPrevented) return;
             submitted.add(form);
             form.querySelectorAll('[type=submit]').forEach(button => {button.setAttribute('aria-disabled','true');button.dataset.spSubmitting='true';});
-        });
+        }, 0);
     }, true);
     window.addEventListener('pageshow', () => {
         document.querySelectorAll('form').forEach(form => submitted.delete(form));
@@ -214,7 +217,7 @@
             if (notice && Date.now()-notice.time < 60000 && notice.owner === (document.body.dataset.owner || '')) enqueue(notice);
         } catch (_) {}
         document.querySelectorAll('[data-popup-message]').forEach(node => enqueue({type:node.dataset.level,message:node.textContent,title:node.dataset.title}));
-        const errors = [...document.querySelectorAll('.errorlist, form .text-danger')].map(node => node.textContent.trim()).filter(Boolean);
+        const errors = [...document.querySelectorAll('.errorlist, form .text-danger')].filter(node => !node.closest('[data-inline-validation]')).map(node => node.textContent.trim()).filter(Boolean);
         if (errors.length) enqueue({type:'warning',message:errors.join('\n')});
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize); else initialize();

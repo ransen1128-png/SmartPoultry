@@ -95,7 +95,8 @@ def index(request):
             return redirect('admin_dashboard')
         return redirect('dashboard')
 
-    error = None
+    login_error = email_error = password_error = ''
+    identifier = ''
     if request.method == 'POST':
         identifier = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
@@ -114,10 +115,12 @@ def index(request):
                 if is_admin_user(user):
                     return redirect('admin_dashboard')
                 return redirect('dashboard')
-            error = 'Invalid email or password. Please try again.'
+            login_error = 'Invalid credentials'
         else:
-            error = 'Email and password are required.'
-    return render(request, 'index.html', {'error': error})
+            email_error = '' if identifier else 'Email required'
+            password_error = '' if password else 'Password required'
+    return render(request, 'index.html', {'login_error': login_error, 'email_error': email_error,
+        'password_error': password_error, 'login_email': identifier})
 
 
 @sensitive_post_parameters('password', 'password2', 'answer_one', 'answer_two')

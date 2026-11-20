@@ -14,7 +14,8 @@ class NotificationMessageTests(TestCase):
     def test_success_is_only_queued_after_valid_login(self):
         get_user_model().objects.create_user('popup-owner', 'popup@example.invalid', 'Strong-secret!79')
         response = self.client.post('/login/', {'email':'popup@example.invalid','password':'wrong'})
-        self.assertContains(response, 'data-title="Login Failed!"')
+        self.assertContains(response, 'Invalid credentials')
+        self.assertNotContains(response, 'data-title="Login Failed!"')
         self.assertNotIn('_auth_user_id', self.client.session)
         response = self.client.post('/login/', {'email':'popup@example.invalid','password':'Strong-secret!79'}, follow=True)
         self.assertContains(response, 'data-title="Login Successful!"')

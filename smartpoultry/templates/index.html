@@ -70,6 +70,10 @@
             border-color: #d8e4f5;
         }
 
+        .password-field .form-control.is-invalid {
+            background-image: none;
+        }
+
         .small-link {
             font-size: 0.78rem;
         }
@@ -85,18 +89,20 @@
                 <p>Machine Learning-Based Poultry Farm Financial Analytics System</p>
             </div>
 
-            <form method="post">
+            <form method="post" id="loginForm" data-inline-validation novalidate>
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control{% if email_error %} is-invalid{% endif %}" id="email" name="email" value="{{ login_email }}" autocomplete="username" aria-describedby="emailError"{% if email_error %} aria-invalid="true"{% endif %} required>
+                    <div id="emailError" class="text-danger small mt-1" aria-live="polite"{% if not email_error %} hidden{% endif %}>{{ email_error }}</div>
                 </div>
                 <div class="mb-2">
                     <label for="password" class="form-label">Password</label>
                     <div class="password-field">
-                        <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" required>
+                        <input type="password" class="form-control{% if password_error or login_error %} is-invalid{% endif %}" id="password" name="password" autocomplete="current-password" aria-describedby="passwordError"{% if password_error or login_error %} aria-invalid="true"{% endif %} required>
                         {% include 'includes/password_toggle.html' with target='password' label='password' %}
                     </div>
+                    <div id="passwordError" class="text-danger small mt-1" aria-live="polite"{% if not password_error and not login_error %} hidden{% endif %}>{{ password_error }}{{ login_error }}</div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="form-check">
@@ -112,7 +118,8 @@
         </div>
     </div>
 
-    {% include 'includes/notifications.html' with notification_error_title='Login Failed!' %}
+    {% include 'includes/notifications.html' %}
+    <script src="{% static 'js/login_validation.js' %}?v=1"></script>
     <script src="{% static 'js/password_toggle.js' %}?v=1"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
