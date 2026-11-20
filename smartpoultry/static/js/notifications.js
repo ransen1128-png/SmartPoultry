@@ -73,7 +73,11 @@
         try {
             if (accepted && item.onConfirm) item.onConfirm();
             target.dispatchEvent(new Event('hidden.bs.modal'));
-        } finally { item.resolve(accepted); active = null; displayNext(); }
+        } finally {
+            item.resolve(accepted);
+            if (lastNotice?.promise === item.promise) lastNotice = null;
+            active = null; displayNext();
+        }
     }
     dialog.querySelector('.sp-popup-ok').onclick = () => finish(true);
     dialog.querySelector('.sp-popup-close').onclick = () => finish(false);

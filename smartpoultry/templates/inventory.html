@@ -241,21 +241,11 @@
     }
 
     function showDistributionBlocked(message) {
-        const inventoryId=selectedInventoryId;
-        const values=Object.fromEntries(new FormData(document.getElementById('distributionForm')));
-        const notification=document.getElementById('appDialog');
-        notification.addEventListener('hidden.bs.modal',()=>{
-            showDistributionModal(inventoryId,true);
-            const form=document.getElementById('distributionForm');
-            Object.entries(values).forEach(([name,value])=>{if(form.elements[name])form.elements[name].value=value;});
-            distributionFeedback(message);
-        },{once:true});
-        // Finish the save state before switching dialogs; Bootstrap supports one at a time.
+        // Native notification dialogs sit above the editing window. Keep its
+        // values and state in place when validation fails.
         distributionSaving=false;
-        distributionModal.addEventListener('hidden.bs.modal',()=>{
-            showAppDialog(message,'Cannot distribute inventory');
-        },{once:true});
-        bootstrap.Modal.getInstance(distributionModal).hide();
+        distributionFeedback(message);
+        showAppDialog(message,'Cannot distribute inventory');
     }
 
     function confirmAllDistribution(item) {
@@ -291,7 +281,7 @@
         distributionFeedback('');
         const current=inventoryItems.get(selectedInventoryId);
         if(current && Number(form.elements.quantity.value)>Number(current.quantity)) {
-            distributionFeedback('Only '+formatQuantity(current.quantity,current.unit)+' available. Enter a quantity within the available stock.');return;
+            showDistributionBlocked('Only '+formatQuantity(current.quantity,current.unit)+' available. Enter a quantity within the available stock.');return;
         }
         if (!form.reportValidity() || !selectedInventoryId) {
             return;
