@@ -8,6 +8,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% if user.is_authenticated %}
+        <style>
+            html[data-session-checking] body { visibility: hidden; }
+            html[data-session-checking]::after { content: 'Checking your session…'; position: fixed; inset: 0; display: grid; place-items: center; background: #f5f8fc; color: #08233f; font: 16px system-ui, sans-serif; }
+        </style>
+        <script src="{% static 'js/auth_session.js' %}?v=20261120" defer data-user-id="{{ user.pk }}" data-status-url="{% url 'session_status' %}" data-login-url="{% url 'login' %}" data-logout-url="{% url 'logout' %}"></script>
+    {% endif %}
     {% block extra_css %}{% endblock %}
 </head>
 <body data-owner="{{ request.user.pk|default:'' }}">

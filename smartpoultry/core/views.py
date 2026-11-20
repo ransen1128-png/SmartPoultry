@@ -20,6 +20,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import capfirst
 from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.http import require_GET, require_http_methods
 from PIL import Image, ImageFilter, ImageStat, UnidentifiedImageError
 from notifications.utils import create_activity_notification
 from .forms import MortalityRecordForm, ProductionRecordForm
@@ -156,9 +157,21 @@ def register(request):
     return render(request, 'register.html', {'error': error, 'recovery_form': recovery_form})
 
 
+@require_http_methods(['GET', 'POST'])
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    if 'application/json' in request.headers.get('Accept', ''):
+        response = JsonResponse({'logged_out': True})
+    else:
+        response = redirect('login')
+    response['Clear-Site-Data'] = '"cache"'
+    return response
+
+
+@require_GET
+def session_status(request):
+    authenticated = request.user.is_authenticated
+    return JsonResponse({'authenticated': authenticated, 'user_id': str(request.user.pk) if authenticated else None})
 
 
 @login_required(login_url='login')

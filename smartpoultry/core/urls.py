@@ -32,6 +32,7 @@ urlpatterns = [
     path('reset-password/complete/', PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
     path('register/', views.register, name='register'),
     path('logout/', views.logout_view, name='logout'),
+    path('session-status/', views.session_status, name='session_status'),
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
     path('api/flocks/', include('flocks.urls')),
