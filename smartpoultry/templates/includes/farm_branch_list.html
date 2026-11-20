@@ -1,11 +1,11 @@
 <div class="table-responsive">
 <table class="table table-hover align-middle">
-    <thead class="table-light"><tr><th scope="col">#</th><th scope="col">Branch Name</th><th scope="col">Location</th><th scope="col">Address</th><th scope="col">Contact Number</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
+    <thead class="table-light"><tr><th scope="col">#</th><th scope="col">Branch Name</th><th scope="col">Address</th><th scope="col">Contact Number</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
     <tbody>
         {% if show_farm %}
         <tr data-farm-row>
             <td>1</td><td>{{ farm.name }}{% if has_branches %} <span class="badge bg-primary ms-1" data-main-branch-label>Main Branch</span>{% endif %}</td>
-            <td>{{ farm.location }}</td><td>{{ farm.address|default:'—' }}</td><td>{{ farm.contact_phone }}</td>
+            <td>{{ farm.address|default:'—' }}</td><td>{{ farm.contact_phone }}</td>
             <td><span class="badge {% if farm.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">{{ farm.get_status_display }}</span></td>
             <td><button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#farmDetails" aria-label="View {{ farm.name }}">View</button></td>
         </tr>
@@ -13,7 +13,7 @@
         {% for branch in branches %}
         <tr data-branch-id="{{ branch.pk }}">
             <td>{% if show_farm %}{{ forloop.counter|add:'1' }}{% else %}{{ forloop.counter }}{% endif %}</td>
-            <td>{{ branch.name }}</td><td>{{ branch.location|default:'—' }}</td><td>{{ branch.address|default:'—' }}</td><td>{{ branch.contact_number|default:'—' }}</td>
+            <td>{{ branch.name }}</td><td>{{ branch.address|default:'—' }}</td><td>{{ branch.contact_number|default:'—' }}</td>
             <td><span class="badge {% if branch.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">{{ branch.get_status_display }}</span></td>
             <td><div class="d-flex flex-wrap gap-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#branchDetails{{ branch.pk }}" aria-label="View {{ branch.name }}">View</button>
@@ -25,7 +25,7 @@
             </div></td>
         </tr>
         {% endfor %}
-        {% if not show_farm and not branches %}<tr><td colspan="7" class="text-center py-4">No farms or branches match your search.</td></tr>{% endif %}
+        {% if not show_farm and not branches %}<tr><td colspan="6" class="text-center py-4">No farms or branches match your search.</td></tr>{% endif %}
     </tbody>
 </table>
 </div>
@@ -33,7 +33,6 @@
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
         <div class="modal-header"><h5 class="modal-title" id="farmDetailsTitle">{{ farm.name }}{% if has_branches %} (Main Branch){% endif %}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
         <div class="modal-body"><dl class="row mb-0">
-            <dt class="col-sm-4">Location</dt><dd class="col-sm-8">{{ farm.location }}</dd>
             <dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ farm.address|default:'—' }}</dd>
             <dt class="col-sm-4">Contact Number</dt><dd class="col-sm-8">{{ farm.contact_phone }}</dd>
             <dt class="col-sm-4">Contact Email</dt><dd class="col-sm-8">{{ farm.contact_email }}</dd>
@@ -49,7 +48,6 @@
         <div class="modal-header"><h5 class="modal-title" id="branchDetailsTitle{{ branch.pk }}">{{ branch.name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
         <div class="modal-body"><dl class="row mb-0">
             <dt class="col-sm-4">Farm</dt><dd class="col-sm-8">{{ farm.name }}</dd>
-            <dt class="col-sm-4">Location</dt><dd class="col-sm-8">{{ branch.location|default:'—' }}</dd>
             <dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ branch.address|default:'—' }}</dd>
             <dt class="col-sm-4">Contact Number</dt><dd class="col-sm-8">{{ branch.contact_number|default:'—' }}</dd>
             <dt class="col-sm-4">Description</dt><dd class="col-sm-8">{{ branch.description|default:'—' }}</dd>

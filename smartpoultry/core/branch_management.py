@@ -13,7 +13,6 @@ from .models import Branch, Farm
 
 class BranchForm(forms.Form):
     branch_name = forms.CharField(label='Branch Name', max_length=255)
-    location = forms.CharField(max_length=255)
     address = forms.CharField(widget=forms.Textarea(attrs={'rows': 2}))
     contact_number = forms.CharField(label='Contact Number', max_length=20,
         widget=forms.TextInput(attrs={'type': 'tel', 'inputmode': 'numeric',
@@ -31,7 +30,7 @@ class BranchForm(forms.Form):
         super().__init__(*args, initial=initial, **kwargs)
         # Existing incomplete legacy records remain editable without erasing data.
         if branch:
-            for name in ('location', 'address', 'contact_number'):
+            for name in ('address', 'contact_number'):
                 self.fields[name].required = False
             self.fields.pop('description')
         for name, field in self.fields.items():
@@ -58,11 +57,11 @@ def branch_context(request, farm, *, bound_form=None, edited_branch=None, query=
     query = (request.GET.get('q', '') if query is None else query).strip()[:200]
     all_branches = farm.branches.all() if farm else Branch.objects.none()
     has_branches = all_branches.exists()
-    branches = list(all_branches.filter(Q(name__icontains=query) | Q(location__icontains=query)).order_by('created_at', 'pk'))
+    branches = list(all_branches.filter(Q(name__icontains=query) | Q(address__icontains=query)).order_by('created_at', 'pk'))
     for branch in branches:
         branch.edit_form = bound_form if edited_branch and branch.pk == edited_branch.pk else BranchForm(farm=farm, branch=branch)
     return {'farm': farm, 'branches': branches, 'has_branches': has_branches,
-        'show_farm': bool(farm and (not query or query.casefold() in farm.name.casefold() or query.casefold() in farm.location.casefold())),
+        'show_farm': bool(farm and (not query or query.casefold() in farm.name.casefold() or query.casefold() in farm.address.casefold())),
         'query': query, 'branch_form': bound_form if bound_form and not edited_branch else BranchForm(farm=farm),
         'open_branch_modal': f'editBranch{edited_branch.pk}' if bound_form and edited_branch else 'addBranchModal' if bound_form else ''}
 

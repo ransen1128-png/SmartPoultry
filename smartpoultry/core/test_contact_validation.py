@@ -22,7 +22,7 @@ class ContactPhoneTests(TestCase):
 
     def test_eleven_digit_farm_phone_is_accepted(self):
         response = self.client.post('/farm/branches/', {
-            'farm_name':'Test Farm', 'farm_location':'Town', 'established_date':'2026-01-01',
+            'farm_name':'Test Farm', 'established_date':'2026-01-01',
             'contact_email':'contact@example.invalid', 'contact_phone':'09123456789',
         })
         self.assertEqual(response.status_code,302)

@@ -25,7 +25,7 @@ class FarmBranchesTests(TestCase):
         self.client.force_login(self.user)
 
     def payload(self, **changes):
-        return {'branch_name':'Branch One','location':'Dalaguete','address':'Branch address',
+        return {'branch_name':'Branch One','address':'Branch address',
             'contact_number':'09123456789','description':'New branch','status':'active',**changes}
 
     def post(self, **changes):
@@ -38,6 +38,8 @@ class FarmBranchesTests(TestCase):
         self.assertNotContains(response,'data-main-branch-label')
         self.assertNotContains(response,'No branches yet')
         self.assertContains(response,'id="addBranchModal"')
+        self.assertNotContains(response,'>Location</')
+        self.assertNotContains(response,'name="location"')
         self.assertFalse(Branch.objects.exists())
 
     def test_first_and_subsequent_branches_preserve_original_farm_and_order(self):
@@ -55,7 +57,7 @@ class FarmBranchesTests(TestCase):
         self.assertEqual((self.farm.name,self.farm.address,self.farm.status),('Original Farm','Original address','active'))
 
     def test_required_fields_phone_status_and_duplicate_names(self):
-        for changes in ({'branch_name':''},{'location':''},{'address':''},{'contact_number':''},
+        for changes in ({'branch_name':''},{'address':''},{'contact_number':''},
                 {'contact_number':'123'},{'contact_number':'abcdefghijk'},{'status':'invalid'}):
             with self.subTest(changes=changes):
                 self.assertEqual(self.post(**changes).status_code,400)
@@ -64,13 +66,13 @@ class FarmBranchesTests(TestCase):
         self.assertEqual(self.post(branch_name='branch one').status_code,400)
         self.assertEqual(Branch.objects.count(),1)
 
-    def test_search_covers_original_and_additional_locations(self):
+    def test_search_covers_original_and_additional_addresses(self):
         self.post()
-        response=self.client.get(self.url,{'q':'Argao'})
+        response=self.client.get(self.url,{'q':'Original address'})
         self.assertContains(response,'data-farm-row')
         self.assertContains(response,'data-main-branch-label')
         self.assertNotContains(response,'data-branch-id=')
-        response=self.client.get(self.url,{'q':'Dalaguete'})
+        response=self.client.get(self.url,{'q':'Branch address'})
         self.assertNotContains(response,'data-farm-row')
         self.assertContains(response,'Branch One')
         self.assertContains(self.client.get(self.url,{'q':'missing'}),'No farms or branches match your search.')
@@ -91,11 +93,13 @@ class FarmBranchesTests(TestCase):
     def test_edit_status_cascades_and_related_records_prevent_deletion(self):
         self.post()
         branch=Branch.objects.get(farm=self.farm)
+        branch.location='Existing location';branch.save()
         flock=Flock.objects.create(user=self.user,branch=branch,flock_id='1',quantity=10,breed='layers')
         response=self.post(branch_id=branch.pk,branch_name='Renamed',status='inactive')
         self.assertEqual(response.status_code,200)
         flock.refresh_from_db();self.assertEqual(flock.status,'inactive')
         branch.refresh_from_db();self.assertEqual(branch.description,'New branch')
+        self.assertEqual(branch.location,'Existing location')
         self.assertEqual(self.post(branch_id=branch.pk,action='delete').status_code,400)
         flock.refresh_from_db();self.assertEqual(flock.branch_id,branch.pk)
         self.assertTrue(Branch.objects.filter(pk=branch.pk).exists())
@@ -158,7 +162,6 @@ class FarmBranchesBrowserTests(StaticLiveServerTestCase):
                 expect(modal).not_to_be_visible()
                 page.get_by_role('button',name='Add Branch',exact=True).first.click()
                 modal.get_by_label('Branch Name',exact=True).fill('North Branch')
-                modal.get_by_label('Location',exact=True).fill('Dalaguete')
                 modal.get_by_label('Address',exact=True).fill('North address')
                 modal.get_by_label('Contact Number',exact=True).fill('09123456789')
                 modal.get_by_role('button',name='Add Branch',exact=True).click()
@@ -176,7 +179,7 @@ class FarmBranchesBrowserTests(StaticLiveServerTestCase):
                 expect(page.locator('#appDialogTitle')).to_have_text('Branch updated successfully!')
                 page.locator('.sp-popup-ok').click();page.wait_for_function("!document.querySelector('#appDialog').open")
                 search=page.get_by_role('searchbox',name='Search farm and branches')
-                search.fill('Argao');page.get_by_role('button',name='Search',exact=True).click()
+                search.fill('Original address');page.get_by_role('button',name='Search',exact=True).click()
                 expect(page.locator('[data-branch-id]')).to_have_count(0)
                 expect(page.locator('[data-farm-row]')).to_have_count(1)
                 search.fill('');page.get_by_role('button',name='Search',exact=True).click()

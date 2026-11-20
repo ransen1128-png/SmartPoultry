@@ -521,7 +521,7 @@ def farm_branches(request):
             contact_email = request.POST.get('contact_email', '').strip()
             contact_phone = request.POST.get('contact_phone', '').strip()
 
-            if not farm_name or not farm_location or not established_date or not contact_email or not contact_phone:
+            if not farm_name or not established_date or not contact_email or not contact_phone:
                 messages.error(request, 'All farm profile fields are required.')
             elif not valid_contact_phone(contact_phone):
                 messages.warning(request, PHONE_ERROR)
