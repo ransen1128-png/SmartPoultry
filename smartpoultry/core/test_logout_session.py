@@ -15,7 +15,7 @@ class LogoutSessionTests(TestCase):
         old_cookie = self.client.cookies[settings.SESSION_COOKIE_NAME].value
         response = self.client.get(reverse('logout'))
         self.assertEqual(response['Clear-Site-Data'], '"cache"')
-        self.assertRedirects(response, reverse('login'))
+        self.assertContains(response, 'Finishing logout')
         self.assertNotIn('_auth_user_id', self.client.session)
         replay = Client()
         replay.cookies[settings.SESSION_COOKIE_NAME] = old_cookie
@@ -59,7 +59,20 @@ class LogoutSessionTests(TestCase):
         self.client.force_login(another)
         self.assertEqual(self.client.get(reverse('session_status')).json()['user_id'], str(another.pk))
 
+    def test_cache_cleanup_happens_after_the_account_page_is_inactive(self):
+        self.assertNotIn('Clear-Site-Data', self.client.get(reverse('session_status')))
+        self.client.get(reverse('logout'))
+        response = self.client.get(reverse('session_status'))
+        self.assertEqual(response['Clear-Site-Data'], '"cache"')
+        self.assertFalse(response.json()['authenticated'])
+
+    def test_completion_url_does_not_log_out_a_new_session(self):
+        response = self.client.get(reverse('logout_complete'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], reverse('login'))
+        self.assertTrue(self.client.get(reverse('session_status')).json()['authenticated'])
+
     def test_account_page_loads_history_and_tab_session_guard(self):
         response = self.client.get(reverse('farm_branches'))
-        self.assertContains(response, 'auth_session.js?v=20261120')
+        self.assertContains(response, 'auth_session.js?v=20261120-history2')
         self.assertContains(response, f'data-user-id="{self.user.pk}"')

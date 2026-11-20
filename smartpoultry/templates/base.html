@@ -13,7 +13,7 @@
             html[data-session-checking] body { visibility: hidden; }
             html[data-session-checking]::after { content: 'Checking your session…'; position: fixed; inset: 0; display: grid; place-items: center; background: #f5f8fc; color: #08233f; font: 16px system-ui, sans-serif; }
         </style>
-        <script src="{% static 'js/auth_session.js' %}?v=20261120" defer data-user-id="{{ user.pk }}" data-status-url="{% url 'session_status' %}" data-login-url="{% url 'login' %}" data-logout-url="{% url 'logout' %}"></script>
+        <script src="{% static 'js/auth_session.js' %}?v=20261120-history2" defer data-user-id="{{ user.pk }}" data-status-url="{% url 'session_status' %}" data-login-url="{% url 'login' %}" data-logout-url="{% url 'logout' %}" data-logout-complete-url="{% url 'logout_complete' %}"></script>
     {% endif %}
     {% block extra_css %}{% endblock %}
 </head>

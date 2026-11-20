@@ -1,0 +1,11 @@
+{% extends 'password_reset_base.html' %}
+{% load static %}
+{% block title %}Signing Out{% endblock %}
+{% block heading %}Signing Out{% endblock %}
+{% block description %}Finishing logout and clearing saved account pages…{% endblock %}
+{% block reset_content %}
+    <p id="logoutProgress" class="text-muted" role="status">Please wait a moment.</p>
+    <button type="button" id="retryLogoutCleanup" class="btn btn-primary w-100" hidden>Retry</button>
+    <noscript><p>Your server session is signed out. Clear this site's cached pages in your browser before returning to login.</p><a href="{% url 'login' %}" class="btn btn-primary w-100">Go to Login</a></noscript>
+    <script src="{% static 'js/logout_complete.js' %}?v=20261120-history2" defer data-status-url="{% url 'session_status' %}" data-login-url="{% url 'login' %}"></script>
+{% endblock %}

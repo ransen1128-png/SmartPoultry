@@ -67,7 +67,7 @@
             });
             if (!response.ok || !(await response.json()).logged_out) throw new Error('Logout failed');
             try { localStorage.setItem(logoutKey, String(Date.now()) + Math.random()); } catch (_) { /* Back checks still work. */ }
-            goToLogin();
+            window.location.replace(config.logoutCompleteUrl);
         } catch (_) {
             // Use the normal server logout when a fetch or CSRF check fails.
             window.location.replace(config.logoutUrl);

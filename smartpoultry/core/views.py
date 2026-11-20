@@ -163,15 +163,27 @@ def logout_view(request):
     if 'application/json' in request.headers.get('Accept', ''):
         response = JsonResponse({'logged_out': True})
     else:
-        response = redirect('login')
+        response = render(request, 'logout_complete.html')
     response['Clear-Site-Data'] = '"cache"'
     return response
 
 
 @require_GET
+def logout_complete(request):
+    if request.user.is_authenticated:
+        return redirect('login')
+    return render(request, 'logout_complete.html')
+
+
+@require_GET
 def session_status(request):
     authenticated = request.user.is_authenticated
-    return JsonResponse({'authenticated': authenticated, 'user_id': str(request.user.pk) if authenticated else None})
+    response = JsonResponse({'authenticated': authenticated, 'user_id': str(request.user.pk) if authenticated else None})
+    if not authenticated:
+        # Finish cache removal after the former account document has navigated
+        # away; clearing only on the logout response happens too early for bfcache.
+        response['Clear-Site-Data'] = '"cache"'
+    return response
 
 
 @login_required(login_url='login')
