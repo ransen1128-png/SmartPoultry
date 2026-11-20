@@ -97,6 +97,10 @@ def answer_questions(request):
     from django.db import transaction
     from django.core.cache import cache
     from django.utils.crypto import salted_hmac
+    if request.method == 'POST':
+        # Revoke any previous success before checking even an expired or stale
+        # question form. A new partial/incorrect attempt must never reuse it.
+        request.session.pop('recovery_grant', None)
     challenge = request.session.get('recovery_challenge', {})
     if not challenge or challenge.get('expires', 0) < timezone.now().timestamp():
         return redirect('forgot_password')
@@ -108,7 +112,6 @@ def answer_questions(request):
     profile = AccountRecovery.objects.filter(user=user).first() if user else None
     error = None
     if request.method == 'POST':
-        request.session.pop('recovery_grant', None)
         key = 'recovery-attempt:' + salted_hmac('recovery', email.casefold() + '\0' + challenge.get('username', '')).hexdigest()
         if not cache.add(key, True, timeout=2):
             error = 'Please wait a moment before trying again.'
@@ -126,7 +129,7 @@ def answer_questions(request):
                 }, salt='recovery-password-change')
                 request.session.pop('recovery_challenge', None)
                 return redirect('question_password_reset')
-            error = 'The answers could not be verified. After five incorrect attempts, wait 15 minutes or request administrator help.'
+            error = 'Both recovery answers must be correct. After five incorrect attempts, wait 15 minutes or request administrator help.'
     return render(request, 'recovery_questions.html', {'question_labels': question_labels(profile), 'error': error})
 
 

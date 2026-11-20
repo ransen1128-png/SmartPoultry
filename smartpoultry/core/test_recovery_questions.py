@@ -53,7 +53,7 @@ class RecoveryQuestionTests(TestCase):
     def test_wrong_answers_block_password_form_and_change(self):
         self.challenge()
         response = self.answer('wrong answer', 'wrong answer')
-        self.assertContains(response, 'answers could not be verified')
+        self.assertContains(response, 'Both recovery answers must be correct.')
         self.assertNotIn('recovery_grant', self.client.session)
         response = self.client.post(reverse('question_password_reset'), {'new_password1': 'Attack-secret!47', 'new_password2': 'Attack-secret!47'})
         self.assertContains(response, 'Reset Link Unavailable')
@@ -76,6 +76,45 @@ class RecoveryQuestionTests(TestCase):
         session = self.client.session; session['recovery_grant'] = grant; session.save()
         self.assertContains(self.client.get(reverse('question_password_reset')), 'Reset Link Unavailable')
 
+    def test_only_one_correct_answer_or_missing_answer_never_allows_reset(self):
+        cases = [
+            (self.details['answer_one'], 'incorrect answer'),
+            ('incorrect answer', self.details['answer_two']),
+            (self.details['answer_one'], ''),
+            ('', self.details['answer_two']),
+        ]
+        for one, two in cases:
+            with self.subTest(first=bool(one), second=bool(two)):
+                self.challenge()
+                response = self.answer(one, two)
+                self.assertContains(response, 'Both recovery answers must be correct.')
+                self.assertNotIn('recovery_grant', self.client.session)
+                response = self.client.post(reverse('question_password_reset'), {
+                    'new_password1': 'Attempted-secret!79', 'new_password2': 'Attempted-secret!79',
+                })
+                self.assertContains(response, 'Reset Link Unavailable')
+                self.user.refresh_from_db()
+                self.assertTrue(self.user.check_password('Original-secret!47'))
+
+    def test_partial_retry_cannot_reuse_an_earlier_successful_verification(self):
+        self.challenge(); self.answer()
+        self.assertIn('recovery_grant', self.client.session)
+        # A stale question form can be restored by browser Back after success.
+        self.answer(self.details['answer_one'], 'incorrect answer')
+        self.assertNotIn('recovery_grant', self.client.session)
+        self.assertContains(self.client.get(reverse('question_password_reset')), 'Reset Link Unavailable')
+
+    def test_admin_also_requires_both_correct_answers(self):
+        admin = get_user_model().objects.create_superuser('partial-admin', 'admin@example.com', 'Admin-secret!47')
+        self.client.force_login(admin)
+        for one, two in ((self.details['answer_one'], 'incorrect answer'), ('incorrect answer', self.details['answer_two'])):
+            self.client.post(reverse('admin_reset_user_password', args=[self.user.pk]), {
+                'answer_one': one, 'answer_two': two,
+                'new_password': 'Attempted-secret!79', 'confirm_password': 'Attempted-secret!79',
+            })
+            self.user.refresh_from_db()
+            self.assertTrue(self.user.check_password('Original-secret!47'))
+
     def test_lockout_survives_cache_clear_and_expires(self):
         self.challenge()
         for _ in range(5):
@@ -83,7 +122,7 @@ class RecoveryQuestionTests(TestCase):
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.failed_attempts, 5)
         self.assertIsNotNone(self.profile.locked_until)
-        self.assertContains(self.answer(), 'answers could not be verified')
+        self.assertContains(self.answer(), 'Both recovery answers must be correct.')
         AccountRecovery.objects.filter(pk=self.profile.pk).update(locked_until=timezone.now() - timedelta(seconds=1))
         self.assertContains(self.answer(), 'Choose a New Password')
 
