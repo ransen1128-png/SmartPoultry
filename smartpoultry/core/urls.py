@@ -24,7 +24,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('login/', views.index, name='login'),
     path('forgot-password/', RequestPasswordResetView.as_view(), name='forgot_password'),
-    path('forgot-password/admin-help/', RequestPasswordResetView.as_view(recovery_method='admin'), name='request_admin_password_reset'),
     path('forgot-password/questions/', recovery_questions.answer_questions, name='recovery_questions'),
     path('forgot-password/new-password/', recovery_questions.change_password, name='question_password_reset'),
     path('forgot-password/sent/', ResetRequestDoneView.as_view(), name='password_reset_done'),

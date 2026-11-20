@@ -64,7 +64,6 @@ class RecoveryIdentityForm(ResetEmailForm):
 
 @method_decorator(never_cache, name='dispatch')
 class RequestPasswordResetView(PasswordResetView):
-    recovery_method = None
     template_name = 'forgot_password.html'
     form_class = ResetEmailForm
     email_template_name = 'emails/password_reset.txt'
@@ -72,13 +71,13 @@ class RequestPasswordResetView(PasswordResetView):
     success_url = reverse_lazy('password_reset_done')
 
     def mode(self):
-        return self.recovery_method or settings.PASSWORD_RESET_METHOD
+        return 'email' if settings.PASSWORD_RESET_METHOD == 'email' else 'questions'
 
     def get_form_class(self):
         return RecoveryIdentityForm if self.mode() == 'questions' else self.form_class
 
     def get_context_data(self, **kwargs):
-        return {**super().get_context_data(**kwargs), 'admin_assisted_reset': self.mode() == 'admin', 'question_recovery': self.mode() == 'questions'}
+        return {**super().get_context_data(**kwargs), 'question_recovery': self.mode() == 'questions'}
 
     def post(self, request, *args, **kwargs):
         if self.mode() == 'questions':
@@ -89,7 +88,6 @@ class RequestPasswordResetView(PasswordResetView):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        self.request.session['reset_request_method'] = self.mode()
         if self.mode() == 'questions':
             self.request.session.pop('recovery_grant', None)
             from django.utils import timezone
@@ -98,23 +96,10 @@ class RequestPasswordResetView(PasswordResetView):
                 'expires': timezone.now().timestamp() + 600,
             }
             return HttpResponseRedirect(reverse_lazy('recovery_questions'))
-        if self.mode() == 'admin':
-            from .models import PasswordResetRequest
-            from django.db import transaction
-            # Lock matching users to prevent concurrent duplicate requests.
-            # Return the same result for unknown and disabled email addresses.
-            from django.contrib.auth import get_user_model
-            with transaction.atomic():
-                for user in get_user_model().objects.select_for_update().filter(
-                    email__iexact=form.cleaned_data['email'], is_active=True, is_active_user=True,
-                ):
-                    PasswordResetRequest.objects.get_or_create(user=user, status='pending')
-            return HttpResponseRedirect(self.success_url)
-
         if settings.EMAIL_BACKEND == 'core.email_backend.ResendEmailBackend' and not (
             settings.RESEND_API_KEY and settings.DEFAULT_FROM_EMAIL
         ):
-            form.add_error(None, 'Password reset emails are temporarily unavailable. Please contact the administrator.')
+            form.add_error(None, 'Password reset emails are temporarily unavailable. Please try again later.')
             return self.form_invalid(form)
 
         origin = urlsplit(settings.PASSWORD_RESET_BASE_URL)
@@ -124,7 +109,7 @@ class RequestPasswordResetView(PasswordResetView):
             or origin.path not in ('', '/')
             or (origin.scheme == 'http' and origin.hostname not in ('localhost', '127.0.0.1', '[::1]', '::1'))
         ):
-            form.add_error(None, 'Password reset emails are temporarily unavailable. Please contact the administrator.')
+            form.add_error(None, 'Password reset emails are temporarily unavailable. Please try again later.')
             logger.error('PASSWORD_RESET_BASE_URL must be an HTTPS site origin (HTTP is allowed only on localhost).')
             return self.form_invalid(form)
 
@@ -144,10 +129,6 @@ class RequestPasswordResetView(PasswordResetView):
 
 class ResetRequestDoneView(PasswordResetDoneView):
     template_name = 'password_reset_done.html'
-
-    def get_context_data(self, **kwargs):
-        return {**super().get_context_data(**kwargs), 'admin_assisted_reset': self.request.session.get('reset_request_method', settings.PASSWORD_RESET_METHOD) == 'admin'}
-
 
 class ConfirmPasswordResetView(PasswordResetConfirmView):
     template_name = 'password_reset_confirm.html'

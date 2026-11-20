@@ -8,16 +8,14 @@ A verified reset session lasts ten minutes and is invalidated by a password
 change. Administrators must also enter the correct answers when resetting an
 account that has recovery questions; saved answers are never displayed.
 
-Existing accounts have no invented recovery answers. They can choose **Request
-Administrator Help**. Pending requests appear on the admin bell, which refreshes
-every 30 seconds and when opened. The administrator verifies the person through
-their existing contact details before resetting. Resolving a request removes it
-from the pending bell and keeps it in request history. Duplicate pending requests
-for the same account are collapsed. This fallback requires no email service.
+The public administrator-help option has been removed from password recovery,
+including its request endpoint and error-message references. Existing accounts
+have no invented recovery answers. Previously recorded requests remain available
+to administrators in their request history.
 
 To enable the optional email flow below, set `PASSWORD_RESET_METHOD=email` in
-both `.env` and Render's Environment. Use `questions` for the default free flow,
-or `admin` for administrator help only. Apply migrations on deployment:
+both `.env` and Render's Environment. Use `questions` for the default free flow.
+Apply migrations on deployment:
 `python smartpoultry/manage.py migrate`. Render's current start command already
 runs migrations.
 

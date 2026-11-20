@@ -188,11 +188,9 @@ class RecoveryQuestionTests(TestCase):
         self.client.post(url, {**data, 'answer_one': self.details['answer_one'], 'answer_two': self.details['answer_two']})
         self.user.refresh_from_db(); self.assertTrue(self.user.check_password('Admin-updated!79'))
 
-    def test_old_accounts_can_notify_admin_without_email_provider(self):
+    def test_previously_recorded_requests_remain_manageable(self):
         self.profile.delete()
-        for _ in range(2):
-            response = self.client.post(reverse('request_admin_password_reset'), {'email': self.user.email}, follow=True)
-            self.assertContains(response, 'Request Submitted')
+        PasswordResetRequest.objects.create(user=self.user)
         self.assertEqual(PasswordResetRequest.objects.filter(user=self.user, status='pending').count(), 1)
         admin = get_user_model().objects.create_superuser('testadmin', 'admin@example.com', 'Admin-secret!47')
         self.client.force_login(admin)
@@ -215,10 +213,17 @@ class RecoveryQuestionTests(TestCase):
             for name in ('admin_notifications_poll', 'admin_password_reset_requests'):
                 self.assertEqual(client.get(reverse(name)).status_code, 302)
 
-    def test_unknown_email_admin_request_does_not_reveal_account(self):
-        known = self.client.post(reverse('request_admin_password_reset'), {'email': self.user.email}, follow=True)
-        unknown = self.client.post(reverse('request_admin_password_reset'), {'email': 'unknown@example.com'}, follow=True)
-        self.assertEqual(known.content, unknown.content)
+    def test_removed_admin_help_endpoint_cannot_create_requests(self):
+        for email in (self.user.email, 'unknown@example.com'):
+            response = self.client.post('/forgot-password/admin-help/', {'email': email})
+            self.assertEqual(response.status_code, 404)
+        self.assertEqual(PasswordResetRequest.objects.count(), 0)
+
+    def test_public_recovery_pages_and_errors_have_no_admin_help_option(self):
+        responses = [self.client.get(reverse('forgot_password')), self.challenge(), self.answer('incorrect answer', 'incorrect answer')]
+        for response in responses:
+            self.assertNotIn('administrator help', response.content.decode().lower())
+            self.assertNotContains(response, '/forgot-password/admin-help/')
 
     def test_admin_cannot_elevate_to_reset_superuser(self):
         staff = get_user_model().objects.create_user('staffadmin', password='Admin-secret!47', is_staff=True)

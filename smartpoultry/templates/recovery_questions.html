@@ -10,7 +10,5 @@
         {% endfor %}
         <button type="submit" class="btn btn-primary w-100 mb-3">Verify Answers</button>
     </form>
-    <p class="text-muted small">If recovery questions were not set up for your account, request administrator help.</p>
-    <a href="{% url 'request_admin_password_reset' %}" class="btn btn-outline-primary w-100 mb-3">Request Administrator Help</a>
     <a href="{% url 'login' %}" class="btn btn-outline-secondary w-100">Back to Login</a>
 {% endblock %}

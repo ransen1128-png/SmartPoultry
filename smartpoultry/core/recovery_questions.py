@@ -129,7 +129,7 @@ def answer_questions(request):
                 }, salt='recovery-password-change')
                 request.session.pop('recovery_challenge', None)
                 return redirect('question_password_reset')
-            error = 'Both recovery answers must be correct. After five incorrect attempts, wait 15 minutes or request administrator help.'
+            error = 'Both recovery answers must be correct. After five incorrect attempts, wait 15 minutes before trying again.'
     return render(request, 'recovery_questions.html', {'question_labels': question_labels(profile), 'error': error})
 
 
