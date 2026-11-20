@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+from urllib.parse import urlsplit
 
 
 @override_settings(PASSWORD_HASHERS=['django.contrib.auth.hashers.MD5PasswordHasher'])
@@ -35,7 +36,7 @@ class LogoutSessionTests(TestCase):
             with self.subTest(page=name):
                 response = self.client.get(reverse(name))
                 self.assertEqual(response.status_code, 302)
-                self.assertIn('login', response['Location'])
+                self.assertEqual(urlsplit(response['Location']).path, reverse('login'))
 
     def test_api_data_is_unavailable_after_logout(self):
         self.client.get(reverse('logout'))
