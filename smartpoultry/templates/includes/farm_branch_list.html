@@ -1,0 +1,71 @@
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+    <thead class="table-light"><tr><th scope="col">#</th><th scope="col">Branch Name</th><th scope="col">Location</th><th scope="col">Address</th><th scope="col">Contact Number</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
+    <tbody>
+        {% if show_farm %}
+        <tr data-farm-row>
+            <td>1</td><td>{{ farm.name }}{% if has_branches %} <span class="badge bg-primary ms-1" data-main-branch-label>Main Branch</span>{% endif %}</td>
+            <td>{{ farm.location }}</td><td>{{ farm.address|default:'—' }}</td><td>{{ farm.contact_phone }}</td>
+            <td><span class="badge {% if farm.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">{{ farm.get_status_display }}</span></td>
+            <td><button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#farmDetails" aria-label="View {{ farm.name }}">View</button></td>
+        </tr>
+        {% endif %}
+        {% for branch in branches %}
+        <tr data-branch-id="{{ branch.pk }}">
+            <td>{% if show_farm %}{{ forloop.counter|add:'1' }}{% else %}{{ forloop.counter }}{% endif %}</td>
+            <td>{{ branch.name }}</td><td>{{ branch.location|default:'—' }}</td><td>{{ branch.address|default:'—' }}</td><td>{{ branch.contact_number|default:'—' }}</td>
+            <td><span class="badge {% if branch.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">{{ branch.get_status_display }}</span></td>
+            <td><div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#branchDetails{{ branch.pk }}" aria-label="View {{ branch.name }}">View</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editBranch{{ branch.pk }}" aria-label="Edit {{ branch.name }}">Edit</button>
+                <form method="post" action="{% url 'farm_branches' %}" data-branch-form data-branch-action="delete" data-confirm="Are you sure you want to delete this record? Branch: {{ branch.name }}.">
+                    {% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="branch_id" value="{{ branch.pk }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete {{ branch.name }}">Delete</button>
+                </form>
+            </div></td>
+        </tr>
+        {% endfor %}
+        {% if not show_farm and not branches %}<tr><td colspan="7" class="text-center py-4">No farms or branches match your search.</td></tr>{% endif %}
+    </tbody>
+</table>
+</div>
+<div class="modal fade" id="farmDetails" tabindex="-1" aria-labelledby="farmDetailsTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title" id="farmDetailsTitle">{{ farm.name }}{% if has_branches %} (Main Branch){% endif %}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-body"><dl class="row mb-0">
+            <dt class="col-sm-4">Location</dt><dd class="col-sm-8">{{ farm.location }}</dd>
+            <dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ farm.address|default:'—' }}</dd>
+            <dt class="col-sm-4">Contact Number</dt><dd class="col-sm-8">{{ farm.contact_phone }}</dd>
+            <dt class="col-sm-4">Contact Email</dt><dd class="col-sm-8">{{ farm.contact_email }}</dd>
+            <dt class="col-sm-4">Established Date</dt><dd class="col-sm-8">{{ farm.established_date }}</dd>
+            <dt class="col-sm-4">Status</dt><dd class="col-sm-8">{{ farm.get_status_display }}</dd>
+        </dl></div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div></div>
+</div>
+{% for branch in branches %}
+<div class="modal fade" id="branchDetails{{ branch.pk }}" tabindex="-1" aria-labelledby="branchDetailsTitle{{ branch.pk }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title" id="branchDetailsTitle{{ branch.pk }}">{{ branch.name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-body"><dl class="row mb-0">
+            <dt class="col-sm-4">Farm</dt><dd class="col-sm-8">{{ farm.name }}</dd>
+            <dt class="col-sm-4">Location</dt><dd class="col-sm-8">{{ branch.location|default:'—' }}</dd>
+            <dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ branch.address|default:'—' }}</dd>
+            <dt class="col-sm-4">Contact Number</dt><dd class="col-sm-8">{{ branch.contact_number|default:'—' }}</dd>
+            <dt class="col-sm-4">Description</dt><dd class="col-sm-8">{{ branch.description|default:'—' }}</dd>
+            <dt class="col-sm-4">Status</dt><dd class="col-sm-8">{{ branch.get_status_display }}</dd>
+        </dl></div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div></div>
+</div>
+<div class="modal fade" id="editBranch{{ branch.pk }}" tabindex="-1" aria-labelledby="editBranchTitle{{ branch.pk }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <form method="post" action="{% url 'farm_branches' %}" data-branch-form data-branch-action="update">
+            {% csrf_token %}<input type="hidden" name="action" value="save"><input type="hidden" name="branch_id" value="{{ branch.pk }}">
+            <div class="modal-header"><h5 class="modal-title" id="editBranchTitle{{ branch.pk }}">Edit Branch</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">{% include 'includes/branch_fields.html' with branch_fields=branch.edit_form %}</div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div>
+        </form>
+    </div></div>
+</div>
+{% endfor %}

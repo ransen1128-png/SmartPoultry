@@ -58,6 +58,8 @@ class Farm(models.Model):
     owner = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='owned_farm')
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
+    address = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')
     established_date = models.DateField()
     contact_email = models.EmailField()
     contact_phone = models.CharField(max_length=20)

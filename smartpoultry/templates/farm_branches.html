@@ -28,6 +28,10 @@
                             <input name="farm_location" class="form-control" placeholder="Enter farm location" required>
                         </div>
                         <div class="mb-3">
+                            <label class="form-label" for="farmAddress">Address (Optional)</label>
+                            <textarea name="farm_address" id="farmAddress" class="form-control" rows="2" placeholder="Enter complete address"></textarea>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Established Date</label>
                             <input name="established_date" type="date" class="form-control" required>
                         </div>
@@ -46,135 +50,33 @@
         </div>
     </div>
     {% else %}
-    <div class="row g-4">
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow-sm" id="branch-form">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Add New Branch</h5>
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Branch Name</label>
-                            <input name="branch_name" class="form-control" placeholder="Enter branch name">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Location</label>
-                            <input name="location" class="form-control" placeholder="Enter location">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Address</label>
-                            <textarea name="address" class="form-control" rows="3" placeholder="Enter complete address"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contact Number</label>
-                            <input name="contact_number" class="form-control" placeholder="Enter contact number">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description (Optional)</label>
-                            <textarea name="description" class="form-control" rows="3" placeholder="Enter description"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Status</label>
-                            <select name="status" class="form-select">
-                                <option value="active" selected>Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-primary w-100">Add Branch</button>
-                    </form>
-                </div>
+    <section class="card shadow-sm" aria-labelledby="farmBranchesTitle">
+        <div class="card-body">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                <div><h5 class="card-title mb-1" id="farmBranchesTitle">Farm Branches</h5><p class="text-muted mb-0">View and manage branches for your farm.</p></div>
+                <button type="button" class="btn btn-primary align-self-end" data-bs-toggle="modal" data-bs-target="#addBranchModal"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add Branch</button>
             </div>
+            <form class="d-flex gap-2 mb-3" method="get" id="branchSearchForm" role="search">
+                <input name="q" class="form-control" type="search" placeholder="Search by name or location..." aria-label="Search farm and branches" value="{{ query }}" maxlength="200">
+                <button class="btn btn-outline-secondary" type="submit" aria-label="Search"><i class="bi bi-search" aria-hidden="true"></i></button>
+            </form>
+            <div id="branchList" aria-live="polite">{% include 'includes/farm_branch_list.html' %}</div>
         </div>
-
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4">
-                        <div>
-                            <h5 class="card-title mb-1">Farm Branches</h5>
-                            <p class="text-muted mb-0">View and manage branches for your farm.</p>
-                        </div>
-                        <form class="d-flex w-100 w-sm-auto mt-3 mt-sm-0" method="get">
-                            <input name="q" class="form-control form-control-sm me-2" type="search" placeholder="Search branches..." value="{{ request.GET.q|default:'' }}">
-                            <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="bi bi-search"></i></button>
-                        </form>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Branch Name</th>
-                                    <th scope="col">Location</th>
-                                    <th scope="col">Contact Number</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for branch in branches %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ branch.name }}</td>
-                                    <td>{{ branch.location }}</td>
-                                    <td>{{ branch.contact_number }}</td>
-                                    <td>
-                                        {% if branch.status == 'active' %}
-                                            <span class="badge bg-success">{{ branch.get_status_display }}</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">{{ branch.get_status_display }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#editBranch{{ branch.pk }}" aria-label="Edit {{ branch.name }}">Edit</button>
-<div class="modal fade" id="editBranch{{ branch.pk }}" tabindex="-1" aria-labelledby="editBranchTitle{{ branch.pk }}" aria-hidden="true">
- <div class="modal-dialog"><div class="modal-content">
- <form method="post">{% csrf_token %}
- <input type="hidden" name="branch_id" value="{{ branch.pk }}">
- <div class="modal-header"><h5 class="modal-title" id="editBranchTitle{{ branch.pk }}">Edit Branch</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
- <div class="modal-body">
-<label class="form-label">Branch Name</label><input class="form-control mb-2" name="branch_name" value="{{ branch.name }}" required>
-<label class="form-label">Location</label><input class="form-control mb-2" name="location" value="{{ branch.location }}">
-<label class="form-label">Address</label><textarea class="form-control mb-2" name="address">{{ branch.address }}</textarea>
-<label class="form-label">Contact Number</label><input class="form-control mb-2" name="contact_number" value="{{ branch.contact_number }}">
-<label class="form-label">Status</label><select class="form-select" name="status"><option value="active" {% if branch.status == 'active' %}selected{% endif %}>Active</option><option value="inactive" {% if branch.status == 'inactive' %}selected{% endif %}>Inactive</option></select>
-<p class="mt-2">Deactivating this branch deactivates its active flocks and hides their production and mortality records. Records are retained. Activate the branch, then its flocks, to show them again.</p>
-</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" type="submit">Save Changes</button></div>
-</form></div></div></div>
-                                        <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash-fill"></i></button>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="6" class="text-center py-4">No branches yet.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {% if branches.has_other_pages %}
-                    <nav aria-label="Branch pagination">
-                        <ul class="pagination justify-content-end mt-3 mb-0">
-                            {% if branches.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ branches.previous_page_number }}">Previous</a></li>
-                            {% else %}
-                            <li class="page-item disabled"><span class="page-link">Previous</span></li>
-                            {% endif %}
-                            <li class="page-item disabled"><span class="page-link">Page {{ branches.number }} of {{ branches.paginator.num_pages }}</span></li>
-                            {% if branches.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ branches.next_page_number }}">Next</a></li>
-                            {% else %}
-                            <li class="page-item disabled"><span class="page-link">Next</span></li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+    </section>
+    <div class="modal fade" id="addBranchModal" tabindex="-1" aria-labelledby="addBranchTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+            <form method="post" action="{% url 'farm_branches' %}" data-branch-form data-branch-action="create" id="addBranchForm">
+                {% csrf_token %}<input type="hidden" name="action" value="save">
+                <div class="modal-header"><h5 class="modal-title" id="addBranchTitle">Add New Branch</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="modal-body">{% include 'includes/branch_fields.html' with branch_fields=branch_form %}</div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" type="submit">Add Branch</button></div>
+            </form>
+        </div></div>
     </div>
     {% endif %}
 </div>
+{% if open_branch_modal %}<span hidden id="openBranchModal" data-modal-id="{{ open_branch_modal }}"></span>{% endif %}
+{% endblock %}
+{% block extra_js %}
+{% load static %}<script src="{% static 'js/farm_branches.js' %}?v=1"></script>
 {% endblock %}

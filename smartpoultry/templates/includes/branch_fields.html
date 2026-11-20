@@ -1,0 +1,8 @@
+{{ branch_fields.non_field_errors }}
+{% for field in branch_fields %}
+<div class="mb-3">
+    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+    {{ field }}{{ field.errors }}
+</div>
+{% endfor %}
+{% if branch_fields.branch %}<p class="small text-muted mb-0">Deactivating this branch deactivates its active flocks and hides their production and mortality records. Records are retained. Activate the branch, then its flocks, to show them again.</p>{% endif %}

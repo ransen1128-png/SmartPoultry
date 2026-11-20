@@ -531,48 +531,20 @@ def farm_branches(request):
                         established_date=established_date,
                         contact_email=contact_email,
                         contact_phone=contact_phone,
+                        address=request.POST.get('farm_address', '').strip(),
                     )
                     messages.success(request, 'Farm profile created successfully. You can now add branches.')
                     return redirect('farm_branches')
                 except Exception:
                     messages.error(request, 'Unable to create farm profile. Please check your input.')
         else:
-            name = request.POST.get('branch_name', '').strip()
-            location = request.POST.get('location', '').strip()
-            address = request.POST.get('address', '').strip()
-            contact_number = request.POST.get('contact_number', '').strip()
-            description = request.POST.get('description', '').strip()
-            status = request.POST.get('status', 'active')
+            from .branch_management import branch_page
+            return branch_page(request, farm)
 
-            branch_id = request.POST.get('branch_id', '').strip()
-            edited_branch = get_object_or_404(Branch, pk=branch_id, farm=farm) if branch_id.isdigit() else None
-            if branch_id and edited_branch is None:
-                raise Http404('Branch not found.')
-            if status not in ('active', 'inactive'):
-                messages.error(request, 'Choose a valid branch status.')
-            elif not name:
-                messages.error(request, 'Branch name is required.')
-            else:
-                if edited_branch:
-                    for field, value in dict(name=name, location=location, address=address, contact_number=contact_number, status=status).items():
-                        setattr(edited_branch, field, value)
-                    edited_branch.save()
-                    messages.success(request, 'Branch updated. Deactivated branches also deactivate their active flocks.')
-                    return redirect('farm_branches')
-                Branch.objects.create(
-                    farm=farm,
-                    name=name,
-                    location=location,
-                    address=address,
-                    contact_number=contact_number,
-                    description=description,
-                    status=status,
-                )
-                messages.success(request, 'Branch added successfully.')
-                return redirect('farm_branches')
-
-    branches = farm.branches.all() if farm is not None else []
-    return render(request, 'farm_branches.html', {'farm': farm, 'branches': branches})
+    from .branch_management import branch_page, branch_context
+    if farm:
+        return branch_page(request, farm)
+    return render(request, 'farm_branches.html', branch_context(request, farm))
 
 
 @admin_required
