@@ -50,6 +50,17 @@ class ResetPasswordForm(SetPasswordForm):
 class RecoveryIdentityForm(ResetEmailForm):
     username = forms.CharField(label='Username', max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'username'}))
 
+    def clean(self):
+        data = super().clean()
+        if data.get('email') and data.get('username'):
+            from django.contrib.auth import get_user_model
+            if not get_user_model().objects.filter(
+                email__iexact=data['email'], username=data['username'],
+                is_active=True, is_active_user=True,
+            ).exists():
+                raise forms.ValidationError('Email and username do not match an active account.')
+        return data
+
 
 @method_decorator(never_cache, name='dispatch')
 class RequestPasswordResetView(PasswordResetView):
@@ -68,6 +79,14 @@ class RequestPasswordResetView(PasswordResetView):
 
     def get_context_data(self, **kwargs):
         return {**super().get_context_data(**kwargs), 'admin_assisted_reset': self.mode() == 'admin', 'question_recovery': self.mode() == 'questions'}
+
+    def post(self, request, *args, **kwargs):
+        if self.mode() == 'questions':
+            # A failed new attempt must not retain a previous account challenge
+            # or an earlier permission to change a password in this browser.
+            request.session.pop('recovery_challenge', None)
+            request.session.pop('recovery_grant', None)
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         self.request.session['reset_request_method'] = self.mode()

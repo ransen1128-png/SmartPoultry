@@ -95,9 +95,45 @@ class RecoveryQuestionTests(TestCase):
 
     def test_disabled_user_cannot_recover(self):
         self.user.is_active = False; self.user.save()
-        self.challenge()
-        self.assertContains(self.answer(), 'answers could not be verified')
+        self.assertContains(self.challenge(), 'Email and username do not match an active account.')
+        self.assertNotIn('recovery_challenge', self.client.session)
         self.assertNotIn('recovery_grant', self.client.session)
+
+    def test_username_and_email_must_match_the_same_account(self):
+        other = get_user_model().objects.create_user('other-owner', 'other@example.com', 'Other-secret!47')
+        cases = [
+            (self.user.email, 'wrong-username'),
+            ('wrong@example.com', self.user.username),
+            (self.user.email, other.username),
+            (other.email, self.user.username),
+        ]
+        for email, username in cases:
+            with self.subTest(email=email, username=username):
+                response = self.client.post(reverse('forgot_password'), {'email': email, 'username': username})
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'Email and username do not match an active account.')
+                self.assertNotIn('recovery_challenge', self.client.session)
+                self.assertRedirects(self.client.get(reverse('recovery_questions')), reverse('forgot_password'))
+
+    def test_failed_identity_attempt_clears_earlier_verification(self):
+        self.challenge(); self.answer()
+        self.assertIn('recovery_grant', self.client.session)
+        response = self.client.post(reverse('forgot_password'), {'email': self.user.email, 'username': 'wrong-username'})
+        self.assertContains(response, 'Email and username do not match an active account.')
+        self.assertNotIn('recovery_grant', self.client.session)
+        self.assertNotIn('recovery_challenge', self.client.session)
+        self.assertContains(self.client.get(reverse('question_password_reset')), 'Reset Link Unavailable')
+
+    def test_invalid_form_also_clears_previous_challenge(self):
+        self.challenge()
+        self.assertIn('recovery_challenge', self.client.session)
+        self.client.post(reverse('forgot_password'), {'email': self.user.email, 'username': ''})
+        self.assertNotIn('recovery_challenge', self.client.session)
+
+    def test_email_case_differences_are_accepted_with_correct_username(self):
+        response = self.client.post(reverse('forgot_password'), {'email': 'OWNER@EXAMPLE.COM', 'username': self.user.username}, follow=True)
+        self.assertContains(response, 'Answer Your Recovery Questions')
+        self.assertIn('recovery_challenge', self.client.session)
 
     def test_admin_must_supply_correct_answers_and_never_sees_saved_answers(self):
         admin = get_user_model().objects.create_superuser('testadmin', 'admin@example.com', 'Admin-secret!47')
