@@ -24,6 +24,7 @@ from django.views.decorators.http import require_GET, require_http_methods
 from PIL import Image, ImageFilter, ImageStat, UnidentifiedImageError
 from notifications.utils import create_activity_notification
 from .forms import MortalityRecordForm, ProductionRecordForm
+from .contact_validation import PHONE_ERROR, valid_contact_phone
 from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 from .age_inference import bound_estimator_requests
 
@@ -403,9 +404,12 @@ def profile_view(request):
         user = request.user
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
 
         if not username or not email:
             messages.error(request, 'Username and email are required.')
+        elif phone and not valid_contact_phone(phone):
+            messages.warning(request, PHONE_ERROR)
         elif User.objects.exclude(pk=user.pk).filter(username=username).exists():
             messages.error(request, 'That username is already taken.')
         elif User.objects.exclude(pk=user.pk).filter(email=email).exists():
@@ -415,7 +419,7 @@ def profile_view(request):
             user.email = email
             user.first_name = request.POST.get('first_name', '').strip()
             user.last_name = request.POST.get('last_name', '').strip()
-            user.phone = request.POST.get('phone', '').strip()
+            user.phone = phone
             user.save()
             messages.success(request, 'Profile updated successfully.')
             return redirect('profile')
@@ -516,6 +520,8 @@ def farm_branches(request):
 
             if not farm_name or not farm_location or not established_date or not contact_email or not contact_phone:
                 messages.error(request, 'All farm profile fields are required.')
+            elif not valid_contact_phone(contact_phone):
+                messages.warning(request, PHONE_ERROR)
             else:
                 try:
                     farm = Farm.objects.create(

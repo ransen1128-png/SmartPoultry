@@ -37,7 +37,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contact Phone</label>
-                            <input name="contact_phone" class="form-control" placeholder="Enter contact phone" required>
+                            <input name="contact_phone" type="tel" inputmode="numeric" minlength="11" maxlength="20" pattern="[0-9]{11,20}" title="Enter at least 11 digits (numbers only)." class="form-control" placeholder="Enter contact phone" required>
                         </div>
                         <button class="btn btn-primary w-100">Create Farm Profile</button>
                     </form>

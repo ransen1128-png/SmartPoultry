@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import UserProfile, UserRole
+from core.contact_validation import PHONE_ERROR, valid_contact_phone
 
 
 class UserRoleSerializer(serializers.ModelSerializer):
@@ -9,6 +10,11 @@ class UserRoleSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    def validate_phone(self, value):
+        if value and not valid_contact_phone(value):
+            raise serializers.ValidationError(PHONE_ERROR)
+        return value
+
     def get_fields(self):
         fields=super().get_fields()
         request=self.context.get('request')
