@@ -11,8 +11,14 @@
             symbol: /[!-/:-@\[-`{-~]/.test(password.value),
         };
         for (const rule of document.querySelectorAll('[data-rule]')) {
-            rule.dataset.met = String(checks[rule.dataset.rule]);
+            const met = checks[rule.dataset.rule];
+            rule.dataset.met = String(met);
+            const status = rule.querySelector('[data-rule-status]');
+            if (status) status.textContent = met ? 'Met: ' : 'Not met: ';
         }
+        const summary = document.getElementById('passwordChecklistStatus');
+        const summaryText = Object.values(checks).filter(Boolean).length + ' of 5 password requirements met.';
+        if (summary && summary.textContent !== summaryText) summary.textContent = summaryText;
         password.setCustomValidity(password.value && !Object.values(checks).every(Boolean)
             ? 'Use at least 8 characters with an uppercase letter, a lowercase letter, a number, and a special symbol.' : '');
         const mismatch = confirm.value && confirm.value !== password.value;
