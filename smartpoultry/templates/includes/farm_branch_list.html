@@ -1,3 +1,4 @@
+{% if has_branches %}
 <div class="table-responsive">
 <table class="table table-hover align-middle">
     <thead class="table-light"><tr><th scope="col">#</th><th scope="col">Branch Name</th><th scope="col">Address</th><th scope="col">Contact Number</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
@@ -67,3 +68,15 @@
     </div></div>
 </div>
 {% endfor %}
+{% else %}
+<div data-farm-row data-farm-information>
+    <dl class="row mb-0">
+        <dt class="col-sm-4 mb-2">Farm Name</dt><dd class="col-sm-8 mb-2">{{ farm.name }}</dd>
+        <dt class="col-sm-4 mb-2">Address</dt><dd class="col-sm-8 mb-2">{{ farm.address|default:'Not provided' }}</dd>
+        <dt class="col-sm-4 mb-2">Established Date</dt><dd class="col-sm-8 mb-2">{{ farm.established_date }}</dd>
+        <dt class="col-sm-4 mb-2">Contact Email</dt><dd class="col-sm-8 mb-2 text-break">{{ farm.contact_email }}</dd>
+        <dt class="col-sm-4 mb-2">Contact Number</dt><dd class="col-sm-8 mb-2">{{ farm.contact_phone }}</dd>
+        <dt class="col-sm-4 mb-0">Status</dt><dd class="col-sm-8 mb-0"><span class="badge {% if farm.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">{{ farm.get_status_display }}</span></dd>
+    </dl>
+</div>
+{% endif %}

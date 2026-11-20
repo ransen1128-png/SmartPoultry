@@ -40,6 +40,9 @@ class FarmBranchesTests(TestCase):
         self.assertContains(response,'id="addBranchModal"')
         self.assertNotContains(response,'>Location</')
         self.assertNotContains(response,'name="location"')
+        self.assertContains(response,'data-farm-information')
+        self.assertContains(response,'id="farmBranchesTitle">Farm Information</h5>')
+        self.assertNotContains(response,'<table')
         self.assertFalse(Branch.objects.exists())
 
     def test_first_and_subsequent_branches_preserve_original_farm_and_order(self):
@@ -47,6 +50,7 @@ class FarmBranchesTests(TestCase):
             response=self.post(branch_name=name)
             self.assertEqual(response.status_code,200,response.content)
             self.assertEqual(response.json()['message'],'Branch added successfully!')
+            self.assertTrue(response.json()['has_branches'])
             html=response.json()['html']
             self.assertIn('data-main-branch-label',html)
             self.assertLess(html.index('data-farm-row'),html.index('data-branch-id'))
@@ -112,6 +116,13 @@ class FarmBranchesTests(TestCase):
         self.assertNotIn('data-main-branch-label',response.json()['html'])
         self.assertFalse(Branch.objects.exists())
 
+    def test_only_farm_information_is_shown_when_no_branches_even_with_old_search(self):
+        response=self.client.get(self.url,{'q':'old branch'},HTTP_ACCEPT='application/json')
+        self.assertFalse(response.json()['has_branches'])
+        self.assertEqual(response.json()['query'],'')
+        self.assertIn('Original Farm',response.json()['html'])
+        self.assertNotIn('<table',response.json()['html'])
+
     def test_financial_records_are_not_detached_by_branch_deletion(self):
         from expenses.models import Expense
         self.post();branch=Branch.objects.get(farm=self.farm)
@@ -155,8 +166,12 @@ class FarmBranchesBrowserTests(StaticLiveServerTestCase):
                 page.evaluate('window.originalDocument=true')
                 expect(page.locator('[data-farm-row]')).to_have_count(1)
                 expect(page.locator('[data-main-branch-label]')).to_have_count(0)
+                expect(page.locator('#farmBranchesTitle')).to_have_text('Farm Information')
+                expect(page.locator('#branchSearchArea')).not_to_be_visible()
+                expect(page.locator('#branchList table')).to_have_count(0)
                 modal=page.locator('#addBranchModal')
                 expect(modal).not_to_be_visible()
+                expect(page.locator('#farmBranchesTitle')).to_have_text('Farm Information')
                 page.get_by_role('button',name='Add Branch',exact=True).first.click()
                 modal.get_by_role('button',name='Cancel',exact=True).click()
                 expect(modal).not_to_be_visible()
@@ -171,6 +186,9 @@ class FarmBranchesBrowserTests(StaticLiveServerTestCase):
                 expect(modal).not_to_be_visible()
                 expect(page.locator('[data-main-branch-label]')).to_have_count(1)
                 expect(page.locator('[data-branch-id]')).to_have_count(1)
+                expect(page.locator('#farmBranchesTitle')).to_have_text('Farm Branches')
+                expect(page.locator('#branchSearchArea')).to_be_visible()
+                expect(page.locator('#branchList table')).to_have_count(1)
                 self.assertTrue(page.evaluate('window.originalDocument'))
                 page.get_by_role('button',name='Edit North Branch',exact=True).click()
                 edit=page.locator('.modal.show')
@@ -192,6 +210,9 @@ class FarmBranchesBrowserTests(StaticLiveServerTestCase):
                 page.locator('.sp-popup-ok').click();page.wait_for_function("!document.querySelector('#appDialog').open")
                 expect(page.locator('[data-branch-id]')).to_have_count(0)
                 expect(page.locator('[data-main-branch-label]')).to_have_count(0)
+                expect(page.locator('#farmBranchesTitle')).to_have_text('Farm Information')
+                expect(page.locator('#branchSearchArea')).not_to_be_visible()
+                expect(page.locator('#branchList table')).to_have_count(0)
                 page.set_viewport_size({'width':390,'height':844})
                 self.assertTrue(page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
                 self.assertEqual(errors,[])

@@ -57,6 +57,8 @@ def branch_context(request, farm, *, bound_form=None, edited_branch=None, query=
     query = (request.GET.get('q', '') if query is None else query).strip()[:200]
     all_branches = farm.branches.all() if farm else Branch.objects.none()
     has_branches = all_branches.exists()
+    if not has_branches:
+        query = ''
     branches = list(all_branches.filter(Q(name__icontains=query) | Q(address__icontains=query)).order_by('created_at', 'pk'))
     for branch in branches:
         branch.edit_form = bound_form if edited_branch and branch.pk == edited_branch.pk else BranchForm(farm=farm, branch=branch)
@@ -71,7 +73,8 @@ def branch_page(request, farm):
     if request.method != 'POST':
         context = branch_context(request, farm)
         if json_request:
-            return JsonResponse({'html': render_to_string('includes/farm_branch_list.html', context, request=request)})
+            return JsonResponse({'has_branches': context['has_branches'], 'query': context['query'],
+                'html': render_to_string('includes/farm_branch_list.html', context, request=request)})
         return render(request, 'farm_branches.html', context)
 
     branch = None
@@ -121,7 +124,7 @@ def branch_page(request, farm):
         if json_request:
             query = '' if not branch_id else request.POST.get('q', '')
             context = branch_context(request, farm, query=query)
-            return JsonResponse({'message': message, 'query': query,
+            return JsonResponse({'message': message, 'query': context['query'], 'has_branches': context['has_branches'],
                 'html': render_to_string('includes/farm_branch_list.html', context, request=request)})
         messages.success(request, message)
         return redirect('farm_branches')

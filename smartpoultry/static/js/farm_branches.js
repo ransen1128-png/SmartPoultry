@@ -10,6 +10,12 @@
         list.innerHTML = data.html;
         list.inert = false;
         if (data.query !== undefined) search.elements.q.value = data.query;
+        if (data.has_branches !== undefined) {
+            document.getElementById('farmBranchesTitle').textContent = data.has_branches ? 'Farm Branches' : 'Farm Information';
+            document.getElementById('branchSearchArea').hidden = !data.has_branches;
+            document.getElementById('branchSectionDescription').hidden = !data.has_branches;
+            document.getElementById('farmPageDescription').textContent = data.has_branches ? 'Manage your poultry farm branches' : 'View your farm information';
+        }
     }
     function clearErrors(form) {
         form.querySelectorAll('[data-branch-error]').forEach(node => node.remove());
