@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import render,get_object_or_404,redirect
@@ -27,6 +28,9 @@ def activity_history(request):
             AuditEvent.objects.create(owner=request.user,actor=request.user,actor_label=request.user.username,
                 object_type=event.object_type,object_id=event.object_id,action='note',
                 after={'audit_event_id':event.pk},reason=reason)
+            messages.success(request, 'Changes saved successfully.')
+        else:
+            messages.warning(request, 'Enter a note with at most 500 characters.')
         return redirect('activity_history')
     rows=AuditEvent.objects.filter(owner=request.user)
     kind=request.GET.get('type','')

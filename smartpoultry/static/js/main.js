@@ -43,35 +43,9 @@ async function apiRequest(url, method = 'GET', data = null) {
     }
 }
 
-// Show Error Message
-function showError(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    const container = document.querySelector('main') || document.body;
-    container.insertBefore(alertDiv, container.firstChild);
-    
-    setTimeout(() => alertDiv.remove(), 5000);
-}
-
-// Show Success Message
-function showSuccess(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-success alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    const container = document.querySelector('main') || document.body;
-    container.insertBefore(alertDiv, container.firstChild);
-    
-    setTimeout(() => alertDiv.remove(), 5000);
-}
+// All modules use the shared notification component.
+function showError(message) { return window.SmartPoultry.notify({type:'error', message}); }
+function showSuccess(message) { return window.SmartPoultry.notify({type:'success', message}); }
 
 // Format Currency
 function formatCurrency(value) {

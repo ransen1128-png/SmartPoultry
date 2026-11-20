@@ -57,7 +57,7 @@
 <script>
     function loadReports() {
         fetch('/api/reports/')
-            .then(response => response.json())
+            .then(response => { if (!response.ok) throw new Error('The request could not be completed. Please check your information and try again.'); return response.json(); })
             .then(data => {
                 const tbody = document.getElementById('reportsBody');
                 tbody.innerHTML = '';
@@ -112,7 +112,7 @@
             },
             body: JSON.stringify(reportData)
         })
-        .then(response => response.json())
+        .then(response => { if (!response.ok) throw new Error('The request could not be completed. Please check your information and try again.'); return response.json(); })
         .then(data => {
             loadReports();
             showAppDialog('Report generated successfully!', 'Report Generated');

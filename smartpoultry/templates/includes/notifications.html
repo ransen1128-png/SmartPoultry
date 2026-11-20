@@ -1,0 +1,18 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/notifications.css' %}?v=1">
+<div hidden id="popupMessages">
+  {% for message in messages %}<span data-popup-message data-level="{{ message.tags }}"{% if 'account-created' in message.tags %} data-title="Registration Successful!"{% elif 'login-success' in message.tags %} data-title="Login Successful!"{% endif %}>{{ message }}</span>{% endfor %}
+  {% if error %}<span data-popup-message data-level="error" data-title="{{ notification_error_title|default:'Invalid Information!' }}">{{ error }}</span>{% endif %}
+</div>
+<dialog id="appDialog" class="sp-popup" aria-labelledby="appDialogTitle" aria-describedby="appDialogText">
+  <button type="button" class="sp-popup-close" aria-label="Close notification">&#215;</button>
+  <div class="sp-popup-icon" aria-hidden="true"></div>
+  <h2 id="appDialogTitle"></h2><p id="appDialogText"></p>
+  <button type="button" class="sp-popup-ok">OK</button>
+</dialog>
+<dialog id="appConfirmDialog" class="sp-popup" aria-labelledby="appConfirmDialogTitle" aria-describedby="appConfirmDialogText">
+  <div class="sp-popup-icon" aria-hidden="true">?</div>
+  <h2 id="appConfirmDialogTitle"></h2><p id="appConfirmDialogText"></p>
+  <div class="sp-popup-actions"><button type="button" class="sp-popup-cancel">Cancel</button><button type="button" id="appConfirmDialogConfirm">Confirm</button></div>
+</dialog>
+<script src="{% static 'js/notifications.js' %}?v=1"></script>

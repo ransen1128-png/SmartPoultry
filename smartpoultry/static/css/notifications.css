@@ -1,0 +1,21 @@
+.sp-popup{box-sizing:border-box;border:0;border-radius:22px;padding:36px 30px 30px;width:min(490px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;margin:auto;color:#18342a;background:#fff;box-shadow:0 24px 80px #102d3033;text-align:center;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;animation:sp-popup-in .18s ease-out}
+.sp-popup::backdrop{background:#10232085;backdrop-filter:blur(2px)}
+.sp-popup h2{font-size:1.55rem;font-weight:700;margin:20px 0 12px;line-height:1.3}
+.sp-popup p{color:#53645e;font-size:1rem;line-height:1.6;white-space:pre-line;overflow-wrap:anywhere;margin:0 0 26px}
+.sp-popup-icon{display:flex;align-items:center;justify-content:center;width:78px;height:78px;margin:auto;border-radius:50%;background:#e4f5eb;color:#16834b;font-size:48px;font-weight:600;line-height:1}
+.sp-popup[data-type=error] .sp-popup-icon{background:#fde7e7;color:#c32c34}
+.sp-popup[data-type=warning] .sp-popup-icon{background:#fff3ce;color:#a16a00}
+.sp-popup[data-type=question] .sp-popup-icon{background:#e9f3ed;color:#26734b}
+.sp-popup button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:11px 28px;min-height:44px;background:#208348;color:#fff;font-weight:600}
+.sp-popup button:hover{filter:brightness(.94)}
+.sp-popup button:focus-visible{outline:3px solid #86c9a2;outline-offset:3px}
+.sp-popup .sp-popup-ok{min-width:140px}
+.sp-popup .sp-popup-close{position:absolute;right:14px;top:10px;padding:0;width:40px;background:transparent;color:#63726c;font-size:28px}
+.sp-popup-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.sp-popup .sp-popup-cancel{background:#edf2ef;color:#354d40}
+[data-sp-submitting]{pointer-events:none;opacity:.7}
+.sp-popup.sp-popup-closing{animation:sp-popup-out .12s ease-in forwards}
+@keyframes sp-popup-in{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes sp-popup-out{to{opacity:0;transform:translateY(8px) scale(.98)}}
+@media(prefers-reduced-motion:reduce){.sp-popup,.sp-popup.sp-popup-closing{animation:none}}
+@media(max-width:480px){.sp-popup{padding:30px 20px 24px}.sp-popup h2{font-size:1.3rem}}

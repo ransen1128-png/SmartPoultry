@@ -5,6 +5,7 @@
     const logoutKey = 'smartpoultry-session-ended';
     let pending = null;
     let leaving = false;
+    let confirmingLogout = false;
     function hidePrivateContent() { root.setAttribute('data-session-checking', ''); }
     function goToLogin() {
         leaving = true;
@@ -55,7 +56,11 @@
         const target = new URL(link.href, window.location.href);
         if (target.origin !== location.origin || target.pathname !== config.logoutUrl) return;
         event.preventDefault();
-        if (leaving) return;
+        if (leaving || confirmingLogout) return;
+        confirmingLogout = true;
+        const confirmed = window.SmartPoultry ? await window.SmartPoultry.confirm('Are you sure you want to log out?', 'Log Out') : true;
+        confirmingLogout = false;
+        if (!confirmed) return;
         leaving = true;
         hidePrivateContent();
         const token = document.querySelector('[name=csrfmiddlewaretoken]')?.value

@@ -34,7 +34,7 @@ class RecoveryQuestionTests(TestCase):
     def test_registration_requires_recovery_and_stores_hashes(self):
         details = {**self.details, 'username': 'new-owner', 'email': 'new@example.com'}
         response = self.client.post(reverse('register'), details, follow=True)
-        self.assertContains(response, 'Account Created Successfully!')
+        self.assertContains(response, 'Registration Successful!')
         self.assertNotIn('_auth_user_id', self.client.session)
         profile = AccountRecovery.objects.get(user__username='new-owner')
         self.assertNotEqual(profile.answer_one_hash, details['answer_one'])

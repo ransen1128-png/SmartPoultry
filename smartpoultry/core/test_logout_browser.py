@@ -34,6 +34,7 @@ class LogoutBrowserTests(StaticLiveServerTestCase):
                     page.locator('#password').fill('Original-secret!79')
                     with page.expect_navigation(wait_until='domcontentloaded'):
                         page.get_by_role('button', name='Login', exact=True).click()
+                    page.locator('#appDialog .sp-popup-ok').click()
 
                 login('first')
                 page.goto(self.live_server_url+'/farm/branches/', wait_until='domcontentloaded')
@@ -43,6 +44,7 @@ class LogoutBrowserTests(StaticLiveServerTestCase):
                 page.bring_to_front()
                 page.locator('#accountDropdown').click()
                 page.locator('a[href="/logout/"]').last.click()
+                page.locator('#appConfirmDialogConfirm').click()
                 page.wait_for_url(login_pattern, wait_until='domcontentloaded')
                 other.wait_for_url(login_pattern, wait_until='domcontentloaded')
                 self.assertEqual(other.locator('body[data-owner]').count(), 0)
@@ -88,6 +90,7 @@ class LogoutBrowserTests(StaticLiveServerTestCase):
                 page.locator('#password').fill('Original-secret!79')
                 with page.expect_navigation(wait_until='domcontentloaded'):
                     page.get_by_role('button', name='Login', exact=True).click()
+                page.locator('#appDialog .sp-popup-ok').click()
 
                 def legacy_page(route):
                     response = route.fetch()
@@ -100,6 +103,9 @@ class LogoutBrowserTests(StaticLiveServerTestCase):
                 page.goto(self.live_server_url+'/farm/branches/', wait_until='networkidle')
                 self.assertEqual(page.locator('script[src*="auth_session.js"]').count(), 0)
                 page.unroute('**/farm/branches/', legacy_page)
+                if page.locator('#appDialog').evaluate('(node)=>node.open'):
+                    page.locator('#appDialog .sp-popup-ok').click()
+                    page.wait_for_function("!document.querySelector('#appDialog').open")
                 page.locator('#accountDropdown').click()
                 page.locator('a[href="/logout/"]').last.click()
                 pattern = re.compile(r'/login/(?:\?.*)?$')

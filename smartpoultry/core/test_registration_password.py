@@ -26,6 +26,6 @@ class RegistrationPasswordTests(TestCase):
 
     def test_valid_password_registers_and_returns_to_login(self):
         response = self.client.post(reverse('register'), self.details('Strong-secret!79'), follow=True)
-        self.assertContains(response, 'Account Created Successfully!')
+        self.assertContains(response, 'Registration Successful!')
         self.assertTrue(get_user_model().objects.get(username='new-owner').check_password('Strong-secret!79'))
         self.assertNotIn('_auth_user_id', self.client.session)

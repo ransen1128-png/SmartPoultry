@@ -74,77 +74,6 @@
             font-size: 0.78rem;
         }
 
-        .login-error-dialog {
-            width: min(520px, calc(100vw - 32px));
-            max-height: calc(100dvh - 32px);
-            padding: 32px 28px 28px;
-            border: 0;
-            border-radius: 24px;
-            color: #08233f;
-            background: #fff;
-            box-shadow: 0 24px 70px rgba(8, 35, 63, 0.25);
-            text-align: center;
-        }
-
-        .login-error-dialog::backdrop {
-            background: rgba(21, 30, 46, 0.46);
-        }
-
-        .login-error-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            display: grid;
-            place-items: center;
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            border: 0;
-            border-radius: 8px;
-            color: #737b87;
-            background: transparent;
-        }
-
-        .login-error-close:hover { background: #f1f4f8; }
-
-        .login-error-icon {
-            display: grid;
-            place-items: center;
-            width: 88px;
-            height: 88px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            color: #bd1717;
-            background: #ffdddd;
-        }
-
-        .login-error-dialog h2 {
-            margin: 0 0 16px;
-            font-size: clamp(1.5rem, 5vw, 1.85rem);
-            font-weight: 750;
-        }
-
-        .login-error-dialog p {
-            margin: 0 0 30px;
-            color: #566071;
-            font-size: 1.05rem;
-            line-height: 1.5;
-        }
-
-        .login-error-ok {
-            min-width: 170px;
-            min-height: 48px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .account-created-dialog { width: min(600px, calc(100vw - 32px)); }
-        .account-created-dialog .login-error-icon {
-            color: #fff;
-            background: #078509;
-        }
-
     </style>
 </head>
 <body>
@@ -156,11 +85,6 @@
                 <p>Machine Learning-Based Poultry Farm Financial Analytics System</p>
             </div>
 
-            {% for message in messages %}
-                {% if 'account-created' not in message.tags %}
-                <div class="alert alert-{{ message.tags|default:'info' }}" role="status">{{ message }}</div>
-                {% endif %}
-            {% endfor %}
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3">
@@ -188,50 +112,7 @@
         </div>
     </div>
 
-    {% for message in messages %}
-        {% if 'account-created' in message.tags %}
-            <dialog class="login-error-dialog account-created-dialog" id="accountCreatedDialog" aria-labelledby="accountCreatedTitle" aria-describedby="accountCreatedMessage">
-                <button type="button" class="login-error-close" aria-label="Close account confirmation">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-                </button>
-                <div class="login-error-icon" aria-hidden="true">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L20 5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <h2 id="accountCreatedTitle">Account Created Successfully!</h2>
-                <p id="accountCreatedMessage">{{ message }}</p>
-                <button type="button" class="btn btn-primary login-error-ok" autofocus>OK</button>
-            </dialog>
-            <script>
-                const accountCreatedDialog = document.getElementById('accountCreatedDialog');
-                accountCreatedDialog.querySelector('.login-error-close').addEventListener('click', () => accountCreatedDialog.close());
-                accountCreatedDialog.querySelector('.login-error-ok').addEventListener('click', () => accountCreatedDialog.close());
-                accountCreatedDialog.addEventListener('close', () => document.getElementById('email').focus());
-                accountCreatedDialog.showModal();
-            </script>
-        {% endif %}
-    {% endfor %}
-
-    {% if error %}
-        <dialog class="login-error-dialog" id="loginErrorDialog" aria-labelledby="loginErrorTitle" aria-describedby="loginErrorMessage">
-            <button type="button" class="login-error-close" aria-label="Close login error">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-            </button>
-            <div class="login-error-icon" aria-hidden="true">
-                <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="m5 5 14 14M19 5 5 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-            </div>
-            <h2 id="loginErrorTitle">Login Failed</h2>
-            <p id="loginErrorMessage">{{ error }}</p>
-            <button type="button" class="btn btn-primary login-error-ok" autofocus>OK</button>
-        </dialog>
-        <script>
-            const loginErrorDialog = document.getElementById('loginErrorDialog');
-            loginErrorDialog.querySelector('.login-error-close').addEventListener('click', () => loginErrorDialog.close());
-            loginErrorDialog.querySelector('.login-error-ok').addEventListener('click', () => loginErrorDialog.close());
-            loginErrorDialog.addEventListener('close', () => document.getElementById('password').focus());
-            loginErrorDialog.showModal();
-        </script>
-    {% endif %}
-
+    {% include 'includes/notifications.html' with notification_error_title='Login Failed!' %}
     <script src="{% static 'js/password_toggle.js' %}?v=1"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

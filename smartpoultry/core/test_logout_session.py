@@ -74,5 +74,5 @@ class LogoutSessionTests(TestCase):
 
     def test_account_page_loads_history_and_tab_session_guard(self):
         response = self.client.get(reverse('farm_branches'))
-        self.assertContains(response, 'auth_session.js?v=20261120-history2')
+        self.assertContains(response, 'auth_session.js?v=20261120-popups')
         self.assertContains(response, f'data-user-id="{self.user.pk}"')
