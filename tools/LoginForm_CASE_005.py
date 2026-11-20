@@ -14,7 +14,7 @@ INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password. Please try again.'
 class LiveLoginTests(unittest.TestCase):
     def test_case_005_correct_email_wrong_password(self):
         """CASE-005 | A wrong password shows the invalid-credentials message."""
-        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Test account email: ')
+        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Registered email for userx: ')
         wrong_password = f'Incorrect-{token_urlsafe()}'
 
         with sync_playwright() as playwright:

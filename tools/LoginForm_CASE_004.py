@@ -13,8 +13,8 @@ BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
 class LiveLoginTests(unittest.TestCase):
     def test_case_004_valid_credentials_redirect_to_dashboard(self):
         """CASE-004 | Valid credentials redirect to the Dashboard."""
-        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Test account email: ')
-        password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
+        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Registered email for userx: ')
+        password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Password for userx: ')
 
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(channel='msedge', headless=True)
