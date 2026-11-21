@@ -1,26 +1,20 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/record_pages.css' %}?v=1">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/record_pages.css' %}?v=2">{% endblock %}
 
 {% block content %}
 <div class="page-heading">
-    <div><h1>Expenses Tracking</h1><div class="d-flex align-items-center gap-2"><p class="mb-0">Track and manage poultry farm expenses and operational costs.</p><button type="button" class="record-help-button" data-record-help="expenseTrackingHelp" data-help-title="How expense tracking works" aria-label="How expense tracking works"><i class="bi bi-info-circle-fill" aria-hidden="true"></i></button></div></div>
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addExpenseModal"><i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Add Expense</button>
+    <div class="expense-page-title"><span class="expense-summary-icon" aria-hidden="true"><i class="bi bi-wallet2"></i></span><div><h1>Expenses Tracking</h1><div class="d-flex align-items-center gap-1"><p class="mb-0">Track and manage poultry farm expenses, purchases, and operational costs.</p><button type="button" class="record-help-button" data-record-help="expenseTrackingHelp" data-help-title="How Expense Tracking Works" aria-label="How expense tracking works"><i class="bi bi-info-circle-fill" aria-hidden="true"></i></button></div></div></div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal"><i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Add Expense</button>
 </div>
 <div id="expenseTrackingHelp" hidden>Inventory distributions assign purchase cost to the receiving branch. Purchase cost is counted once; the financial date remains the purchase date. Totals include all recorded purchases and expenses.</div>
-<div class="row g-3 mb-4">
-    <div class="col-md-6"><div class="card h-100"><div class="card-body expense-summary-card">
+<div class="card mb-3"><div class="card-body expense-summary-card">
         <span class="expense-summary-icon" aria-hidden="true"><i class="bi bi-wallet2"></i></span><div><h2 class="h6">Total Expenses</h2><p id="totalExpenses" class="expense-summary-amount">&#8369;0.00</p></div>
-    </div></div></div>
-    <div class="col-md-6"><div class="card h-100"><div class="card-body expense-summary-card">
-        <span class="expense-summary-icon" aria-hidden="true"><i class="bi bi-coin"></i></span><div><div class="d-flex align-items-center gap-1"><h2 class="h6 mb-0">Average Expense</h2><button type="button" class="record-help-button" data-record-help="averageExpenseHelp" data-help-title="Average Expense" aria-label="How Average Expense is calculated"><i class="bi bi-info-circle-fill" aria-hidden="true"></i></button></div><p id="avgExpense" class="expense-summary-amount">&#8369;0.00</p></div>
-    </div></div></div>
-</div>
-<div id="averageExpenseHelp" hidden>Total recorded expenses divided by the number of expense records. This includes purchases and returns counted in the totals.</div>
+    </div></div>
 
 <div class="card">
     <div class="card-header">
-        <h5>Expense Records</h5>
+        <h2 class="h5 mb-0"><i class="bi bi-file-earmark-text expense-section-icon me-2" aria-hidden="true"></i>Expense Records</h2>
     </div>
     <div class="card-body">
         <div class="table-responsive"><table class="table table-hover">
@@ -44,7 +38,7 @@
 </div>
 
 <section class="card mt-4" id="returnedItemsSection">
-    <div class="card-header d-flex justify-content-between align-items-center gap-2 flex-wrap"><h5 class="mb-0">Returned Items / Eggs</h5><button class="btn btn-outline-danger" type="button" data-bs-toggle="modal" data-bs-target="#addReturnModal">Add Return</button></div>
+    <div class="card-header d-flex justify-content-between align-items-center gap-2 flex-wrap"><h2 class="h5 mb-0"><i class="bi bi-arrow-counterclockwise expense-section-icon me-2" aria-hidden="true"></i>Returned Items / Eggs</h2><button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addReturnModal"><i class="bi bi-reply me-1" aria-hidden="true"></i>Add Return</button></div>
     <div class="card-body"><p class="text-muted">Record the expense or refund for a return. These amounts are included once in Total Expenses. Returned stock is not automatically made available for sale.</p><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Date</th><th>Type</th><th>Reason</th><th>Quantity</th><th>Amount</th></tr></thead><tbody id="returnedItemsBody"></tbody></table></div></div>
 </section>
 <div class="modal fade" id="addReturnModal" tabindex="-1" aria-labelledby="addReturnTitle"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="addReturnTitle">Add Returned Item / Eggs</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body">
@@ -171,7 +165,13 @@
             const row=body.insertRow();
             [formatExpenseDate(expense.date),expense.expense_type==='return_eggs'?'Return Eggs':'Return Item'+(expense.return_item_name?' — '+expense.return_item_name:''),expense.description,expense.return_quantity==null?'Not recorded':Number(expense.return_quantity)+' '+expense.return_unit,'₱'+Number(expense.amount).toFixed(2)].forEach(value=>addExpenseCell(row,value));
         }
-        if(!returns.length){const cell=body.insertRow().insertCell();cell.colSpan=5;cell.textContent='No returned items or eggs recorded.';}
+        if(!returns.length){
+            const cell=body.insertRow().insertCell();cell.colSpan=5;
+            const empty=document.createElement('div');empty.className='expense-return-empty';
+            const icon=document.createElement('i');icon.className='bi bi-box-seam';icon.setAttribute('aria-hidden','true');
+            const message=document.createElement('p');message.textContent='No returned items or eggs recorded.';
+            empty.append(icon,message);cell.append(empty);
+        }
     }
     function updateReturnItemField(){const item=document.getElementById('returnType').value==='return_item';document.getElementById('returnItemField').hidden=!item;document.getElementById('returnItemName').required=item;}
     document.getElementById('returnType').addEventListener('change',updateReturnItemField);
@@ -256,7 +256,6 @@
                 });
 
                 document.getElementById('totalExpenses').textContent = '\u20b1' + total.toFixed(2);
-                document.getElementById('avgExpense').textContent = '\u20b1' + (allRecords.length > 0 ? total / allRecords.length : 0).toFixed(2);
             }).catch(error => showAppDialog(error.message, 'Expenses'));
     }
 

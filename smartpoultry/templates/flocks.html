@@ -8,7 +8,7 @@
         <h1>Flocks Management</h1>
     </div>
     <div class="col-md-4 text-end">
-        <button class="btn btn-outline-primary" type="button" id="flockHistoryBtn" aria-expanded="false" aria-controls="flockHistoryPanel">History</button>
+        <button class="btn btn-outline-primary" type="button" id="flockHistoryBtn" data-bs-toggle="modal" data-bs-target="#flockHistoryPanel" aria-haspopup="dialog" aria-controls="flockHistoryPanel">History</button>
         <button class="btn btn-primary" id="addFlockBtn">
             <i class="bi bi-plus-circle"></i> Add New Flock
         </button>
@@ -42,7 +42,13 @@
 </div>
 
 <!-- Add Flock Modal -->
-<section class="card mt-4" id="flockHistoryPanel" hidden><div class="card-header"><h5>Flock History</h5></div><div class="card-body"><p class="text-muted">Sold flocks and flocks with no live chicken remain here with their records. Broilers already recorded as production can still be sold from Revenue while stock is available.</p><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Branch</th><th>Flock ID</th><th>Type</th><th>Live chicken</th><th>Reason</th><th>Source</th><th>Purchase cost</th><th>Added date</th><th>Days since delivery / hatch</th><th>Readiness window</th><th>Actions</th></tr></thead><tbody id="flockHistoryBody"></tbody></table></div></div></section>
+<div class="modal fade" id="flockHistoryPanel" tabindex="-1" aria-labelledby="flockHistoryTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down"><div class="modal-content">
+        <div class="modal-header"><h2 class="modal-title h5" id="flockHistoryTitle">Flock History</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close flock history"></button></div>
+        <div class="modal-body"><p class="text-muted">Sold flocks and flocks with no live chicken remain here with their records. Broilers already recorded as production can still be sold from Revenue while stock is available.</p><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Branch</th><th>Flock ID</th><th>Type</th><th>Live chicken</th><th>Reason</th><th>Source</th><th>Purchase cost</th><th>Added date</th><th>Days since delivery / hatch</th><th>Readiness window</th><th>Actions</th></tr></thead><tbody id="flockHistoryBody"></tbody></table></div></div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div></div>
+</div>
 
 <div class="modal fade" id="addFlockModal" tabindex="-1">
     <div class="modal-dialog">
@@ -270,5 +276,5 @@
 
     document.addEventListener('DOMContentLoaded', () => loadFlocks());
 </script>
-<script src="{% static 'js/flock_history.js' %}?v=4-actions"></script>
+<script src="{% static 'js/flock_history.js' %}?v=5-history-dialog"></script>
 {% endblock %}

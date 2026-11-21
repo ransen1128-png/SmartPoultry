@@ -19,4 +19,9 @@
 .expense-summary-card h2{font-size:.9rem;font-weight:600;margin:0 0 5px}
 .expense-summary-amount{font-size:1.75rem;font-weight:750;line-height:1.2;margin:5px 0 0;color:#08233f}
 .expense-source-badge{display:inline-block;border:1px solid #b5d0ff;border-radius:6px;padding:4px 8px;color:#0b6ee8;font-size:.75rem;font-weight:600;white-space:nowrap}
+.expense-page-title{display:flex;align-items:center;gap:14px;min-width:0}
+.expense-section-icon{color:#0b6ee8}
+.expense-return-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:22px 12px;text-align:center;color:#64748b}
+.expense-return-empty i{font-size:2rem;line-height:1.2;color:#8292ad}
+.expense-return-empty p{margin:0;font-size:.85rem}
 @media(max-width:500px){.production-stock-note{padding:12px;gap:8px}.expense-summary-card{gap:12px}.expense-summary-amount{font-size:1.5rem}}

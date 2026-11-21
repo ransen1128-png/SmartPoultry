@@ -12,7 +12,7 @@ async function loadFlocks() {
             const group=document.createElement('div');group.className='flock-actions';group.setAttribute('role','group');group.setAttribute('aria-label','Actions for flock '+flock.flock_id);actions.append(group);
             const edit=document.createElement('button');edit.type='button';edit.className='btn btn-sm flock-action-edit';
             const editIcon=document.createElement('i');editIcon.className='bi bi-pencil-square';editIcon.setAttribute('aria-hidden','true');
-            edit.append(editIcon,document.createTextNode(flock.in_history?'View / Edit':'Edit'));edit.addEventListener('click',()=>editFlock(flock.id));group.append(edit);
+            edit.append(editIcon,document.createTextNode(flock.in_history?'View / Edit':'Edit'));edit.addEventListener('click',()=>openFlockHistoryEditor(flock.id));group.append(edit);
             tr.insertCell(actions.cellIndex).textContent=flock.days_since_placement==null?'Not recorded':flock.days_since_placement+' days';
             tr.insertCell(actions.cellIndex).textContent=flock.ready_from?flock.ready_from+' to '+flock.readiness_window_end:'—';
             if(!flock.in_history){
@@ -25,8 +25,10 @@ async function loadFlocks() {
         document.getElementById('flockHistoryBtn').textContent='History ('+records.filter(row=>row.in_history).length+')';
     } catch(error){showMessageDialog(error.message,'Flocks');}
 }
-document.addEventListener('DOMContentLoaded',()=>document.getElementById('flockHistoryBtn').addEventListener('click',()=>{
-    const panel=document.getElementById('flockHistoryPanel');panel.hidden=!panel.hidden;
-    document.getElementById('flockHistoryBtn').setAttribute('aria-expanded',String(!panel.hidden));
-    if(!panel.hidden)panel.scrollIntoView({behavior:'smooth',block:'nearest'});
-}));
+// Finish closing history before opening its editor; Bootstrap supports one modal at a time.
+function openFlockHistoryEditor(id) {
+    const history = document.getElementById('flockHistoryPanel');
+    if (!history.classList.contains('show')) { editFlock(id); return; }
+    history.addEventListener('hidden.bs.modal', () => editFlock(id), {once: true});
+    bootstrap.Modal.getOrCreateInstance(history).hide();
+}
