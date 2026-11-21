@@ -6,7 +6,17 @@
     <form method="post">
         {% csrf_token %}
         {% for question in question_labels %}
-            <div class="mb-3"><label for="answer_{{ forloop.counter }}" class="form-label">{{ question }}</label><input id="answer_{{ forloop.counter }}" name="{% if forloop.first %}answer_one{% else %}answer_two{% endif %}" class="form-control" type="password" maxlength="200" autocomplete="off" required></div>
+            <div class="mb-3">
+                <label for="answer_{{ forloop.counter }}" class="form-label">{{ question }}</label>
+                <div class="password-field">
+                    <input id="answer_{{ forloop.counter }}" name="{% if forloop.first %}answer_one{% else %}answer_two{% endif %}" class="form-control" type="password" maxlength="200" autocomplete="off" required>
+                    {% if forloop.first %}
+                        {% include 'includes/password_toggle.html' with target='answer_1' label='first recovery answer' %}
+                    {% else %}
+                        {% include 'includes/password_toggle.html' with target='answer_2' label='second recovery answer' %}
+                    {% endif %}
+                </div>
+            </div>
         {% endfor %}
         <button type="submit" class="btn btn-primary w-100 mb-3">Verify Answers</button>
     </form>
