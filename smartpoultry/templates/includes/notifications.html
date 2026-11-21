@@ -1,5 +1,5 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/notifications.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/notifications.css' %}?v=2">
 <div hidden id="popupMessages">
   {% for message in messages %}<span data-popup-message data-level="{{ message.tags }}"{% if 'account-created' in message.tags %} data-title="Registration Successful!"{% endif %}>{{ message }}</span>{% endfor %}
   {% if error %}<span data-popup-message data-level="error" data-title="{{ notification_error_title|default:'Invalid Information!' }}">{{ error }}</span>{% endif %}
@@ -15,4 +15,4 @@
   <h2 id="appConfirmDialogTitle"></h2><p id="appConfirmDialogText"></p>
   <div class="sp-popup-actions"><button type="button" class="sp-popup-cancel">Cancel</button><button type="button" id="appConfirmDialogConfirm">Confirm</button></div>
 </dialog>
-<script src="{% static 'js/notifications.js' %}?v=3"></script>
+<script src="{% static 'js/notifications.js' %}?v=4"></script>

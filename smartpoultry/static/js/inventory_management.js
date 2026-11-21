@@ -38,11 +38,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 let packagingReturnToHistory=false;
 function showLowStockDialog(message,dialog,title='Low stock - restock needed') {
     if(!message)return;
-    const show=()=>showAppDialog(message,title);
-    if(dialog && dialog.classList.contains('show')){
-        dialog.addEventListener('hidden.bs.modal',show,{once:true});
-        bootstrap.Modal.getInstance(dialog).hide();
-    }else show();
+    SmartPoultry.notify({type:'warning',title,message,
+        target:dialog?.classList.contains('show') ? dialog.querySelector('.modal-body') : null});
 }
 function inventoryRestockMessage(item) {
     return item.name+': '+formatQuantity(item.quantity,item.unit,item.package_size,item.content_unit)+

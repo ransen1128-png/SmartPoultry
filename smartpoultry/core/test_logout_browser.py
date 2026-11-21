@@ -34,7 +34,6 @@ class LogoutBrowserTests(StaticLiveServerTestCase):
                     page.locator('#password').fill('Original-secret!79')
                     with page.expect_navigation(wait_until='domcontentloaded'):
                         page.get_by_role('button', name='Login', exact=True).click()
-                    page.locator('#appDialog .sp-popup-ok').click()
 
                 login('first')
                 page.goto(self.live_server_url+'/farm/branches/', wait_until='domcontentloaded')
@@ -90,7 +89,6 @@ class LogoutBrowserTests(StaticLiveServerTestCase):
                 page.locator('#password').fill('Original-secret!79')
                 with page.expect_navigation(wait_until='domcontentloaded'):
                     page.get_by_role('button', name='Login', exact=True).click()
-                page.locator('#appDialog .sp-popup-ok').click()
 
                 def legacy_page(route):
                     response = route.fetch()
@@ -104,7 +102,6 @@ class LogoutBrowserTests(StaticLiveServerTestCase):
                 self.assertEqual(page.locator('script[src*="auth_session.js"]').count(), 0)
                 page.unroute('**/farm/branches/', legacy_page)
                 if page.locator('#appDialog').evaluate('(node)=>node.open'):
-                    page.locator('#appDialog .sp-popup-ok').click()
                     page.wait_for_function("!document.querySelector('#appDialog').open")
                 page.locator('#accountDropdown').click()
                 page.locator('a[href="/logout/"]').last.click()

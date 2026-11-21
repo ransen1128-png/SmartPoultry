@@ -82,7 +82,9 @@ class NotificationBrowserTests(unittest.TestCase):
 
     def test_invalid_fields_warn_without_submitting(self):
         self.page.get_by_role('button',name='Save',exact=True).click()
-        self.assertEqual(self.page.locator('#appDialogTitle').inner_text(),'Please Complete All Required Fields!')
+        self.assertEqual(self.page.locator('form .sp-field-error').count(),1)
+        self.assertEqual(self.page.locator('[name=name]').get_attribute('aria-invalid'),'true')
+        self.assertFalse(self.page.locator('#appDialog').evaluate('node=>node.open'))
         self.assertEqual(self.page.url,'https://popup.test/')
 
     def test_deduplicate_writes_and_success_popups(self):
@@ -102,9 +104,9 @@ class NotificationBrowserTests(unittest.TestCase):
     def test_server_failure_is_not_success_and_does_not_leak(self):
         self.page.route('**/api/items/',lambda route:route.fulfill(status=500,body='<html>Traceback SECRET_KEY=private</html>',content_type='text/html'))
         self.page.evaluate("fetch('/api/items/',{method:'POST',body:'{}'})")
-        self.assertEqual(self.page.locator('#appDialog').get_attribute('data-type'),'error')
-        self.assertNotIn('SECRET_KEY',self.page.locator('#appDialogText').inner_text())
-        self.assertNotIn('Successfully',self.page.locator('#appDialogTitle').inner_text())
+        self.assertEqual(self.page.locator('.sp-inline-message').get_attribute('data-type'),'error')
+        self.assertNotIn('SECRET_KEY',self.page.locator('.sp-inline-message').inner_text())
+        self.assertFalse(self.page.locator('#appDialog').evaluate('node=>node.open'))
 
     def test_success_survives_navigation_once(self):
         self.page.route('**/api/items/',lambda route:route.fulfill(status=201,json={'id':1}))
@@ -116,18 +118,20 @@ class NotificationBrowserTests(unittest.TestCase):
         self.page.reload()
         self.assertFalse(self.page.locator('#appDialog').evaluate('(node)=>node.open'))
 
-    def test_mobile_popup_fits_viewport_and_escapes_markup(self):
+    def test_mobile_inline_error_fits_viewport_and_escapes_markup(self):
         self.page.set_viewport_size({'width':360,'height':740})
         self.page.evaluate("void SmartPoultry.notify({type:'error',message:'<img src=x onerror=alert(1)>'})")
-        bounds=self.page.locator('#appDialog').bounding_box()
+        bounds=self.page.locator('.sp-inline-message').bounding_box()
         self.assertGreaterEqual(bounds['x'],0)
         self.assertLessEqual(bounds['x']+bounds['width'],360)
-        self.assertEqual(self.page.locator('#appDialog img').count(),0)
+        self.assertEqual(self.page.locator('.sp-inline-message img').count(),0)
+        self.assertFalse(self.page.locator('#appDialog').evaluate('node=>node.open'))
 
     def test_network_failure_has_no_success_notice(self):
         self.page.route('**/api/items/',lambda route:route.abort('failed'))
         self.page.evaluate("fetch('/api/items/',{method:'POST'}).catch(()=>{})")
-        self.assertEqual(self.page.locator('#appDialogTitle').inner_text(),'Connection Error!')
+        self.assertIn('Connection Error!',self.page.locator('.sp-inline-message').inner_text())
+        self.assertFalse(self.page.locator('#appDialog').evaluate('node=>node.open'))
 
     def test_native_submit_preserves_action_and_blocks_repeat(self):
         requests=[]
@@ -151,6 +155,46 @@ class NotificationBrowserTests(unittest.TestCase):
         self.page.evaluate("fetch('/api/items/1/',{method:'DELETE'})")
         self.page.wait_for_function("document.querySelector('#appDialog').open")
         self.assertEqual(self.page.locator('#appDialogTitle').inner_text(),'Successfully Deleted!')
+
+    def test_api_field_errors_appear_below_input_and_clear_when_edited(self):
+        self.page.route('**/api/items/',lambda route:route.fulfill(status=400,json={'name':['This name already exists.']}))
+        self.page.evaluate("fetch('/api/items/',{method:'POST',body:'{}'})")
+        self.assertEqual(self.page.locator('form .sp-field-error').inner_text(),'This name already exists.')
+        self.assertEqual(self.page.locator('[name=name]').get_attribute('aria-invalid'),'true')
+        self.assertFalse(self.page.locator('#appDialog').evaluate('node=>node.open'))
+        self.page.locator('[name=name]').fill('New item')
+        self.assertEqual(self.page.locator('.sp-field-error').count(),0)
+        self.assertIsNone(self.page.locator('[name=name]').get_attribute('aria-invalid'))
+
+    def test_django_error_message_is_inline_and_success_remains_popup(self):
+        self.page.evaluate("""() => {
+            const message=document.createElement('span');message.dataset.popupMessage='';
+            message.dataset.level='error';message.textContent='Unable to save this record.';
+            document.body.append(message);document.dispatchEvent(new Event('DOMContentLoaded'));
+        }""")
+        self.assertIn('Unable to save this record.',self.page.locator('.sp-inline-message').inner_text())
+        self.assertFalse(self.page.locator('#appDialog').evaluate('node=>node.open'))
+        self.page.evaluate("void SmartPoultry.notify({type:'success',message:'Changes saved successfully.'})")
+        self.assertTrue(self.page.locator('#appDialog').evaluate('node=>node.open'))
+
+    def test_legacy_error_with_saved_word_is_not_a_success_popup(self):
+        self.page.evaluate("void showAppDialog('This record cannot be saved.', 'Record')")
+        self.assertFalse(self.page.locator('#appDialog').evaluate('node=>node.open'))
+        self.assertIn('This record cannot be saved.',self.page.locator('.sp-inline-message').inner_text())
+
+    def test_error_is_visible_when_editing_form_is_hidden_in_history_modal(self):
+        self.page.evaluate("""() => {
+            document.querySelector('form').hidden=true;
+            const modal=document.createElement('div');modal.className='modal show';
+            modal.innerHTML='<div class="modal-body"><section hidden><form><input name="name"></form></section></div>';
+            document.body.append(modal);
+        }""")
+        self.page.route('**/api/items/',lambda route:route.fulfill(status=400,json={'name':['This record cannot be changed.']}))
+        self.page.evaluate("fetch('/api/items/',{method:'POST',body:'{}'})")
+        node=self.page.locator('.modal-body > .sp-inline-message')
+        self.assertTrue(node.is_visible())
+        self.assertIn('This record cannot be changed.',node.inner_text())
+        self.assertFalse(self.page.locator('#appDialog').evaluate('node=>node.open'))
 
 
 @unittest.skipUnless(importlib.util.find_spec('playwright'), 'Desktop Playwright is not installed')
@@ -181,20 +225,20 @@ class InventoryPopupBrowserTests(StaticLiveServerTestCase):
                 page.context.request.get(self.live_server_url+'/profile/')
                 page.goto(self.live_server_url+'/inventory/',wait_until='networkidle')
                 page.get_by_role('button',name='Distribute',exact=True).first.click()
+                page.wait_for_function("bootstrap.Modal.getInstance(document.querySelector('#distributionModal'))?._isTransitioning === false")
                 page.locator('#distributionModal [data-bs-dismiss=modal]').first.click()
                 page.wait_for_function("!document.querySelector('#distributionModal').classList.contains('show')")
                 page.get_by_role('button',name='Distribute',exact=True).first.click()
                 page.locator('#distributionBranch').select_option(str(branch.pk))
                 page.locator('#distributionQuantity').fill('6')
                 page.locator('#saveDistributionBtn').click()
-                page.locator('.sp-popup-ok').click()
-                page.wait_for_function("!document.querySelector('#appDialog').open")
+                self.assertFalse(page.locator('#appDialog').evaluate('node=>node.open'))
                 self.assertEqual(page.locator('#distributionQuantity').input_value(),'6')
                 page.locator('#distributionBranch').select_option(str(empty_branch.pk))
                 page.locator('#distributionQuantity').fill('1')
                 page.locator('#saveDistributionBtn').click()
-                page.locator('.sp-popup-ok').click()
-                page.wait_for_function("!document.querySelector('#appDialog').open")
+                page.wait_for_function("document.querySelector('#distributionFeedback').textContent.includes('Empty branch')")
+                self.assertFalse(page.locator('#appDialog').evaluate('node=>node.open'))
                 self.assertTrue(page.locator('#distributionModal').evaluate("node=>node.classList.contains('show')"))
                 self.assertEqual(page.locator('#distributionQuantity').input_value(),'1')
                 page.locator('#distributionBranch').select_option(str(branch.pk))
@@ -208,8 +252,9 @@ class InventoryPopupBrowserTests(StaticLiveServerTestCase):
                 page.wait_for_function("document.querySelector('#appDialog').open")
                 self.assertIn('Successfully',page.locator('#appDialogTitle').inner_text(),page.locator('#appDialogText').inner_text())
                 page.locator('.sp-popup-ok').click()
-                page.wait_for_function("document.querySelector('#appDialogTitle').textContent.includes('Out of stock')")
-                self.assertIn('Popup feed',page.locator('#appDialogText').inner_text())
+                page.wait_for_function("[...document.querySelectorAll('.sp-inline-message')].some(node=>node.textContent.includes('Out of stock'))")
+                self.assertIn('Popup feed',page.locator('#distributionModal .sp-inline-message').inner_text())
+                page.wait_for_function("!document.querySelector('#appDialog').open")
                 self.assertEqual(errors,[])
             finally: browser.close()
         item.refresh_from_db()

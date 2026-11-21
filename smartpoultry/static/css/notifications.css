@@ -14,6 +14,11 @@
 .sp-popup-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
 .sp-popup .sp-popup-cancel{background:#edf2ef;color:#354d40}
 [data-sp-submitting]{pointer-events:none;opacity:.7}
+.sp-inline-message{color:#b42318;border-left:3px solid currentColor;padding:8px 12px;margin:0 0 16px;white-space:pre-line;overflow-wrap:anywhere;font-size:.9rem;line-height:1.5}
+.sp-inline-message[data-type=info]{color:#315b80}
+.sp-inline-title{display:block;margin-bottom:3px}
+.sp-field-error{display:block;color:#b42318;font-size:.85rem;line-height:1.5;margin-top:5px;overflow-wrap:anywhere}
+.errorlist{color:#b42318;font-size:.85rem;margin:5px 0 0;padding-left:20px}
 .sp-popup.sp-popup-closing{animation:sp-popup-out .12s ease-in forwards}
 @keyframes sp-popup-in{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
 @keyframes sp-popup-out{to{opacity:0;transform:translateY(8px) scale(.98)}}
