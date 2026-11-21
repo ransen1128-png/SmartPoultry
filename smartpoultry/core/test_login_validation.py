@@ -23,7 +23,7 @@ class LoginValidationTests(TestCase):
         get_user_model().objects.create_user('owner','owner@example.invalid','Strong-secret!79')
         for email in ('owner@example.invalid','unknown@example.invalid'):
             response=self.client.post('/login/',{'email':email,'password':'wrong-private-password'})
-            self.assertEqual(response.context['login_error'],'Invalid credentials')
+            self.assertEqual(response.context['login_error'],'Incorrect Email and Password. Please try again')
             self.assertContains(response,f'value="{email}"')
             self.assertNotContains(response,'wrong-private-password')
             self.assertNotContains(response,'data-title="Login Failed!"')
@@ -56,7 +56,7 @@ class LoginInlineBrowserTests(StaticLiveServerTestCase):
                 expect(page.locator('#passwordError')).to_have_text('Password required')
                 page.locator('#password').fill('wrong-password')
                 with page.expect_navigation(wait_until='networkidle'):login.click()
-                expect(page.locator('#passwordError')).to_have_text('Invalid credentials')
+                expect(page.locator('#passwordError')).to_have_text('Incorrect Email and Password. Please try again')
                 expect(page.locator('#passwordError')).to_be_visible()
                 self.assertFalse(page.locator('#appDialog').evaluate('node=>node.open'))
                 self.assertGreater(page.locator('#passwordError').bounding_box()['y'],page.locator('#password').bounding_box()['y'])

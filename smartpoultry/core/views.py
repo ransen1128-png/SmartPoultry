@@ -115,7 +115,7 @@ def index(request):
                 if is_admin_user(user):
                     return redirect('admin_dashboard')
                 return redirect('dashboard')
-            login_error = 'Invalid credentials'
+            login_error = 'Incorrect Email and Password. Please try again'
         else:
             email_error = '' if identifier else 'Email required'
             password_error = '' if password else 'Password required'

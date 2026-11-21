@@ -21,6 +21,6 @@
     });
     for (const field of [email, password]) field.addEventListener('input', () => {
         message(field, '');
-        if (document.getElementById('passwordError').textContent === 'Invalid credentials') message(password, '');
+        if (document.getElementById('passwordError').textContent === 'Incorrect Email and Password. Please try again') message(password, '');
     });
 })();
