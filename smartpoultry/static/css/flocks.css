@@ -1,0 +1,8 @@
+.flock-actions-cell{vertical-align:middle;white-space:nowrap;width:1%}
+.flock-actions{display:inline-flex;flex-wrap:nowrap;align-items:center;gap:8px}
+.flock-actions .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:32px;padding:6px 10px;font-size:.875rem;line-height:1.2;white-space:nowrap;border-radius:6px}
+.flock-action-edit{color:#0b6ee8;background:#edf4ff;border:1px solid #cfdef5}
+.flock-action-edit:hover{color:#0754b3;background:#dfeaff;border-color:#b1caf1}
+.flock-action-delete{color:#c62d40;background:#fff0f2;border:1px solid #f1d2d7}
+.flock-action-delete:hover{color:#a42132;background:#fce0e5;border-color:#e8aeb9}
+.flock-actions .btn:focus-visible{outline:2px solid currentColor;outline-offset:2px}

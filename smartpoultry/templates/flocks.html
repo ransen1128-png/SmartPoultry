@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/flocks.css' %}?v=1">{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -269,5 +270,5 @@
 
     document.addEventListener('DOMContentLoaded', () => loadFlocks());
 </script>
-<script src="{% static 'js/flock_history.js' %}?v=3-readiness"></script>
+<script src="{% static 'js/flock_history.js' %}?v=4-actions"></script>
 {% endblock %}
