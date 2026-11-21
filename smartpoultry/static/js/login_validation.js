@@ -1,4 +1,4 @@
-/* Login uses field messages; other forms retain shared popup validation. */
+/* Login uses field-specific validation and a generic authentication error. */
 (() => {
     const form = document.getElementById('loginForm');
     if (!form) return;
@@ -10,9 +10,16 @@
         field.classList.toggle('is-invalid', !!text);
         if (text) field.setAttribute('aria-invalid', 'true');else field.removeAttribute('aria-invalid');
     }
+    function clearCredentialError() {
+        if (form.dataset.credentialError !== 'true') return;
+        message(email, '');message(password, '');
+        email.setAttribute('aria-describedby', 'emailError');
+        form.dataset.credentialError = 'false';
+    }
     form.addEventListener('submit', event => {
-        const emailError = !email.value.trim() ? 'Email required' : email.validity.typeMismatch ? 'Enter a valid email address' : '';
-        const passwordError = !password.value ? 'Password required' : '';
+        clearCredentialError();
+        const emailError = !email.value.trim() ? 'Email is required.' : email.validity.typeMismatch ? 'Enter a valid email address.' : '';
+        const passwordError = !password.value ? 'Password is required.' : '';
         message(email, emailError);message(password, passwordError);
         if (emailError || passwordError) {
             event.preventDefault();
@@ -20,7 +27,7 @@
         }
     });
     for (const field of [email, password]) field.addEventListener('input', () => {
+        clearCredentialError();
         message(field, '');
-        if (document.getElementById('passwordError').textContent === 'Incorrect Email and Password. Please try again') message(password, '');
     });
 })();

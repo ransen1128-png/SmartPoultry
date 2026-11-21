@@ -14,7 +14,7 @@ class NotificationMessageTests(TestCase):
     def test_login_redirects_without_a_success_popup(self):
         get_user_model().objects.create_user('popup-owner', 'popup@example.invalid', 'Strong-secret!79')
         response = self.client.post('/login/', {'email':'popup@example.invalid','password':'wrong'})
-        self.assertContains(response, 'Incorrect Email and Password. Please try again')
+        self.assertContains(response, 'Incorrect email or password. Please try again.')
         self.assertNotContains(response, 'data-title="Login Failed!"')
         self.assertNotIn('_auth_user_id', self.client.session)
         response = self.client.post('/login/', {'email':'popup@example.invalid','password':'Strong-secret!79'}, follow=True)

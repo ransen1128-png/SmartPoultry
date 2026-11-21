@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.db.models import Count, Min, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.http import FileResponse, Http404, HttpResponseForbidden, JsonResponse
@@ -100,7 +101,16 @@ def index(request):
     if request.method == 'POST':
         identifier = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
-        if identifier and password:
+        if not identifier:
+            email_error = 'Email is required.'
+        else:
+            try:
+                validate_email(identifier)
+            except ValidationError:
+                email_error = 'Enter a valid email address.'
+        if not password:
+            password_error = 'Password is required.'
+        if not email_error and not password_error:
             username = identifier
             if '@' in identifier:
                 try:
@@ -114,10 +124,7 @@ def index(request):
                 if is_admin_user(user):
                     return redirect('admin_dashboard')
                 return redirect('dashboard')
-            login_error = 'Incorrect Email and Password. Please try again'
-        else:
-            email_error = '' if identifier else 'Email required'
-            password_error = '' if password else 'Password required'
+            login_error = 'Incorrect email or password. Please try again.'
     return render(request, 'index.html', {'login_error': login_error, 'email_error': email_error,
         'password_error': password_error, 'login_email': identifier})
 
