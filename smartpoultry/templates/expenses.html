@@ -1,37 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/record_pages.css' %}?v=1">{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Expenses Tracking</h1>
-<p class="text-muted">Inventory distributions assign purchase cost to the receiving branch. Purchase cost is counted once; the financial date remains the purchase date. Totals include all recorded purchases and expenses.</p>
-
-<div class="row mb-4">
-    <div class="col-md-8">
-    </div>
-    <div class="col-md-4 text-end">
-        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
-            <i class="bi bi-plus-circle"></i> Add Expense
-        </button>
-    </div>
+<div class="page-heading">
+    <div><h1>Expenses Tracking</h1><div class="d-flex align-items-center gap-2"><p class="mb-0">Track and manage poultry farm expenses and operational costs.</p><button type="button" class="record-help-button" data-record-help="expenseTrackingHelp" data-help-title="How expense tracking works" aria-label="How expense tracking works"><i class="bi bi-info-circle-fill" aria-hidden="true"></i></button></div></div>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addExpenseModal"><i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Add Expense</button>
 </div>
-
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Expenses</h5>
-                <h2 id="totalExpenses">&#8369;0</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Average Expense</h5>
-                <h2 id="avgExpense">&#8369;0</h2>
-            </div>
-        </div>
-    </div>
+<div id="expenseTrackingHelp" hidden>Inventory distributions assign purchase cost to the receiving branch. Purchase cost is counted once; the financial date remains the purchase date. Totals include all recorded purchases and expenses.</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-6"><div class="card h-100"><div class="card-body expense-summary-card">
+        <span class="expense-summary-icon" aria-hidden="true"><i class="bi bi-wallet2"></i></span><div><h2 class="h6">Total Expenses</h2><p id="totalExpenses" class="expense-summary-amount">&#8369;0.00</p></div>
+    </div></div></div>
+    <div class="col-md-6"><div class="card h-100"><div class="card-body expense-summary-card">
+        <span class="expense-summary-icon" aria-hidden="true"><i class="bi bi-coin"></i></span><div><div class="d-flex align-items-center gap-1"><h2 class="h6 mb-0">Average Expense</h2><button type="button" class="record-help-button" data-record-help="averageExpenseHelp" data-help-title="Average Expense" aria-label="How Average Expense is calculated"><i class="bi bi-info-circle-fill" aria-hidden="true"></i></button></div><p id="avgExpense" class="expense-summary-amount">&#8369;0.00</p></div>
+    </div></div></div>
 </div>
+<div id="averageExpenseHelp" hidden>Total recorded expenses divided by the number of expense records. This includes purchases and returns counted in the totals.</div>
 
 <div class="card">
     <div class="card-header">
@@ -131,6 +116,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/record_help.js' %}?v=1"></script>
 <script>
     let deletingExpenseId = null;
 
@@ -154,6 +140,10 @@
         const cell = row.insertCell();
         cell.textContent = text;
         return cell;
+    }
+
+    function expenseTypeLabel(value) {
+        return String(value || 'other').split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 
     function expenseItemQuantity(expense) {
@@ -241,7 +231,7 @@
                     const row = document.createElement('tr');
                     addExpenseCell(row, branchName);
                     addExpenseCell(row, formatExpenseDate(expense.date));
-                    addExpenseCell(row, expense.expense_type);
+                    addExpenseCell(row, expenseTypeLabel(expense.expense_type));
                     addExpenseCell(row, expense.description);
                     addExpenseCell(row, expense.distribution_date ? formatExpenseDate(expense.distribution_date) : '—');
                     addExpenseCell(row, expenseItemQuantity(expense));
@@ -257,14 +247,16 @@
                         confirmDeleteExpense(expense.id, expense.description);
                     });
                     if (expense.inventory_purchase || expense.inventory_distribution || expense.flock_purchase) {
-                        actionsCell.textContent=expense.flock_purchase ? 'Flock purchase' : (expense.distribution_reversed_at ? 'Reversed distribution' : (expense.inventory_distribution ? 'Inventory distribution' : 'Remaining inventory purchase'));
+                        const source=document.createElement('span');source.className='expense-source-badge';
+                        source.textContent=expense.flock_purchase ? 'Flock Purchase' : (expense.distribution_reversed_at ? 'Reversed Distribution' : (expense.inventory_distribution ? 'Inventory Distribution' : 'Remaining Inventory Purchase'));
+                        actionsCell.append(source);
                     } else {actionsCell.appendChild(deleteButton);}
 
                     tbody.appendChild(row);
                 });
 
                 document.getElementById('totalExpenses').textContent = '\u20b1' + total.toFixed(2);
-                document.getElementById('avgExpense').textContent = '\u20b1' + (allRecords.length > 0 ? (total / allRecords.length).toFixed(2) : 0);
+                document.getElementById('avgExpense').textContent = '\u20b1' + (allRecords.length > 0 ? total / allRecords.length : 0).toFixed(2);
             }).catch(error => showAppDialog(error.message, 'Expenses'));
     }
 

@@ -1,0 +1,22 @@
+.record-help-button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 30px;width:30px;height:30px;padding:0;border:0;border-radius:6px;color:#0b6ee8;background:transparent;cursor:help}
+.record-help-button:hover,.record-help-button:focus-visible{background:#e3edff;color:#0756ba;outline:2px solid #b8d1ff;outline-offset:1px}
+.record-help-popover{max-width:min(340px,calc(100vw - 24px));box-shadow:0 8px 28px #08233f25;border:1px solid #dce6f6;border-radius:10px}
+.record-help-popover .popover-header{color:#082f78;background:#f7faff;font-size:.85rem;font-weight:700}
+.record-help-popover .popover-body{font-size:.82rem;line-height:1.5;color:#27354a}
+.production-stock-note{display:flex;align-items:center;gap:12px;background:#eaf2ff;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#17457f}
+.production-stock-note>i{font-size:1.35rem;color:#2780f6;flex-shrink:0}
+.record-note-copy{min-width:0;font-size:.85rem}
+.record-note-copy p{margin:0 0 4px;font-weight:600}
+.record-note-copy a{font-size:.8rem}
+.production-records-panel,#productionHistoryPanel{min-height:0}
+.production-empty-state{display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px 16px;text-align:center}
+.production-empty-state>i{font-size:3rem;line-height:1;color:#72a8ff}
+.production-empty-state h2{font-size:1rem;font-weight:700;margin:0}
+.production-empty-state p{font-size:.85rem;color:#64748b;margin:0}
+#productionHistoryPanel>summary{font-size:.9rem;font-weight:600}
+.expense-summary-card{display:flex;align-items:center;gap:16px;min-height:104px}
+.expense-summary-icon{display:grid;place-items:center;flex:0 0 52px;height:52px;border-radius:10px;background:#e9f2ff;color:#0b6ee8;font-size:1.7rem}
+.expense-summary-card h2{font-size:.9rem;font-weight:600;margin:0 0 5px}
+.expense-summary-amount{font-size:1.75rem;font-weight:750;line-height:1.2;margin:5px 0 0;color:#08233f}
+.expense-source-badge{display:inline-block;border:1px solid #b5d0ff;border-radius:6px;padding:4px 8px;color:#0b6ee8;font-size:.75rem;font-weight:600;white-space:nowrap}
+@media(max-width:500px){.production-stock-note{padding:12px;gap:8px}.expense-summary-card{gap:12px}.expense-summary-amount{font-size:1.5rem}}

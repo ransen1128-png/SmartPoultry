@@ -1,22 +1,30 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/record_pages.css' %}?v=1">{% endblock %}
 
 {% block content %}
 <div class="page-heading">
     <div>
         <h1>Production Records</h1>
-        <p>Daily flock production entries and output history</p>
+        <p>Track daily production and available stock.</p>
     </div>
-    <div class="d-flex gap-2"><a href="#productionHistoryPanel" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('productionHistoryPanel').open=true">History ({{ production_history|length }})</a>
+    <div class="d-flex gap-2 flex-wrap"><a href="#productionHistoryPanel" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('productionHistoryPanel').open=true"><i class="bi bi-clock-history me-1" aria-hidden="true"></i>History ({{ production_history|length }})</a>
     <a href="{% url 'production_record_create' %}" class="btn btn-primary btn-sm">
-        <i class="bi bi-plus-lg me-1"></i> Add Record
+        <i class="bi bi-plus-lg me-1" aria-hidden="true"></i> Add Record
     </a></div>
 </div>
 
-<div class="panel-card">
-    <div class="panel-title">Production Records</div>
-    <p class="text-muted">Available stock deducts sales linked to each production entry. Older revenue without a production reference is not deducted.</p>
-    <p><a href="{% url 'revenue' %}#legacy-reconciliation">Review older revenue and link its production stock</a></p>
-    <p class="text-muted">New broiler entries in chicken units deduct live chicken automatically. Older entries can be applied after confirming the chicken are still included in the live flock count; weight measurements are not converted into chicken counts.</p>
+<div class="production-stock-note">
+    <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+    <div class="record-note-copy"><p>Sales linked to production records automatically reduce available stock.</p><a href="{% url 'revenue' %}#legacy-reconciliation">Review older revenue records</a></div>
+    <button type="button" class="record-help-button ms-auto" data-record-help="productionStockHelp" data-help-title="How production stock works" aria-label="How production stock works"><i class="bi bi-question-circle" aria-hidden="true"></i></button>
+</div>
+<div id="productionStockHelp" hidden><ul class="mb-0 ps-3">
+    <li>Older revenue without a production reference is not automatically deducted.</li>
+    <li>New broiler production entries recorded in chicken units reduce the live flock count. Older entries require confirmation before applying the deduction.</li>
+    <li>Weight measurements are not converted into chicken counts.</li>
+</ul></div>
+<div class="panel-card production-records-panel">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0" id="availableProductionTable">
             <thead>
@@ -66,7 +74,12 @@
                     {% endfor %}
                 {% empty %}
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-4">No production stock available. Sold-out batches are in Production History.</td>
+                        <td colspan="10"><div class="production-empty-state">
+                            <i class="bi bi-box-seam" aria-hidden="true"></i>
+                            <h2>No production stock available.</h2>
+                            <p>{% if production_history %}Sold-out batches are in Production History.{% else %}Add a production record to get started.{% endif %}</p>
+                            <a href="{% url 'production_record_create' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Add Record</a>
+                        </div></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -80,3 +93,5 @@
 {% empty %}<tr><td colspan="8">No sold-out production batches.</td></tr>{% endfor %}
 </tbody></table></div></details>
 {% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/record_help.js' %}?v=1"></script>{% endblock %}
