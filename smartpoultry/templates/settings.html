@@ -1,22 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/settings.css' %}?v=3">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/settings.css' %}?v=4">{% endblock %}
 {% block content %}
 <div class="settings-layout">
  <aside class="settings-navigation">
   <h1>Settings</h1>
   <div class="nav flex-column settings-nav" role="tablist" aria-label="Settings sections" aria-orientation="vertical">
    <button class="nav-link {% if request.POST.action == 'password' %}active{% endif %}" id="security-tab" data-bs-toggle="pill" data-bs-target="#security-panel" type="button" role="tab" aria-controls="security-panel" aria-selected="{% if request.POST.action == 'password' %}true{% else %}false{% endif %}"><i class="bi bi-lock" aria-hidden="true"></i>Account Security</button>
-   <button class="nav-link {% if request.POST.action != 'password' %}active{% endif %}" id="notifications-tab" data-bs-toggle="pill" data-bs-target="#notifications-panel" type="button" role="tab" aria-controls="notifications-panel" aria-selected="{% if request.POST.action != 'password' %}true{% else %}false{% endif %}"><i class="bi bi-bell" aria-hidden="true"></i>Notifications</button>
+   <button class="nav-link {% if request.POST.action != 'password' %}active{% endif %}" id="notifications-tab" data-bs-toggle="pill" data-bs-target="#notifications-panel" type="button" role="tab" aria-controls="notifications-panel" aria-selected="{% if request.POST.action != 'password' %}true{% else %}false{% endif %}"><i class="bi bi-bell" aria-hidden="true"></i>Notification Preferences</button>
   </div>
-  <a href="{% url 'profile' %}" class="settings-profile-link"><i class="bi bi-person-lines-fill"></i> Manage Profile</a>
  </aside>
  <div class="tab-content settings-panels">
   <section class="tab-pane fade {% if request.POST.action != 'password' %}show active{% endif %} panel-card settings-panel" id="notifications-panel" role="tabpanel" aria-labelledby="notifications-tab" tabindex="0">
-   <header class="settings-panel-heading"><span class="settings-section-icon"><i class="bi bi-bell" aria-hidden="true"></i></span><div><h2>Notifications</h2><p>Choose your SMARTPOULTRY notification preferences.</p></div></header>
+   <header class="settings-panel-heading"><span class="settings-section-icon"><i class="bi bi-bell" aria-hidden="true"></i></span><div><h2>Notification Preferences</h2><p>Choose your SMARTPOULTRY notification preferences.</p></div></header>
    <form method="post">
     {% csrf_token %}<input type="hidden" name="action" value="notifications">
-    <h3>Notification Preferences</h3><p class="text-muted">Turn notification preferences on or off.</p>
+    <h3>Notification Types</h3><p class="text-muted">Turn notification preferences on or off.</p>
     <div class="form-switch settings-preference-row"><span class="settings-option-icon"><i class="bi bi-envelope" aria-hidden="true"></i></span><label for="email_alerts"><strong>Email alerts</strong><span>Important updates and reports.</span></label><input class="form-check-input settings-switch" type="checkbox" role="switch" id="email_alerts" name="email_alerts" {% if preference.email_alerts %}checked{% endif %}></div>
     <div class="form-switch settings-preference-row"><span class="settings-option-icon"><i class="bi bi-bell" aria-hidden="true"></i></span><label for="email_notifications"><strong>Email notifications</strong><span>Farm activities, flock updates, and system alerts.</span></label><input class="form-check-input settings-switch" type="checkbox" role="switch" id="email_notifications" name="email_notifications" {% if preference.email_notifications %}checked{% endif %}></div>
     <div class="form-switch settings-preference-row"><span class="settings-option-icon"><i class="bi bi-phone" aria-hidden="true"></i></span><label for="in_app_notifications"><strong>In-app notifications</strong><span>Notification preferences within the application.</span></label><input class="form-check-input settings-switch" type="checkbox" role="switch" id="in_app_notifications" name="in_app_notifications" {% if preference.in_app_notifications %}checked{% endif %}></div>
