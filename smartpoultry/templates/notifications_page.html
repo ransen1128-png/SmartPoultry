@@ -12,7 +12,7 @@
     <div class="panel-title">Notifications</div>
     <ul class="notification-list">
         {% for notification in notifications %}
-            <li>
+            <li id="notification-{{ notification.pk }}">
                 <i class="bi bi-bell text-primary"></i>
                 <span>{{ notification.title }}<small class="d-block text-muted">{{ notification.message }}</small></span>
                 <small>{{ notification.created_at|timesince }} ago</small>

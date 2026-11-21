@@ -4,6 +4,22 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Notification, Alert, NotificationPreference
 from .serializers import NotificationSerializer, AlertSerializer, NotificationPreferenceSerializer
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.utils.timesince import timesince
+from django.views.decorators.http import require_GET
+
+
+@login_required(login_url='login')
+@require_GET
+def notification_preview(request):
+    """Read-only header preview, restricted to the signed-in account."""
+    notifications = Notification.objects.filter(user=request.user)
+    return JsonResponse({'unread_count': notifications.filter(is_read=False).count(), 'results': [
+        {'id': item.pk, 'title': item.title, 'message': item.message, 'is_read': item.is_read,
+         'created_at': item.created_at.isoformat(), 'age': timesince(item.created_at) + ' ago'}
+        for item in notifications.order_by('-created_at', '-pk')[:5]
+    ]})
 
 
 class NotificationViewSet(viewsets.ModelViewSet):

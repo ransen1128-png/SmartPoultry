@@ -12,6 +12,7 @@ from . import business_views
 from django.contrib.auth.views import PasswordResetCompleteView
 from .password_reset import RequestPasswordResetView, ConfirmPasswordResetView, ResetRequestDoneView
 from . import admin_notifications
+from notifications.views import notification_preview
 from . import recovery_questions
 
 urlpatterns = [
@@ -78,6 +79,7 @@ urlpatterns = [
     path('forecasting/', views.forecasting_view, name='forecasting'),
     path('scenario-analysis/', views.scenario_analysis_view, name='scenario_analysis'),
     path('notifications/', views.notifications_page, name='notifications_page'),
+    path('notifications/preview/', notification_preview, name='notification_preview'),
     path('farm/branches/', views.farm_branches, name='farm_branches'),
 ]
 

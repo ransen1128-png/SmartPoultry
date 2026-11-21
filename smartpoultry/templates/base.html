@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% if user.is_authenticated %}<link rel="stylesheet" href="{% static 'css/notification_bell.css' %}?v=1">{% endif %}
     {% if user.is_authenticated %}
         <style>
             html[data-session-checking] body { visibility: hidden; }
@@ -56,8 +57,8 @@
                     </div>
                     <div class="topbar-spacer"></div>
                     <div class="dropdown">
-                        <a class="admin-bell" href="#" id="adminNotificationBell" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications" data-poll-url="{% url 'admin_notifications_poll' %}">
-                            <i class="bi bi-bell"></i>
+                        <a class="admin-bell" href="#" id="adminNotificationBell" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications" title="Notifications" data-bell-tooltip data-poll-url="{% url 'admin_notifications_poll' %}">
+                            <i class="bi bi-bell" aria-hidden="true"></i>
                             <span id="adminNotificationCount" {% if not admin_notifications.count %}hidden{% endif %}>{{ admin_notifications.count|default:'0' }}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end p-2 shadow" aria-labelledby="adminNotificationBell" style="width: min(360px, calc(100vw - 32px));">
@@ -165,9 +166,17 @@
             <div class="app-main">
                 <header class="app-topbar">
                     <div class="topbar-spacer"></div>
-                    <a class="topbar-icon" href="{% url 'notifications_page' %}" aria-label="Notifications">
-                        <i class="bi bi-bell"></i>
-                    </a>
+                    <div class="dropdown">
+                        <button type="button" class="topbar-icon notification-bell" id="userNotificationBell" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="userNotificationMenu" aria-label="Notifications" title="Notifications" data-bell-tooltip data-preview-url="{% url 'notification_preview' %}">
+                            <i class="bi bi-bell" aria-hidden="true"></i><span class="notification-badge" id="userNotificationCount" hidden>0</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notification-preview" id="userNotificationMenu" aria-labelledby="userNotificationBell">
+                            <div class="notification-preview-heading"><h2>Notifications</h2><span id="notificationPreviewCount" hidden></span></div>
+                            <p class="notification-preview-status" id="notificationPreviewStatus" role="status">Loading notifications...</p>
+                            <div id="notificationPreviewItems" class="notification-preview-items"></div>
+                            <div class="notification-preview-footer"><a class="btn btn-outline-primary btn-sm w-100" id="viewAllNotifications" href="{% url 'notifications_page' %}"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> View All Notifications</a></div>
+                        </div>
+                    </div>
                     <div class="dropdown">
                         <a class="topbar-user dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown">
                             <span>{{ user.username }}</span>
@@ -203,6 +212,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src="{% static 'js/main.js' %}?v=20261120-popups"></script>
     <script src="{% static 'js/financial_requests.js' %}?v=1"></script>
+    {% if user.is_authenticated %}<script src="{% static 'js/notification_bell.js' %}?v=1"></script>{% endif %}
     {% if user.is_staff or user.is_superuser %}<script src="{% static 'js/admin_notifications.js' %}?v=1"></script>{% endif %}
     {% block extra_js %}{% endblock %}
 </body>

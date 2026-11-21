@@ -1,0 +1,22 @@
+.notification-bell{position:relative;cursor:pointer}
+.admin-bell:hover{color:#0b6ee8;background:#eef5ff}
+.notification-bell:focus-visible,.admin-bell:focus-visible{outline:2px solid #0b6ee8;outline-offset:2px}
+.notification-badge{position:absolute;top:-3px;right:-4px;min-width:18px;height:18px;padding:0 3px;border:2px solid #fff;border-radius:10px;background:#0b6ee8;color:#fff;font-size:.6rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.notification-badge[hidden],#notificationPreviewCount[hidden],#adminNotificationCount[hidden]{display:none!important}
+.notification-preview{width:min(390px,calc(100vw - 24px));padding:0;border:1px solid #dce6f6;border-radius:12px;box-shadow:0 12px 36px #08233f25;overflow:hidden}
+.notification-preview-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid #e6edf7}
+.notification-preview-heading h2{font-size:1rem;font-weight:700;margin:0;color:#08233f}
+#notificationPreviewCount{padding:3px 7px;border-radius:6px;background:#e8f1ff;color:#0b6ee8;font-size:.75rem;white-space:nowrap}
+.notification-preview-items{max-height:min(420px,calc(100dvh - 190px));overflow-y:auto}
+.notification-preview-item{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid #eef2f8;text-decoration:none;color:#08233f}
+.notification-preview-item:hover,.notification-preview-item:focus-visible{background:#f4f8ff;color:#08233f}
+.notification-preview-icon{display:grid;place-items:center;flex:0 0 30px;height:30px;border-radius:8px;color:#0b6ee8;background:#e8f1ff}
+.notification-preview-copy{flex:1;min-width:0}
+.notification-preview-row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.notification-preview-title{font-size:.82rem;font-weight:600;overflow-wrap:anywhere;line-height:1.4}
+.notification-preview-item time{flex-shrink:0;font-size:.65rem;color:#64748b;white-space:nowrap}
+.notification-preview-message{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;font-size:.75rem;line-height:1.4;color:#64748b;margin-top:3px}
+.notification-preview-item[data-unread=true] .notification-preview-title{font-weight:750}
+.notification-preview-status{padding:14px 16px;font-size:.85rem;color:#64748b;margin:0}
+.notification-preview-status[data-error=true]{color:#b42318}
+.notification-preview-footer{padding:10px 12px}
