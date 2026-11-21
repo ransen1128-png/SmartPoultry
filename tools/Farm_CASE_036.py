@@ -13,7 +13,7 @@ FARM_URL = f'{BASE_URL}/farm/branches/'
 
 class LiveFarmTests(unittest.TestCase):
     def test_case_036_complete_farm_profile(self):
-        """CASE-036 | Farm profile created successfully & user proceeds to manage farm branches."""
+        """CASE-036 | Farm profile created successfully & farm information displayed with an Add Branch option."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
         password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
 
@@ -39,7 +39,7 @@ class LiveFarmTests(unittest.TestCase):
                 form = page.locator('form').filter(has=submit)
                 details = {
                     'farm_name': 'SMARTPOULTRY QA Farm',
-                    'farm_location': 'Quezon City',
+                    'farm_address': 'Quezon City',
                     'established_date': '2025-01-01',
                     'contact_email': 'farm-test@example.invalid',
                     'contact_phone': '09123456789',
@@ -61,8 +61,12 @@ class LiveFarmTests(unittest.TestCase):
                 expect(notification).to_be_hidden()
                 expect(page).to_have_url(FARM_URL)
                 expect(submit).to_have_count(0)
-                expect(page.get_by_role('button', name='Add Branch', exact=True)).to_be_visible()
-                print('Actual result: Farm profile created and branch management opened.')
+                information = page.get_by_role('region', name='Farm Information', exact=True)
+                expect(information).to_be_visible()
+                for name in ('farm_name', 'farm_address', 'contact_email', 'contact_phone'):
+                    expect(information.get_by_text(details[name], exact=True)).to_be_visible()
+                expect(information.get_by_role('button', name='Add Branch', exact=True)).to_be_visible()
+                print('Actual result: Farm profile created and farm information displayed with Add Branch.')
             finally:
                 browser.close()
 
