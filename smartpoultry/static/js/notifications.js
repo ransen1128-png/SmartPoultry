@@ -16,7 +16,6 @@
     };
     function classify(message, type = 'info', title = '') {
         const text = `${title} ${message}`.toLowerCase();
-        if (/login-success/.test(type)) return ['success', 'Login Successful!'];
         if (/account-created/.test(type)) return ['success', 'Registration Successful!'];
         if (/password.*(match|mismatch)/.test(text)) return ['warning', 'Passwords Do Not Match!'];
         if (/(duplicate|already exists|already taken|already registered)/.test(text)) return ['warning', 'Record Already Exists!'];

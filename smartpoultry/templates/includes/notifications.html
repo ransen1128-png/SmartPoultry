@@ -1,7 +1,7 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/notifications.css' %}?v=1">
 <div hidden id="popupMessages">
-  {% for message in messages %}<span data-popup-message data-level="{{ message.tags }}"{% if 'account-created' in message.tags %} data-title="Registration Successful!"{% elif 'login-success' in message.tags %} data-title="Login Successful!"{% endif %}>{{ message }}</span>{% endfor %}
+  {% for message in messages %}<span data-popup-message data-level="{{ message.tags }}"{% if 'account-created' in message.tags %} data-title="Registration Successful!"{% endif %}>{{ message }}</span>{% endfor %}
   {% if error %}<span data-popup-message data-level="error" data-title="{{ notification_error_title|default:'Invalid Information!' }}">{{ error }}</span>{% endif %}
 </div>
 <dialog id="appDialog" class="sp-popup" aria-labelledby="appDialogTitle" aria-describedby="appDialogText">

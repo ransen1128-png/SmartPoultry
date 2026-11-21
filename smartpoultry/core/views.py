@@ -111,7 +111,6 @@ def index(request):
             user = authenticate(request, username=username, password=password)
             if user is not None and user.is_active:
                 login(request, user)
-                messages.success(request, "Login Successful!", extra_tags="login-success")
                 if is_admin_user(user):
                     return redirect('admin_dashboard')
                 return redirect('dashboard')

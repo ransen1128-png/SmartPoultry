@@ -11,16 +11,16 @@ from django.test import TestCase, override_settings
 
 @override_settings(PASSWORD_HASHERS=['django.contrib.auth.hashers.MD5PasswordHasher'])
 class NotificationMessageTests(TestCase):
-    def test_success_is_only_queued_after_valid_login(self):
+    def test_login_redirects_without_a_success_popup(self):
         get_user_model().objects.create_user('popup-owner', 'popup@example.invalid', 'Strong-secret!79')
         response = self.client.post('/login/', {'email':'popup@example.invalid','password':'wrong'})
         self.assertContains(response, 'Incorrect Email and Password. Please try again')
         self.assertNotContains(response, 'data-title="Login Failed!"')
         self.assertNotIn('_auth_user_id', self.client.session)
         response = self.client.post('/login/', {'email':'popup@example.invalid','password':'Strong-secret!79'}, follow=True)
-        self.assertContains(response, 'data-title="Login Successful!"')
+        self.assertRedirects(response, '/dashboard/')
+        self.assertNotContains(response, 'Login Successful!')
         self.assertIn('_auth_user_id', self.client.session)
-        self.assertNotContains(self.client.get('/dashboard/'), 'data-title="Login Successful!"')
 
     def test_untrusted_message_is_escaped(self):
         html = render_to_string('includes/notifications.html', {'error':'<script>alert("private")</script>'})

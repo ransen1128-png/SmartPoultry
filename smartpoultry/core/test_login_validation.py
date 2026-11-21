@@ -64,6 +64,6 @@ class LoginInlineBrowserTests(StaticLiveServerTestCase):
                 expect(page.locator('#passwordError')).not_to_be_visible()
                 with page.expect_navigation(wait_until='domcontentloaded'):login.click()
                 self.assertTrue(page.url.endswith('/dashboard/'))
-                expect(page.locator('#appDialogTitle')).to_have_text('Login Successful!')
+                expect(page.locator('#appDialog[open]')).to_have_count(0)
                 self.assertEqual(errors,[])
             finally:browser.close()
