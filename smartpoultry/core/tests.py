@@ -238,8 +238,8 @@ class DashboardInventoryFeedCostTests(TestCase):
         self.assertContains(response, 'month=11&amp;year=2026')
 
 
-class BranchScopedFlockIdTests(TestCase):
-    def test_flock_ids_can_repeat_across_branches_but_not_within_one(self):
+class AutomaticFlockIdTests(TestCase):
+    def test_flock_ids_are_assigned_across_branches_and_capped_at_100(self):
         user = get_user_model().objects.create_user(username='flock-branch-owner', password='password123')
         farm = Farm.objects.create(
             owner=user,
@@ -254,12 +254,11 @@ class BranchScopedFlockIdTests(TestCase):
         self.client.force_login(user)
         endpoint = reverse('flock-list')
 
-        for branch in (labogon, mandaue):
+        for branch, expected_id in ((labogon, '01'), (mandaue, '02')):
             response = self.client.post(
                 endpoint,
                 {
                     'branch': branch.pk,
-                    'flock_id': '01',
                     'breed': 'layers',
                     'quantity': 20,
                     'status': 'active',
@@ -267,21 +266,32 @@ class BranchScopedFlockIdTests(TestCase):
                 content_type='application/json',
             )
             self.assertEqual(response.status_code, 201, response.content)
+            self.assertEqual(response.json()['flock_id'], expected_id)
 
-        duplicate_response = self.client.post(
-            endpoint,
-            {
-                'branch': labogon.pk,
-                'flock_id': '01',
-                'breed': 'layers',
-                'quantity': 15,
-                'status': 'active',
-            },
+        edit_response = self.client.patch(
+            reverse('flock-detail', args=[response.json()['id']]),
+            {'flock_id': '01'},
             content_type='application/json',
         )
+        self.assertEqual(edit_response.status_code, 200, edit_response.content)
+        self.assertEqual(edit_response.json()['flock_id'], '02')
 
-        self.assertEqual(duplicate_response.status_code, 400)
-        self.assertIn('flock_id', duplicate_response.json())
+        Flock.objects.bulk_create([
+            Flock(user=user, branch=labogon, flock_id=f'{number:02d}', breed='layers', quantity=20)
+            for number in range(3, 100)
+        ])
+        payload = {'branch': labogon.pk, 'flock_id': 'manual', 'breed': 'layers', 'quantity': 15}
+        last_response = self.client.post(
+            endpoint,
+            payload,
+            content_type='application/json',
+        )
+        self.assertEqual(last_response.status_code, 201, last_response.content)
+        self.assertEqual(last_response.json()['flock_id'], '100')
+
+        full_response = self.client.post(endpoint, payload, content_type='application/json')
+        self.assertEqual(full_response.status_code, 400)
+        self.assertIn('flock_id', full_response.json())
 
 
 class MortalityProductionDisplayTests(TestCase):

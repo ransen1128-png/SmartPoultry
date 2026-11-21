@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from notifications.utils import create_activity_notification
@@ -21,8 +23,15 @@ class FlockViewSet(viewsets.ModelViewSet):
             raise ValidationError('This flock has recorded activity. Its history must be retained; mark it sold or inactive instead.')
         instance.delete()
 
+    @transaction.atomic
     def perform_create(self, serializer):
-        flock = serializer.save(user=self.request.user)
+        user = get_user_model().objects.select_for_update().get(pk=self.request.user.pk)
+        existing_ids = set(self.get_queryset().values_list('flock_id', flat=True))
+        flock_id = next((f'{number:02d}' for number in range(1, 101)
+                         if f'{number:02d}' not in existing_ids and str(number) not in existing_ids), None)
+        if flock_id is None:
+            raise ValidationError({'flock_id': 'All Flock IDs from 01 to 100 are already in use.'})
+        flock = serializer.save(user=user, flock_id=flock_id)
         create_activity_notification(
             self.request.user,
             f"Successfully added a new flock of {flock.get_breed_display().lower()}",

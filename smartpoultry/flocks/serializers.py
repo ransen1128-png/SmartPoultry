@@ -30,6 +30,11 @@ class FlockSerializer(serializers.ModelSerializer):
         from django.db import transaction
         with transaction.atomic():
             instance=Flock.objects.select_for_update(of=('self',)).get(pk=instance.pk)
+            branch = validated_data.get('branch', instance.branch)
+            if branch != instance.branch and Flock.objects.filter(
+                user_id=instance.user_id, branch=branch, flock_id=instance.flock_id,
+            ).exclude(pk=instance.pk).exists():
+                raise serializers.ValidationError({'branch': 'This flock ID is already used in the selected branch.'})
             if 'status' in validated_data and validated_data['status']!=instance.status:instance.auto_sold=False
             try:return super().update(instance,validated_data)
             except ModelError as error:raise serializers.ValidationError(error.message_dict if hasattr(error,'message_dict') else error.messages)
@@ -57,23 +62,8 @@ class FlockSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Select a branch from your farm.')
         return branch
 
-    def validate_flock_id(self, flock_id):
-        request = self.context.get('request')
-        if not request:
-            return flock_id
-
-        branch = self.initial_data.get('branch', getattr(self.instance, 'branch_id', None))
-        if branch in (None,''):branch=None
-        elif not str(branch).isdigit():return flock_id
-        queryset = Flock.objects.filter(user=request.user, flock_id=flock_id, branch_id=branch)
-        if self.instance:
-            queryset = queryset.exclude(pk=self.instance.pk)
-        if queryset.exists():
-            raise serializers.ValidationError('This flock ID is already used in this branch.')
-        return flock_id
-
     class Meta:
         model = Flock
         fields = ['id', 'branch', 'branch_name', 'flock_id', 'breed', 'quantity', 'status', 'in_history','history_reason','date_added',
                   'expected_production_date', 'notes', 'created_at', 'updated_at','acquisition_source','acquisition_source_display','purchase_amount','delivery_cost','purchase_date','supplier','purchase_total','purchase_expense_id','placement_date','ready_from','readiness_window_end','days_since_placement']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'flock_id', 'created_at', 'updated_at']

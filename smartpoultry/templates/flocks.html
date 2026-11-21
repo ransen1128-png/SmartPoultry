@@ -63,8 +63,8 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Flock ID</label>
-                        <input type="text" class="form-control" name="flock_id" required>
+                        <label class="form-label" for="flockIdentifier">Flock ID</label>
+                        <input id="flockIdentifier" type="text" class="form-control" name="flock_id" placeholder="Assigned when saved" readonly>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Breed</label>
@@ -162,7 +162,6 @@
         const method = editingFlockId ? 'PATCH' : 'POST';
         const payload = {
             branch: formData.get('branch') ? parseInt(formData.get('branch')) : null,
-            flock_id: formData.get('flock_id'),
             breed: formData.get('breed'),
             quantity: parseInt(formData.get('quantity')),
             status: formData.get('status'),
