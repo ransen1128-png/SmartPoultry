@@ -439,6 +439,8 @@ def profile_view(request):
 @login_required(login_url='login')
 def settings_view(request):
     """Account settings for password and notification preferences."""
+    requested_tab = request.POST.get('action') if request.method == 'POST' else request.GET.get('tab')
+    active_settings_tab = 'notifications' if requested_tab == 'notifications' else 'security'
     preference = None
     password_mismatch = False
     try:
@@ -457,7 +459,7 @@ def settings_view(request):
             preference.push_notifications = request.POST.get('push_notifications') == 'on'
             preference.save()
             messages.success(request, 'Notification settings updated.')
-            return redirect('settings')
+            return redirect(reverse('settings') + '?tab=notifications')
 
         if action == 'password':
             current_password = request.POST.get('current_password', '')
@@ -480,7 +482,8 @@ def settings_view(request):
                     messages.success(request, 'Password updated successfully.')
                     return redirect('settings')
 
-    return render(request, 'settings.html', {'preference': preference, 'password_mismatch': password_mismatch})
+    return render(request, 'settings.html', {'preference': preference, 'password_mismatch': password_mismatch,
+        'active_settings_tab': active_settings_tab})
 
 
 @login_required(login_url='login')
