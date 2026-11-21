@@ -1,0 +1,14 @@
+"""Rooster Age Estimator browser test CASE-122."""
+
+from playwright.sync_api import expect
+
+from tools.rooster_age_browser import RoosterAgeBrowserCase
+
+
+class RoosterAgeEstimatorCase122(RoosterAgeBrowserCase):
+    def test_case_122_spur_box_without_outline_is_not_measured(self):
+        card = self.open_saved_estimate(self.saved_estimate())
+        expect(card.locator('.rooster-age-estimate')).to_have_text(self.age_display)
+        expect(card.get_by_text('Spur detected', exact=False).first).to_be_visible()
+        expect(card.get_by_text('Spur outline not detected.', exact=False)).to_be_visible()
+        expect(card.get_by_text('Not measured', exact=False)).to_contain_text('a detected spur outline is required')

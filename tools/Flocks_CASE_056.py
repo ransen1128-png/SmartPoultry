@@ -1,4 +1,4 @@
-"""Verify that new flocks receive the next available numeric ID."""
+"""Verify that saving one new flock assigns a unique numeric ID."""
 
 from getpass import getpass
 import os
@@ -14,8 +14,8 @@ FLOCKS_URL = f'{BASE_URL}/flocks/'
 
 
 class LiveFlockTests(unittest.TestCase):
-    def test_case_056_assign_sequential_flock_id(self):
-        """CASE-056 | Unique numeric Flock ID automatically generated in sequential order."""
+    def test_case_056_save_one_flock_with_automatic_id(self):
+        """CASE-056 | Unique numeric Flock ID generated automatically & flock saved successfully."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
         password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
 
@@ -75,8 +75,12 @@ class LiveFlockTests(unittest.TestCase):
                 self.assertEqual(flock_id, expected_id)
 
                 expect(modal).to_be_hidden()
-                expect(page.locator('#flocksBody').get_by_role('cell', name=flock_id, exact=True)).to_have_count(1)
-                print(f'Actual result: Flock {flock_id} was assigned automatically and appears in Current Flocks.')
+                saved_flock = page.locator('#flocksBody').get_by_role('cell', name=flock_id, exact=True)
+                expect(saved_flock).to_be_visible()
+                page.reload(wait_until='domcontentloaded')
+                expect(saved_flock).to_have_count(1)
+                expect(saved_flock).to_be_visible()
+                print(f'Actual result: Flock {flock_id} was assigned automatically and remained saved after reload.')
             finally:
                 browser.close()
 
