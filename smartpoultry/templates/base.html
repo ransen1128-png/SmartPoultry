@@ -147,7 +147,6 @@
 
                     <div class="sidebar-section">Account</div>
                     <a class="sidebar-link" href="{% url 'activity_history' %}"><i class="bi bi-clock-history"></i> Change History</a>
-                    <a class="sidebar-link" href="{% url 'reliability_status' %}"><i class="bi bi-shield-check"></i> Backup &amp; Evaluation</a>
                     <a class="sidebar-link {% if request.path == '/notifications/' %}active{% endif %}" href="{% url 'notifications_page' %}">
                         <i class="bi bi-bell"></i> Notifications
                     </a>

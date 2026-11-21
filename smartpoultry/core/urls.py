@@ -18,7 +18,6 @@ from . import recovery_questions
 urlpatterns = [
     path('revenue/<int:sale_id>/receipt/',business_views.sales_receipt,name='sales_receipt'),
     path('change-history/',business_views.activity_history,name='activity_history'),
-    path('reliability-status/',business_views.reliability_status,name='reliability_status'),
     path('__health/', views.health_check, name='health_check'),
     path('api/spur-cache/<str:action>/', spur_cache_service, name='spur_cache_service'),
     path('rooster-age-estimator/shared-cache/', connection_page, name='spur_cache_connection'),

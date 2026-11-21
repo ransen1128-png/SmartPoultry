@@ -40,22 +40,3 @@ def activity_history(request):
         keys=set(event.before)|set(event.after)
         event.changes=[{'field':key,'before':event.before.get(key),'after':event.after.get(key)} for key in sorted(keys) if event.before.get(key)!=event.after.get(key)]
     return render(request,'activity_history.html',{'page':page,'kind':kind,'kinds':AuditEvent.objects.filter(owner=request.user).values_list('object_type',flat=True).distinct().order_by('object_type')})
-
-
-@login_required
-@never_cache
-def reliability_status(request):
-    from .evaluation_status import age_evaluation_status
-    from django.conf import settings
-    import json
-    backup={};backup_stale=False
-    if not settings.RUNNING_ON_RENDER:
-        try:
-            raw=json.loads((settings.BASE_DIR/'.database-backups/scheduled/last_run.json').read_text())
-            backup={key:raw.get(key) for key in ('status','started_utc','restore_verified','verified_tables','verified_rows')}
-            from datetime import datetime,timezone,timedelta
-            stamp=datetime.strptime(raw['started_utc'].split('-')[0],'%Y%m%dT%H%M%SZ').replace(tzinfo=timezone.utc)
-            backup_stale=datetime.now(timezone.utc)-stamp>timedelta(hours=36)
-        except (OSError,ValueError,KeyError):backup_stale=True
-    return render(request,'reliability_status.html',{'backup':backup,'hosted':settings.RUNNING_ON_RENDER,
-        'backup_stale':backup_stale,'evaluation':age_evaluation_status()})

@@ -32,7 +32,7 @@ class LogoutSessionTests(TestCase):
         self.client.get(reverse('logout'))
         for name in ('dashboard','farm_branches','flocks','production_records','mortality_records','inventory',
                      'revenue','expenses','analytics','rooster_age_estimator','forecasting','scenario_analysis',
-                     'reports','activity_history','reliability_status','notifications_page','profile','feedback','settings','admin_dashboard'):
+                     'reports','activity_history','notifications_page','profile','feedback','settings','admin_dashboard'):
             with self.subTest(page=name):
                 response = self.client.get(reverse(name))
                 self.assertEqual(response.status_code, 302)
