@@ -433,6 +433,7 @@ def profile_view(request):
 def settings_view(request):
     """Account settings for password and notification preferences."""
     preference = None
+    password_mismatch = False
     try:
         from notifications.models import NotificationPreference
         preference, _ = NotificationPreference.objects.get_or_create(user=request.user)
@@ -459,7 +460,7 @@ def settings_view(request):
             if not request.user.check_password(current_password):
                 messages.error(request, 'Current password is incorrect.')
             elif new_password != confirm_password:
-                messages.error(request, 'New passwords do not match.')
+                password_mismatch = True
             else:
                 try:
                     validate_password(new_password, request.user)
@@ -472,7 +473,7 @@ def settings_view(request):
                     messages.success(request, 'Password updated successfully.')
                     return redirect('settings')
 
-    return render(request, 'settings.html', {'preference': preference})
+    return render(request, 'settings.html', {'preference': preference, 'password_mismatch': password_mismatch})
 
 
 @login_required(login_url='login')

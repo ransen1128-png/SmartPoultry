@@ -27,6 +27,21 @@ class NotificationMessageTests(TestCase):
         self.assertNotIn('<script>alert(', html)
         self.assertIn('&lt;script&gt;', html)
 
+    def test_settings_password_mismatch_is_inline(self):
+        user = get_user_model().objects.create_user('settings-owner', password='Original!79')
+        self.client.force_login(user)
+        response = self.client.post('/settings/', {
+            'action': 'password',
+            'current_password': 'Original!79',
+            'new_password': 'Replacement!79',
+            'confirm_password': 'Different!79',
+        })
+        self.assertContains(response, 'aria-describedby="confirmPasswordError"')
+        self.assertContains(response, 'New passwords do not match.', count=1)
+        self.assertNotContains(response, 'data-popup-message')
+        user.refresh_from_db()
+        self.assertTrue(user.check_password('Original!79'))
+
 
 @unittest.skipUnless(importlib.util.find_spec('playwright'), 'Desktop Playwright is not installed')
 class NotificationBrowserTests(unittest.TestCase):
