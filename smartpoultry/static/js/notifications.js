@@ -181,7 +181,8 @@
         const method = String(options.method || (input instanceof Request ? input.method : 'GET')).toUpperCase();
         const api = url.origin === location.origin && url.pathname.startsWith('/api/');
         const write = api && !['GET','HEAD','OPTIONS'].includes(method);
-        if (!api) return nativeFetch(input, options);
+        // Read-only components may own their inline loading errors (including stale requests).
+        if (!api || (!write && options.spHandleErrors === false)) return nativeFetch(input, options);
         const key = `${method}:${url.href}:${typeof options.body === 'string' ? options.body : ''}`;
         if (write && writes.has(key)) return (await writes.get(key)).clone();
         const button = write && document.activeElement?.matches('button') ? document.activeElement : null;

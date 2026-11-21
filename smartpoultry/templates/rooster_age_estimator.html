@@ -1,16 +1,41 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/record_pages.css' %}?v=1"><link rel="stylesheet" href="{% static 'css/analysis_workspaces.css' %}?v=1">{% endblock %}
 
 {% block content %}
-<p><a class="btn btn-outline-primary" href="{% url 'spur_cache_connection' %}">Shared spur cache</a></p>
 <div class="page-heading">
-    <div>
-        <h1>Rooster Age Estimator</h1>
-        <p>Upload chicken images for spur assessment</p>
-    </div>
+    <div class="workspace-title"><span class="workspace-icon" aria-hidden="true"><i class="bi bi-magic"></i></span><div><h1>Rooster Age Estimator</h1><p>Estimate a rooster's age using spur analysis.</p></div></div>
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'spur_cache_connection' %}"><i class="bi bi-layers me-1" aria-hidden="true"></i>Spur Cache</a>
 </div>
-
-<form class="panel-card rooster-estimator" method="post" enctype="multipart/form-data">
+<div class="estimator-hint"><i class="bi bi-info-circle-fill" aria-hidden="true"></i>Upload a clear photo of the rooster's leg or spur (close-up) to estimate its age.</div>
+<form class="panel-card rooster-estimator estimator-workspace" method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    <div class="estimator-layout">
+        <label class="estimator-dropzone" id="estimatorDropzone" for="photos">
+            <input class="visually-hidden" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required aria-describedby="photoSelection">
+            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i><strong>Choose a photo</strong>
+            <span id="photoSelection" role="status">Drag and drop or click to upload</span>
+            <span class="btn btn-outline-primary btn-sm"><i class="bi bi-image me-1" aria-hidden="true"></i>Choose Files</span>
+        </label>
+        <div class="estimator-options">
+            <h2>Analysis Options</h2>
+            <div class="estimator-option"><label for="useCalibration"><input id="useCalibration" class="form-check-input me-2" type="checkbox" aria-controls="calibrationFields" aria-expanded="false">Optional measurement calibration</label><button type="button" class="record-help-button" data-record-help="calibrationHelp" data-help-title="Measurement calibration" aria-label="About measurement calibration"><i class="bi bi-info-circle-fill" aria-hidden="true"></i></button></div>
+            <div id="calibrationFields" class="mb-3" hidden>
+                <label class="form-label" for="pixelsPerCm">Known image scale (pixels per centimeter)</label>
+                <input id="pixelsPerCm" class="form-control" type="number" name="pixels_per_cm" min="0.000001" step="any" placeholder="Measured scale" disabled>
+                <small>Use one photo and a reference in the same plane as the spur.</small>
+            </div>
+            {% if spur_api_available %}
+            <div class="estimator-option"><label for="useSpurApi"><input id="useSpurApi" class="form-check-input me-2" type="checkbox" name="use_spur_api" checked>Combined analysis (local model + Gemini)</label><button type="button" class="record-help-button" data-record-help="combinedHelp" data-help-title="Combined analysis" aria-label="About combined analysis"><i class="bi bi-info-circle-fill" aria-hidden="true"></i></button></div>
+            {% endif %}
+            <div class="rooster-actions estimator-actions">
+                <button class="btn btn-primary" type="submit" name="analysis_mode" value="full" data-record-help="fullAnalysisHelp" data-help-title="Estimate Age"><i class="bi bi-stars me-1" aria-hidden="true"></i>Estimate Age</button>
+                <button class="btn btn-outline-primary" type="submit" name="analysis_mode" value="age_only" data-record-help="quickAnalysisHelp" data-help-title="Quick Age Estimate">Quick Age Estimate</button>
+            </div>
+        </div>
+    </div>
+    <div id="roosterCards" class="rooster-card-list"></div>
+    <details class="estimator-details"><summary>Model availability and limitations</summary>
     {% if not models_checked %}
         <div class="alert alert-info" role="status">Upload a photo to start analysis. Model availability is checked when you submit; the first analysis after a server restart also loads the models. Age predictions are estimates; accuracy on unseen chickens is not established.</div>
     {% else %}
@@ -39,33 +64,12 @@
         </div>
     {% endif %}
     {% endif %}
-    <div class="rooster-upload">
-        <label for="photos">Chicken images</label>
-        <input class="form-control" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required>
-    </div>
-
-    <p>You can upload a leg or spur close-up; a whole-chicken photo is not required. Chicken assessment also considers the leg and spur model results. All model outputs are experimental and can be wrong.</p>
-    <details class="mb-3">
-        <summary>Optional measurement calibration</summary>
-        <label for="pixelsPerCm">Known image scale (pixels per centimeter)</label>
-        <input id="pixelsPerCm" class="form-control" type="number" name="pixels_per_cm" min="0.000001" step="any" placeholder="Leave blank unless you have a measured reference">
-        <small>Use one photograph at a time. Enter a scale measured from a ruler or calibrated reference in the same plane as the spur. Otherwise only pixel lengths are reported. Camera perspective and model errors still affect measurements.</small>
-    </details>
-
-    <div id="roosterCards" class="rooster-card-list"></div>
-
-    {% if spur_api_available %}
-        <label class="d-block mb-3"><input type="checkbox" name="use_spur_api" checked> Combined analysis: local models + Gemini for missed spur regions. Sends the photo to Gemini only when needed. Age uses the local model; lengths require a local spur outline.</label>
-    {% endif %}
-
-    <div class="rooster-actions">
-        <button class="btn btn-primary" type="submit" name="analysis_mode" value="full">
-            <i class="bi bi-upload"></i> Estimate Age + full photo analysis
-        </button>
-        <button class="btn btn-outline-primary" type="submit" name="analysis_mode" value="age_only">Quick age estimate</button>
-        <small>Quick mode uses the same age model and skips chicken/spur detection and length measurement.</small>
-    </div>
+    <p>You can upload a leg or spur close-up; a whole-chicken photo is not required. All model outputs are predictions and can be wrong.</p></details>
 </form>
+<div id="calibrationHelp" hidden>Enter a scale measured from a ruler or calibrated reference in the same plane as the spur. Without a scale, only pixel lengths are reported. Perspective and model errors still affect measurements.</div>
+<div id="combinedHelp" hidden>Sends the photo to Gemini only when needed for missed spur regions. Age uses the local model; length requires a usable spur outline.</div>
+<div id="fullAnalysisHelp" hidden>Runs spur detection, outline analysis and age prediction for a detailed result. Length is reported only when a usable outline is detected.</div>
+<div id="quickAnalysisHelp" hidden>Provides a faster age estimate using the same age model, without chicken/spur detection or length measurement.</div>
 
 {% if results %}
 <section class="rooster-results" id="latest-results">
@@ -173,9 +177,9 @@
 </section>
 {% endif %}
 
-<section class="rooster-saved">
+<section class="rooster-saved estimator-saved">
     <div class="section-heading-row">
-        <h2 class="section-heading">Saved Estimates</h2>
+        <h2 class="section-heading"><i class="bi bi-clock-history me-2" aria-hidden="true"></i>Saved Estimates</h2>
         <span>{{ saved_estimates|length }} recent record{{ saved_estimates|length|pluralize }}</span>
     </div>
     <div class="panel-card rooster-saved-list">
@@ -209,13 +213,15 @@
                 </div>
             </article>
         {% empty %}
-            <p class="text-muted mb-0">No rooster age estimates saved yet.</p>
+            <div class="estimator-empty"><i class="bi bi-folder" aria-hidden="true"></i><strong>No rooster age estimates saved yet.</strong><p>Your saved results will appear here after an analysis.</p></div>
         {% endfor %}
     </div>
 </section>
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/record_help.js' %}?v=1"></script>
+<script src="{% static 'js/estimator_upload.js' %}?v=1"></script>
 {{ results|json_script:"poultry-analysis-results" }}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
