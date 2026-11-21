@@ -81,6 +81,21 @@ class FarmBranchesTests(TestCase):
         self.assertContains(response,'Branch One')
         self.assertContains(self.client.get(self.url,{'q':'missing'}),'No farms or branches match your search.')
 
+    def test_main_branch_name_is_reserved_for_original_farm(self):
+        for name in ('Main Branch','main branch','MAIN BRANCH',' Main   Branch ','Main\tBranch'):
+            with self.subTest(name=name):
+                response=self.post(branch_name=name)
+                self.assertEqual(response.status_code,400)
+                self.assertIn('reserved for the original farm',response.json()['errors']['branch_name'][0]['message'])
+                self.assertFalse(Branch.objects.filter(farm=self.farm).exists())
+        self.assertEqual(self.post().status_code,200)
+        branch=Branch.objects.get(farm=self.farm)
+        self.assertEqual(self.post(branch_id=branch.pk,branch_name='Main Branch').status_code,400)
+        branch.refresh_from_db()
+        self.assertEqual(branch.name,'Branch One')
+        self.farm.refresh_from_db()
+        self.assertEqual(self.farm.name,'Original Farm')
+
     def test_owner_scope_and_cannot_delete_original_farm(self):
         other=get_user_model().objects.create_user('other-owner')
         foreign_farm=create_farm(other,'Private Farm')

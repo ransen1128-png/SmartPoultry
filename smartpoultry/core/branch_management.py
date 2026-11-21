@@ -39,6 +39,8 @@ class BranchForm(forms.Form):
 
     def clean_branch_name(self):
         name = self.cleaned_data['branch_name']
+        if ' '.join(name.split()).casefold() == 'main branch':
+            raise forms.ValidationError('"Main Branch" is reserved for the original farm. Choose another branch name.')
         existing = Branch.objects.filter(farm=self.farm, name__iexact=name)
         if self.branch:
             existing = existing.exclude(pk=self.branch.pk)
