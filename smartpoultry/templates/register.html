@@ -7,72 +7,31 @@
     <title>Register - SMARTPOULTRY</title>
     <link rel="stylesheet" href="{% static 'css/password_toggle.css' %}?v=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 24px 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .register-container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 450px;
-        }
-        .register-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .register-header h1 {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            color: #667eea;
-            font-weight: bold;
-        }
-        .register-logo {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            object-fit: contain;
-            background: #fff;
-        }
-        .errorlist { color: #b42318; font-size: .9rem; padding-left: 20px; }
-        .password-rules { color: #596579; font-size: .85rem; list-style: none; padding-left: 0; margin: 10px 0 0; }
-        .password-rules li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; line-height: 1.5; }
-        .password-rule-check { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 16px; height: 16px; margin-top: 2px; border: 1.5px solid #9aa5b4; border-radius: 3px; color: white; font-size: 12px; font-weight: 700; line-height: 1; }
-        .password-rules li[data-met="true"] .password-rule-check { background: #15803d; border-color: #15803d; }
-        .password-rules li[data-met="true"] .password-rule-check::before { content: "\2713"; }
-        .password-rules li[data-met="true"] { color: #15803d; }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}?v=1">
 </head>
 <body>
     <div class="register-container">
         <div class="register-header">
-            <h1><img src="{% static 'images/smartpoultry_logo.svg' %}" alt="SMARTPOULTRY logo" class="register-logo"> SMARTPOULTRY</h1>
-            <p>Create your farm account</p>
+            <img src="{% static 'images/smartpoultry_logo.svg' %}" alt="" class="register-logo">
+            <div class="register-brand"><h1>SMARTPOULTRY</h1><p>Create your farm account</p></div>
         </div>
         <form method="post">
             {% csrf_token %}
+            <div class="register-columns">
+            <fieldset class="register-column">
+                <legend class="register-section-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3Z"/></svg>Account Information</legend>
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" value="{{ request.POST.username }}" autocomplete="username" required>
+                <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" value="{{ request.POST.username }}" autocomplete="username" required>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ request.POST.email }}" autocomplete="email" required>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" value="{{ request.POST.email }}" autocomplete="email" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <div class="password-field">
-                    <input type="password" class="form-control" id="password" name="password" minlength="8" autocomplete="new-password" aria-describedby="passwordRequirements" required>
+                    <input type="password" class="form-control" id="password" placeholder="Enter password" name="password" minlength="8" autocomplete="new-password" aria-describedby="passwordRequirements" required>
                     {% include 'includes/password_toggle.html' with target='password' label='password' %}
                 </div>
                 <ul class="password-rules" id="passwordRequirements" aria-label="Password requirements">
@@ -87,14 +46,15 @@
             <div class="mb-3">
                 <label for="password2" class="form-label">Confirm Password</label>
                 <div class="password-field">
-                    <input type="password" class="form-control" id="password2" name="password2" minlength="8" autocomplete="new-password" aria-describedby="passwordMatch" required>
+                    <input type="password" class="form-control" id="password2" placeholder="Confirm password" name="password2" minlength="8" autocomplete="new-password" aria-describedby="passwordMatch" required>
                     {% include 'includes/password_toggle.html' with target='password2' label='confirm password' %}
                 </div>
                 <div id="passwordMatch" class="form-text" aria-live="polite">Re-enter your password to make sure it matches.</div>
             </div>
-            <fieldset class="border-top pt-3 mt-3">
-                <legend class="h5">Account Recovery Questions</legend>
-                <p class="text-muted small">Choose two different questions. Use private answers of at least six characters that others cannot guess. You may use unique secret phrases instead of public personal information. Remember both answers for password recovery.</p>
+            </fieldset>
+            <fieldset class="register-column register-recovery">
+                <legend class="register-section-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6Z"/><path d="m8 12 3 3 5-6"/></svg>Account Recovery Questions</legend>
+                <p class="recovery-guidance">Choose two different questions. Use private answers of at least six characters that others cannot guess. You may use unique secret phrases instead of public personal information. Remember both answers for password recovery.</p>
                 {{ recovery_form.non_field_errors }}
                 {% for field in recovery_form %}
                     <div class="mb-3">
@@ -111,8 +71,11 @@
                     </div>
                 {% endfor %}
             </fieldset>
-            <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>
-            <a href="{% url 'login' %}" class="btn btn-outline-secondary w-100">Already have an account? Login</a>
+            </div>
+            <div class="register-actions"><div class="register-action-buttons">
+                <button type="submit" class="btn btn-primary"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M2 21v-3a7 7 0 0 1 14 0v3ZM20 8v8m-4-4h8"/></svg>Register</button>
+                <a href="{% url 'login' %}" class="btn btn-outline-secondary">Already have an account? <strong>Login</strong></a>
+            </div></div>
         </form>
     </div>
     {% include 'includes/notifications.html' with notification_error_title='Registration Failed!' %}
