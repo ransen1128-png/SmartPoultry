@@ -17,6 +17,27 @@ from django.urls import reverse
 from .email_backend import ResendEmailBackend, EmailDeliveryError
 
 
+class ResetPasswordFeedbackTests(SimpleTestCase):
+    def form(self, first, second):
+        from .password_reset import ResetPasswordForm
+        user = get_user_model()(username='farm-owner', email='owner@example.com')
+        return ResetPasswordForm(user, {'new_password1': first, 'new_password2': second})
+
+    def test_strength_errors_belong_to_new_password_only(self):
+        form = self.form('123123', '123123')
+        self.assertFalse(form.is_valid())
+        self.assertIn('new_password1', form.errors)
+        self.assertNotIn('new_password2', form.errors)
+
+    def test_confirmation_only_reports_mismatch(self):
+        form = self.form('Replacement!493', 'Different!493')
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['new_password2'], ['Password not match'])
+
+    def test_matching_strong_password_is_accepted(self):
+        self.assertTrue(self.form('Replacement!493', 'Replacement!493').is_valid())
+
+
 @override_settings(
     EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
     DEFAULT_FROM_EMAIL='SmartPoultry <noreply@example.com>',

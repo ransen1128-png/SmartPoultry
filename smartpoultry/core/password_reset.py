@@ -45,6 +45,20 @@ class ResetPasswordForm(SetPasswordForm):
         self.fields['new_password2'].label = 'Confirm Password'
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
+        self.fields['new_password1'].widget.attrs['aria-describedby'] = 'resetPasswordRequirements resetChecklistStatus resetPasswordRequired'
+        self.fields['new_password2'].widget.attrs['aria-describedby'] = 'resetPasswordMatch'
+
+    def clean_new_password2(self):
+        # Django attaches strength errors to confirmation by default. Keep them
+        # beside the new password, and reserve confirmation for matching feedback.
+        from django.core.exceptions import ValidationError
+        try:
+            return super().clean_new_password2()
+        except ValidationError as error:
+            if any(item.code == 'password_mismatch' for item in error.error_list):
+                raise ValidationError('Password not match', code='password_mismatch') from error
+            self.add_error('new_password1', error)
+            return self.cleaned_data.get('new_password2')
 
 
 class RecoveryIdentityForm(ResetEmailForm):
