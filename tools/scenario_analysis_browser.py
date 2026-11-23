@@ -1,6 +1,7 @@
 """Shared fixtures for the Scenario Analysis browser cases."""
 
-from playwright.sync_api import expect
+from tools.automation_browser import expect
+
 
 from tools.ml_predictions_browser import NovemberFinancialBrowserCase
 

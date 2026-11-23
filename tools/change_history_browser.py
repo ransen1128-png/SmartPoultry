@@ -1,6 +1,7 @@
 """Shared correction fixtures for Change History browser cases."""
 
-from playwright.sync_api import expect
+from tools.automation_browser import expect
+
 
 from core.models import AuditEvent
 from production.models import MortalityRecord, ProductionRecord

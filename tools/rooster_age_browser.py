@@ -1,12 +1,13 @@
 """Browser fixtures for Rooster Age Estimator saved-result and validation cases."""
 
+from tools.automation_browser import expect
+
 import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from django.core.files import File
 from PIL import Image
-from playwright.sync_api import expect
 
 from core.models import RoosterAgeEstimate
 from tools.feed_inventory_browser import FeedInventoryBrowserCase

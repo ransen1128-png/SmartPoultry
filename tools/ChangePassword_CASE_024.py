@@ -4,12 +4,11 @@ import os
 import unittest
 from uuid import uuid4
 
-from playwright.sync_api import expect, sync_playwright
 
 try:
-    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+    from tools.automation_browser import expect, launch_browser, live_base_url, read_test_value
 except ModuleNotFoundError:
-    from automation_browser import launch_browser, live_base_url, read_test_value
+    from automation_browser import expect, launch_browser, live_base_url, read_test_value
 
 
 BASE_URL = live_base_url()
@@ -43,22 +42,21 @@ class LiveChangePasswordTests(unittest.TestCase):
         temporary = os.environ.get('SMARTPOULTRY_TEST_NEW_PASSWORD') or f'Case!025-{uuid4().hex}'
         self.assertNotEqual(temporary, original, 'The new password must differ from the current password.')
 
-        with sync_playwright() as playwright:
-            browser = launch_browser(playwright)
+        browser = launch_browser()
+        try:
+            page = sign_in(browser, email, original)
+            update_password(page, original, temporary)
             try:
-                page = sign_in(browser, email, original)
-                update_password(page, original, temporary)
-                try:
-                    expect(page.get_by_text(SUCCESS_MESSAGE, exact=True).filter(visible=True)).to_be_visible()
-                    sign_in(browser, email, temporary)
-                    print(f'\nActual result: {SUCCESS_MESSAGE} The temporary password worked at sign-in.')
-                finally:
-                    update_password(page, temporary, original)
-                    expect(page.get_by_text(SUCCESS_MESSAGE, exact=True).filter(visible=True)).to_be_visible()
-                    sign_in(browser, email, original)
-                    print('Cleanup verified: The original password works at sign-in.')
+                expect(page.get_by_text(SUCCESS_MESSAGE, exact=True).filter(visible=True)).to_be_visible()
+                sign_in(browser, email, temporary)
+                print(f'\nActual result: {SUCCESS_MESSAGE} The temporary password worked at sign-in.')
             finally:
-                browser.close()
+                update_password(page, temporary, original)
+                expect(page.get_by_text(SUCCESS_MESSAGE, exact=True).filter(visible=True)).to_be_visible()
+                sign_in(browser, email, original)
+                print('Cleanup verified: The original password works at sign-in.')
+        finally:
+            browser.close()
 
 
 if __name__ == '__main__':

@@ -1,10 +1,11 @@
 """Shared fixtures for Dashboard, Farms, and Flocks coverage cases."""
 
+from tools.automation_browser import expect
+
 from datetime import date
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 
-from playwright.sync_api import expect
 
 from core.models import Branch
 from production.models import ProductionRecord

@@ -1,9 +1,10 @@
 """Shared November 2026 fixtures for the Reports browser cases."""
 
+from tools.automation_browser import expect
+
 from datetime import date, datetime, timezone
 from unittest.mock import patch
 
-from playwright.sync_api import expect
 
 from expenses.models import Expense
 from reports.models import Report

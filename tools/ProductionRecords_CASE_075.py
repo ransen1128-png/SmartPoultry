@@ -7,8 +7,9 @@ if __name__ == "__main__":
 
     raise SystemExit(main(["75", *sys.argv[1:]]))
 
+from tools.automation_browser import expect
+
 from datetime import timedelta
-from playwright.sync_api import expect
 from production.models import ProductionRecord
 
 from tools.automation_browser import expect_field_error

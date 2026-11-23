@@ -1,9 +1,10 @@
 """November 2026 fixtures for the ML Predictions browser cases."""
 
+from tools.automation_browser import expect
+
 from datetime import date
 from unittest.mock import patch
 
-from playwright.sync_api import expect
 
 from expenses.models import Expense
 from production.models import ProductionRecord

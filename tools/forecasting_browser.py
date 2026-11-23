@@ -1,6 +1,7 @@
 """Shared fixtures for the Forecasting browser cases."""
 
-from playwright.sync_api import expect
+from tools.automation_browser import expect
+
 
 from expenses.models import Expense
 from production.models import ProductionRecord

@@ -1,6 +1,7 @@
 """Shared setup for Feedback browser cases."""
 
-from playwright.sync_api import expect
+from tools.automation_browser import expect
+
 
 from core.models import Feedback
 from tools.feed_inventory_browser import FeedInventoryBrowserCase

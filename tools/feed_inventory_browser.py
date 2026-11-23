@@ -1,19 +1,16 @@
 """Shared browser fixtures for Feed & Inventory cases."""
 
 from decimal import Decimal
-import os
-from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import override_settings
 from django.utils import timezone
-from playwright.sync_api import expect, sync_playwright
 
 try:
-    from tools.automation_browser import expect_field_error, launch_browser
+    from tools.automation_browser import expect, expect_field_error, launch_browser
 except ModuleNotFoundError:
-    from automation_browser import expect_field_error, launch_browser
+    from automation_browser import expect, expect_field_error, launch_browser
 
 from core.models import Branch, Farm
 from flocks.models import Flock
@@ -30,11 +27,7 @@ class FeedInventoryBrowserCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # Fixture operations run serially while Playwright's sync driver owns an event loop.
-        cls.enterClassContext(patch.dict(os.environ, DJANGO_ALLOW_ASYNC_UNSAFE='true'))
-        playwright = sync_playwright().start()
-        cls.addClassCleanup(playwright.stop)
-        cls.browser = launch_browser(playwright)
+        cls.browser = launch_browser()
         cls.addClassCleanup(cls.browser.close)
 
     def setUp(self):

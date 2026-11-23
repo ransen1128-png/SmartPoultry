@@ -14,6 +14,9 @@ from tools.reports_browser import ReportsBrowserCase
 class ReportsCase153(ReportsBrowserCase):
     def test_case_153_reports(self):
         report = self.generate_monthly_report()
+        self.page.locator('#appDialog[open]').get_by_role(
+            'button', name='Close notification', exact=True,
+        ).click()
         with self.page.expect_download() as download:
             self.generated_report_row(report).get_by_role('link', name='Download', exact=True).click()
         self.assertEqual(

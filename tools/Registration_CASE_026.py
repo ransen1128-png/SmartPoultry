@@ -4,12 +4,11 @@ import os
 import unittest
 from uuid import uuid4
 
-from playwright.sync_api import expect, sync_playwright
 
 try:
-    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+    from tools.automation_browser import expect, launch_browser, live_base_url, read_test_value
 except ModuleNotFoundError:
-    from automation_browser import launch_browser, live_base_url, read_test_value
+    from automation_browser import expect, launch_browser, live_base_url, read_test_value
 
 
 REGISTER_URL = f'{live_base_url()}/register/'
@@ -26,28 +25,27 @@ class LiveRegistrationTests(unittest.TestCase):
             (unique, registered_email, 'Email already registered.'),
         )
 
-        with sync_playwright() as playwright:
-            browser = launch_browser(playwright)
-            try:
-                page = browser.new_page(locale='en-US')
-                for username, email, expected_error in scenarios:
-                    with self.subTest(expected_error=expected_error):
-                        page.goto(REGISTER_URL, timeout=90_000, wait_until='domcontentloaded')
-                        page.get_by_label('Username', exact=True).fill(username)
-                        page.get_by_label('Email', exact=True).fill(email)
-                        for label in ('Password', 'Confirm Password'):
-                            page.get_by_label(label, exact=True).fill('Synthetic!027Password')
-                        for number, answer in enumerate(('Synthetic cedar answer', 'Synthetic maple answer'), start=1):
-                            page.get_by_label(f'Recovery Question {number}', exact=True).select_option(index=number - 1)
-                            page.get_by_label(f'Answer {number}', exact=True).fill(answer)
+        browser = launch_browser()
+        try:
+            page = browser.new_page(locale='en-US')
+            for username, email, expected_error in scenarios:
+                with self.subTest(expected_error=expected_error):
+                    page.goto(REGISTER_URL, timeout=90_000, wait_until='domcontentloaded')
+                    page.get_by_label('Username', exact=True).fill(username)
+                    page.get_by_label('Email', exact=True).fill(email)
+                    for label in ('Password', 'Confirm Password'):
+                        page.get_by_label(label, exact=True).fill('Synthetic!027Password')
+                    for number, answer in enumerate(('Synthetic cedar answer', 'Synthetic maple answer'), start=1):
+                        page.get_by_label(f'Recovery Question {number}', exact=True).select_option(index=number - 1)
+                        page.get_by_label(f'Answer {number}', exact=True).fill(answer)
 
-                        page.get_by_role('button', name='Register', exact=True).click()
-                        alert = page.get_by_role('alert').get_by_text(expected_error, exact=True)
-                        expect(alert).to_be_visible()
-                        expect(page).to_have_url(REGISTER_URL)
-                        print(f'Actual result: {expected_error}')
-            finally:
-                browser.close()
+                    page.get_by_role('button', name='Register', exact=True).click()
+                    alert = page.get_by_role('alert').get_by_text(expected_error, exact=True)
+                    expect(alert).to_be_visible()
+                    expect(page).to_have_url(REGISTER_URL)
+                    print(f'Actual result: {expected_error}')
+        finally:
+            browser.close()
 
 
 if __name__ == '__main__':

@@ -7,7 +7,8 @@ if __name__ == "__main__":
 
     raise SystemExit(main(["42", *sys.argv[1:]]))
 
-from playwright.sync_api import expect
+from tools.automation_browser import expect
+
 
 from core.models import Branch, Farm
 from tools.farm_workflows_browser import FarmWorkflowCase

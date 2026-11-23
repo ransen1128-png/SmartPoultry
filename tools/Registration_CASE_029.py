@@ -3,12 +3,11 @@
 import unittest
 from uuid import uuid4
 
-from playwright.sync_api import expect, sync_playwright
 
 try:
-    from tools.automation_browser import launch_browser, live_base_url
+    from tools.automation_browser import expect, launch_browser, live_base_url
 except ModuleNotFoundError:
-    from automation_browser import launch_browser, live_base_url
+    from automation_browser import expect, launch_browser, live_base_url
 
 
 REGISTER_URL = f'{live_base_url()}/register/'
@@ -20,28 +19,27 @@ class LiveRegistrationTests(unittest.TestCase):
         """CASE-029 | Registration failed & duplicate recovery question error shown."""
         username = f'case-029-{uuid4().hex}'
 
-        with sync_playwright() as playwright:
-            browser = launch_browser(playwright)
-            try:
-                page = browser.new_page(locale='en-US')
-                page.goto(REGISTER_URL, timeout=90_000, wait_until='domcontentloaded')
-                page.get_by_label('Username', exact=True).fill(username)
-                page.get_by_label('Email', exact=True).fill(f'{username}@example.invalid')
-                page.get_by_label('Password', exact=True).fill('Synthetic!030Password')
-                confirmation = page.get_by_label('Confirm Password', exact=True)
-                confirmation.fill('Synthetic!030Password')
-                for number, answer in enumerate(('Synthetic cedar answer', 'Synthetic maple answer'), start=1):
-                    page.get_by_label(f'Recovery Question {number}', exact=True).select_option(index=0)
-                    page.get_by_label(f'Answer {number}', exact=True).fill(answer)
+        browser = launch_browser()
+        try:
+            page = browser.new_page(locale='en-US')
+            page.goto(REGISTER_URL, timeout=90_000, wait_until='domcontentloaded')
+            page.get_by_label('Username', exact=True).fill(username)
+            page.get_by_label('Email', exact=True).fill(f'{username}@example.invalid')
+            page.get_by_label('Password', exact=True).fill('Synthetic!030Password')
+            confirmation = page.get_by_label('Confirm Password', exact=True)
+            confirmation.fill('Synthetic!030Password')
+            for number, answer in enumerate(('Synthetic cedar answer', 'Synthetic maple answer'), start=1):
+                page.get_by_label(f'Recovery Question {number}', exact=True).select_option(index=0)
+                page.get_by_label(f'Answer {number}', exact=True).fill(answer)
 
-                page.get_by_role('button', name='Register', exact=True).click()
+            page.get_by_role('button', name='Register', exact=True).click()
 
-                error = page.get_by_text(DUPLICATE_QUESTION_MESSAGE, exact=True).filter(visible=True)
-                expect(error.first).to_be_visible()
-                expect(page).to_have_url(REGISTER_URL)
-                print(f'Actual result: {DUPLICATE_QUESTION_MESSAGE}')
-            finally:
-                browser.close()
+            error = page.get_by_text(DUPLICATE_QUESTION_MESSAGE, exact=True).filter(visible=True)
+            expect(error.first).to_be_visible()
+            expect(page).to_have_url(REGISTER_URL)
+            print(f'Actual result: {DUPLICATE_QUESTION_MESSAGE}')
+        finally:
+            browser.close()
 
 
 if __name__ == '__main__':

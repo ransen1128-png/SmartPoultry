@@ -2,11 +2,14 @@
 
 from getpass import getpass
 import os
-from pathlib import Path
 import sys
 from unittest import SkipTest
 
-from playwright.sync_api import expect
+try:
+    from tools.selenium_browser import expect, launch_browser
+except ModuleNotFoundError:
+    from selenium_browser import expect, launch_browser
+
 
 
 def expect_field_error(field):
@@ -15,18 +18,6 @@ def expect_field_error(field):
     ids = (field.get_attribute('aria-describedby') or '').split()
     alerts = field.page.locator('[data-sp-field-error]').filter(has_text=message)
     expect(alerts.and_(field.page.locator(', '.join(f'#{value}' for value in ids)))).to_be_visible()
-
-
-def launch_browser(playwright):
-    channel = os.environ.get('SMARTPOULTRY_BROWSER_CHANNEL')
-    if channel:
-        return playwright.chromium.launch(channel=channel, headless=True)
-    if not Path(playwright.chromium.executable_path).is_file():
-        raise RuntimeError(
-            'Install Chromium with "python -m playwright install chromium", '
-            'or set SMARTPOULTRY_BROWSER_CHANNEL to an installed Chrome or Edge channel.'
-        )
-    return playwright.chromium.launch(headless=True)
 
 
 def live_base_url():

@@ -2,12 +2,11 @@
 
 import unittest
 
-from playwright.sync_api import expect, sync_playwright
 
 try:
-    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+    from tools.automation_browser import expect, launch_browser, live_base_url, read_test_value
 except ModuleNotFoundError:
-    from automation_browser import launch_browser, live_base_url, read_test_value
+    from automation_browser import expect, launch_browser, live_base_url, read_test_value
 
 
 BASE_URL = live_base_url()
@@ -19,23 +18,22 @@ class LiveLoginTests(unittest.TestCase):
         email = read_test_value('SMARTPOULTRY_TEST_ADMIN_EMAIL', 'Admin test account email: ', secret=False)
         password = read_test_value('SMARTPOULTRY_TEST_ADMIN_PASSWORD', 'Admin test account password: ', secret=True)
 
-        with sync_playwright() as playwright:
-            browser = launch_browser(playwright)
-            try:
-                page = browser.new_page(locale='en-US')
-                response = page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
-                self.assertIsNotNone(response)
-                self.assertTrue(response.ok, f'Login page returned HTTP {response.status}')
+        browser = launch_browser()
+        try:
+            page = browser.new_page(locale='en-US')
+            response = page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
+            self.assertIsNotNone(response)
+            self.assertTrue(response.ok, f'Login page returned HTTP {response.status}')
 
-                page.get_by_label('Email', exact=True).fill(email)
-                page.get_by_label('Password', exact=True).fill(password)
-                page.get_by_role('button', name='Login', exact=True).click()
+            page.get_by_label('Email', exact=True).fill(email)
+            page.get_by_label('Password', exact=True).fill(password)
+            page.get_by_role('button', name='Login', exact=True).click()
 
-                expect(page).to_have_url(f'{BASE_URL}/admin-dashboard/', timeout=30_000)
-                expect(page.get_by_role('heading', name='Users Management', exact=True)).to_be_visible()
-                print('\nActual result: Admin login succeeded and the Admin Dashboard appeared.')
-            finally:
-                browser.close()
+            expect(page).to_have_url(f'{BASE_URL}/admin-dashboard/', timeout=30_000)
+            expect(page.get_by_role('heading', name='Users Management', exact=True)).to_be_visible()
+            print('\nActual result: Admin login succeeded and the Admin Dashboard appeared.')
+        finally:
+            browser.close()
 
 
 if __name__ == '__main__':

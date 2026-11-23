@@ -7,9 +7,10 @@ if __name__ == "__main__":
 
     raise SystemExit(main(["163", *sys.argv[1:]]))
 
+from tools.automation_browser import expect
+
 from datetime import timedelta
 
-from playwright.sync_api import expect
 
 from flocks.models import Flock
 from tools.notifications_browser import NotificationsBrowserCase

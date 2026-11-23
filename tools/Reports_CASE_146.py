@@ -7,9 +7,10 @@ if __name__ == "__main__":
 
     raise SystemExit(main(["146", *sys.argv[1:]]))
 
+from tools.automation_browser import expect
+
 import re
 
-from playwright.sync_api import expect
 
 from tools.reports_browser import ReportsBrowserCase
 
