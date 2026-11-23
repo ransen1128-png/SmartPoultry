@@ -1140,11 +1140,14 @@ def rooster_age_estimator_view(request):
             prediction = None
             original_prediction = None
             from core.estimator_subject import verify_subject
-            detection = detect_chicken(photo)
+            from core.detection_refinement import refine_chicken, refine_anatomy
+            detection = refine_chicken(photo, detect_chicken(photo), detect_chicken)
             anatomy = {'status':'not_run','legs':[],'spurs':[],'masks':[],'measurements':[],
                        'message':'Spur outlines and length measurements skipped in quick age mode.'}
             if not quick_mode or not verify_subject(detection, anatomy)['accepted']:
                 anatomy = analyze_poultry(photo, calibration, detection_only=True) if quick_mode else analyze_poultry(photo, calibration)
+                anatomy = constrain_legs_to_body(detection, anatomy)
+                anatomy = refine_anatomy(photo, detection, anatomy, analyze_poultry, calibration, detection_only=quick_mode)
                 anatomy = constrain_legs_to_body(detection, anatomy)
                 if request.POST.get('use_spur_api') == 'on' and spur_api_available:
                     from core.spur_api_assistance import assist_missed_spurs
@@ -1251,7 +1254,7 @@ def rooster_age_estimator_view(request):
                 'confidence': confidence,
                 'limitations': limitations,
                 'analysis': {
-                    'workflow_version': 9,
+                    'workflow_version': 10,
                     'subject_verification': subject_check,
                     'inference_strategy': ('local_api_combined' if spur_api_available
                                            and request.POST.get('use_spur_api') == 'on' else 'local_only'),
