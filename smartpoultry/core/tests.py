@@ -653,24 +653,22 @@ class RoosterAgeEstimatorTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Model availability is checked when you submit')
 
-    def test_quick_mode_uses_same_age_prediction_without_loading_detectors(self):
+    @patch('core.chicken_detection.detect_chicken', return_value={'status':'detected','boxes':[{'xyxy':[0,0,100,100],'score':.9}],'message':'Chicken detected.'})
+    def test_quick_mode_verifies_subject_and_skips_outline_processing(self, subject):
         from pathlib import Path
         content=(Path(__file__).resolve().parents[2]/'spurs images/4months.jpg').read_bytes()
         full=self.client.post(reverse('rooster_age_estimator'),{'photos':[SimpleUploadedFile('full.jpg',content,content_type='image/jpeg')]})
         full_record=RoosterAgeEstimate.objects.get(pk=full.context['results'][0]['id'])
-        with patch('core.chicken_detection.load_detector',side_effect=AssertionError('Detector loaded')), \
-             patch('core.poultry_vision.vision_is_ready',side_effect=AssertionError('Anatomy loaded')), \
-             patch('core.chicken_detection.detect_chicken',side_effect=AssertionError('Detection ran')), \
-             patch('core.poultry_vision.analyze_poultry',side_effect=AssertionError('Anatomy ran')):
+        with patch('core.poultry_vision.analyze_poultry',side_effect=AssertionError('Outline processing ran')):
             quick=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'age_only','photos':[SimpleUploadedFile('quick.jpg',content,content_type='image/jpeg')]})
-        self.assertEqual(quick.status_code,200)
         record=RoosterAgeEstimate.objects.get(pk=quick.context['results'][0]['id'])
         self.assertEqual(record.analysis['age_prediction'],full_record.analysis['age_prediction'])
+        self.assertTrue(record.analysis['subject_verification']['accepted'])
         self.assertEqual(record.analysis['anatomy']['status'],'not_run')
-        self.assertEqual(record.analysis['analysis_mode'],'age_only')
-        self.assertContains(quick,'Detection and spur measurements were not run.')
+        self.assertContains(quick,'Subject verification is required')
 
-    def test_single_finetuned_model_keeps_original_checkpoint_as_backup(self):
+    @patch('core.chicken_detection.detect_chicken', return_value={'status':'detected','boxes':[{'xyxy':[0,0,100,100],'score':.9}],'message':'Chicken detected.'})
+    def test_single_finetuned_model_keeps_original_checkpoint_as_backup(self, subject):
         from pathlib import Path
         import hashlib
         from core.age_model_registry import candidate_entry
@@ -747,11 +745,11 @@ class RoosterAgeEstimatorTests(TestCase):
         self.assertIn('unavailable', result['leg_detection_status'])
         self.assertIn('unavailable', result['spur_detection_status'])
         self.assertEqual(result['spur_visibility'], 'Not assessed')
-        self.assertTrue(result['estimated_age_range'].startswith('Experimental estimate:'))
-        self.assertEqual(result['confidence'], 'Uncalibrated experimental estimate')
-        self.assertIn('separate experimental predictions', result['spur_observations'])
+        self.assertEqual(result['estimated_age_range'], 'Insufficient evidence')
+        self.assertEqual(result['confidence'], 'Not available')
+        self.assertIn('could not be verified', result['spur_observations'])
         self.assertIn('Technical image quality', result['image_assessment'])
-        self.assertIn('does not detect chickens or spurs', result['limitations'])
+        self.assertIn('does not authorize age estimation', result['limitations'])
 
     def test_page_no_longer_requests_manual_spur_observations(self):
         response = self.client.get(reverse('rooster_age_estimator'))
@@ -783,7 +781,8 @@ class RoosterAgeEstimatorTests(TestCase):
         self.assertEqual(result['spur_visibility'], 'Not assessed')
         predict.assert_called_once()
 
-    def test_real_age_model_upload_ignores_filenames_and_keeps_detection_unassessed(self):
+    @patch('core.chicken_detection.detect_chicken', return_value={'status':'detected','boxes':[{'xyxy':[0,0,100,100],'score':.9}],'message':'Chicken detected.'})
+    def test_real_age_model_upload_ignores_filenames_and_keeps_detection_unassessed(self, subject):
         from pathlib import Path
         photo_path = Path(__file__).resolve().parents[2] / 'spur_age/dataset/images/10months (1).jpg'
         self.assertTrue(photo_path.is_file(), 'The audited real photograph must be available for this integration check.')
@@ -804,7 +803,7 @@ class RoosterAgeEstimatorTests(TestCase):
             self.assertEqual(record.analysis['age_prediction_status'], 'experimental')
             self.assertEqual(record.analysis['spur_detection']['status'], 'unavailable')
             self.assertEqual(record.spur_visibility, 'unassessed')
-            self.assertEqual(record.chicken_detected, 'unassessed')
+            self.assertEqual(record.chicken_detected, 'yes')
             self.assertEqual(len(prediction['model_sha256']), 64)
             self.assertIn('not independent validation', result['model_evaluation'])
         self.assertEqual(predictions[0], predictions[1])
@@ -819,7 +818,7 @@ class RoosterAgeEstimatorTests(TestCase):
         predict.assert_not_called()
 
     @override_settings(DEBUG=False)
-    def test_bright_photo_predicts_by_default_and_preview_works_without_debug(self):
+    def test_unverified_bright_photo_is_blocked_and_preview_works_without_debug(self):
         from pathlib import Path
         source = Path(__file__).resolve().parents[2] / 'spurs images/3monthsss.jpg'
         content = source.read_bytes()
@@ -831,9 +830,9 @@ class RoosterAgeEstimatorTests(TestCase):
         record = RoosterAgeEstimate.objects.get(pk=result['id'])
         self.assertEqual(record.analysis['image_quality']['quality'], 'limited')
         self.assertIn('too bright', record.analysis['image_quality']['summary'])
-        self.assertTrue(result['estimated_age_range'].startswith('Experimental estimate:'))
-        self.assertIn('Image quality warning:', result['limitations'])
-        self.assertIsNotNone(record.analysis['age_prediction'])
+        self.assertEqual(result['estimated_age_range'], 'Insufficient evidence')
+        self.assertFalse(record.analysis['subject_verification']['accepted'])
+        self.assertIsNone(record.analysis['age_prediction'])
         self.assertEqual(record.analysis['input_mode'], 'experimental_image_estimate')
         self.assertEqual(record.spur_visibility, 'unassessed')
         self.assertEqual(result['photo_url'], reverse('rooster_estimate_photo', args=[record.pk]))
@@ -866,7 +865,8 @@ class RoosterAgeEstimatorTests(TestCase):
         self.client.logout()
         self.assertRedirects(self.client.get(url), f'{reverse("login")}?next={url}', fetch_redirect_response=False)
 
-    def test_missing_photo_and_model_failures_have_specific_reasons(self):
+    @patch('core.chicken_detection.detect_chicken', return_value={'status':'detected','boxes':[{'xyxy':[0,0,100,100],'score':.9}],'message':'Chicken detected.'})
+    def test_missing_photo_and_model_failures_have_specific_reasons(self, subject):
         from pathlib import Path
         content = (Path(__file__).resolve().parents[2] / 'spurs images/3monthsss.jpg').read_bytes()
         with patch('core.rooster_age_classifier.model_is_ready', return_value=False):

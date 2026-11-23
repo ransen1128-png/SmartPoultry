@@ -162,9 +162,9 @@ def _centerline_measurement(polygon, width, height, pixels_per_cm=None):
     return output
 
 
-def analyze_poultry(source, pixels_per_cm=None):
+def analyze_poultry(source, pixels_per_cm=None, *, detection_only=False):
     from core import free_inference
-    if free_inference.enabled():return free_inference.analyze_anatomy(source,pixels_per_cm)
+    if free_inference.enabled():return free_inference.analyze_anatomy(source,pixels_per_cm,detection_only=detection_only)
     result = {'status': 'unavailable', 'legs': [], 'spurs': [], 'masks': [], 'unconfirmed_masks': [],
               'measurements': [], 'image_width': None, 'image_height': None,
               'message': 'Anatomy models are unavailable.'}
@@ -189,7 +189,7 @@ def analyze_poultry(source, pixels_per_cm=None):
         with INFERENCE_LOCK:
             detected = bundle['detect'].predict(image, imgsz=512, conf=manifest['detect'].get('threshold', threshold), iou=.45,
                                                  max_det=12, device='cpu', verbose=False)[0]
-            segmented = bundle['segment'].predict(image, imgsz=512, conf=manifest['segment'].get('threshold', threshold), iou=.45,
+            segmented = None if detection_only else bundle['segment'].predict(image, imgsz=512, conf=manifest['segment'].get('threshold', threshold), iou=.45,
                                                    max_det=6, retina_masks=True, device='cpu', verbose=False)[0]
         result.update(status='completed', image_width=width, image_height=height,
                       model_version=manifest.get('version'), model_provenance={
@@ -202,7 +202,7 @@ def analyze_poultry(source, pixels_per_cm=None):
                        max(0., min(width, xyxy[2])), max(0., min(height, xyxy[3]))]
                 result[key].append({'xyxy': [round(v, 1) for v in box], 'score': round(score, 4),
                                     'source': 'experimental_detector'})
-        if segmented.masks is not None:
+        if segmented is not None and segmented.masks is not None:
             for polygon, score in zip(segmented.masks.xy, segmented.boxes.conf.tolist()):
                 polygon = np.asarray(polygon)
                 if len(polygon) < 3:
@@ -285,7 +285,7 @@ def assess_chicken_evidence(detection, anatomy):
                         f'The anatomy models detected {names} regions. Whole-chicken body not detected. '
                         'Age estimation can use a leg or spur photo; anatomy detections alone do not independently verify the species.')}
     return {'status': 'unconfirmed', 'label': 'Chicken not detected',
-            'explanation': 'The models did not establish chicken presence. A readable close-up can still receive an experimental age estimate.'}
+            'explanation': 'The models did not establish chicken presence. Age estimation requires a detected chicken or spur.'}
 
 
 def summarize_anatomy(result):

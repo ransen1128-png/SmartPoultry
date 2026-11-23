@@ -36,6 +36,24 @@ class FreeGeometryTests(UnitTestCase):
 
 
 class FreeHostedEstimatorTests(TestCase):
+    def test_document_image_is_rejected_by_real_detectors_in_both_modes(self):
+        from PIL import ImageDraw
+        image = Image.new('RGB', (600, 800), 'white')
+        draw = ImageDraw.Draw(image)
+        for y in range(30, 750, 25):
+            draw.line((20, y+17, 580, y+17), fill='#aabbcc')
+            draw.text((30, y), 'Farm notes: expenses and production records 12345', fill='black')
+        stream = BytesIO(); image.save(stream, format='PNG')
+        for mode in ('full', 'age_only'):
+            with self.subTest(mode=mode), patch('core.age_inference.predict_rooster_age') as age:
+                response = self.client.post(reverse('rooster_age_estimator'), {'analysis_mode':mode,
+                    'photos':[SimpleUploadedFile('document.png', stream.getvalue(), content_type='image/png')]})
+            age.assert_not_called()
+            self.assertEqual(response.status_code, 200)
+            row = RoosterAgeEstimate.objects.filter(user=self.user).latest('pk')
+            self.assertFalse(row.analysis['subject_verification']['accepted'])
+            self.assertIsNone(row.analysis['age_prediction'])
+
     def setUp(self):
         self.folder=tempfile.mkdtemp();self.addCleanup(shutil.rmtree,self.folder)
         settings=override_settings(MEDIA_ROOT=self.folder);settings.enable();self.addCleanup(settings.disable)
@@ -48,25 +66,25 @@ class FreeHostedEstimatorTests(TestCase):
         def reject_heavy(name,*args,**kwargs):
             if name.split('.')[0] in ('torch','torchvision','transformers','ultralytics'):raise AssertionError('Heavy hosted import: '+name)
             return real_import(name,*args,**kwargs)
-        content=(Path(__file__).resolve().parents[2]/'spurs images/4months.jpg').read_bytes()
+        content=(Path(__file__).parent/'testdata/full_chicken.jpg').read_bytes()
         with patch('builtins.__import__',side_effect=reject_heavy),patch('core.vision_deployment.memory_limit_mb',return_value=512):
             response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'full','photos':[SimpleUploadedFile('arbitrary-name.jpg',content,content_type='image/jpeg')]})
         self.assertEqual(response.status_code,200)
         row=RoosterAgeEstimate.objects.get(user=self.user)
-        self.assertEqual(row.analysis['age_prediction']['age_months'],2.5)
+        self.assertEqual(row.analysis['age_prediction']['age_months'],13.1)
         self.assertEqual(row.analysis['age_prediction']['runtime'],'onnx-fp32')
         self.assertEqual(row.analysis['anatomy']['status'],'completed')
         self.assertEqual(row.analysis['chicken_detection']['runtime'],'onnx-fp32-staged')
         self.assertTrue(row.analysis['anatomy']['legs'])
         self.assertEqual(self.client.get(reverse('rooster_age_estimator'),{'estimate':row.pk}).status_code,200)
 
-    def test_quick_mode_does_not_run_detectors(self):
-        content=(Path(__file__).resolve().parents[2]/'spurs images/4months.jpg').read_bytes()
-        with patch.object(free,'detect_chicken',side_effect=AssertionError('Body ran')),patch.object(free,'analyze_anatomy',side_effect=AssertionError('Anatomy ran')),patch('core.spur_api_assistance.locate_spurs',side_effect=AssertionError('API ran in quick mode')):
+    def test_quick_mode_verifies_body_without_running_anatomy(self):
+        content=(Path(__file__).parent/'testdata/full_chicken.jpg').read_bytes()
+        with patch.object(free,'detect_chicken',wraps=free.detect_chicken),patch.object(free,'analyze_anatomy',side_effect=AssertionError('Anatomy ran')),patch('core.spur_api_assistance.locate_spurs',side_effect=AssertionError('API ran in quick mode')):
             response=self.client.post(reverse('rooster_age_estimator'),{'analysis_mode':'age_only','use_spur_api':'on','photos':[SimpleUploadedFile('image.jpg',content,content_type='image/jpeg')]})
         self.assertEqual(response.status_code,200)
         row=RoosterAgeEstimate.objects.get(user=self.user)
-        self.assertEqual(row.analysis['age_prediction']['age_months'],2.5)
+        self.assertEqual(row.analysis['age_prediction']['age_months'],13.1)
         self.assertEqual(row.analysis['anatomy']['status'],'not_run')
 
     def test_full_chicken_preserves_desktop_body_detection(self):

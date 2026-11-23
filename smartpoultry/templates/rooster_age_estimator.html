@@ -69,7 +69,7 @@
 <div id="calibrationHelp" hidden>Enter a scale measured from a ruler or calibrated reference in the same plane as the spur. Without a scale, only pixel lengths are reported. Perspective and model errors still affect measurements.</div>
 <div id="combinedHelp" hidden>Sends the photo to Gemini only when needed for missed spur regions. Age uses the local model; length requires a usable spur outline.</div>
 <div id="fullAnalysisHelp" hidden>Runs spur detection, outline analysis and age prediction for a detailed result. Length is reported only when a usable outline is detected.</div>
-<div id="quickAnalysisHelp" hidden>Provides a faster age estimate using the same age model, without chicken/spur detection or length measurement.</div>
+<div id="quickAnalysisHelp" hidden>Provides a faster age estimate using the same age model, after verifying a chicken or spur, without outline or length measurement.</div>
 
 {% if results %}
 <section class="rooster-results" id="latest-results">
@@ -114,9 +114,10 @@
                     <p class="mb-0">The age result is retained. This failed request did not establish whether a spur is visible.</p>
                 </div>
             {% endif %}
+            {% if not result.subject_verification.accepted %}<p class="alert alert-warning" role="alert">{{ result.subject_verification.message }}</p>{% endif %}
             <dl>
                 {% if result.analysis_mode == 'age_only' %}
-                <dt>Analysis:</dt><dd>Quick age estimate. Detection and spur measurements were not run.</dd>
+                <dt>Analysis:</dt><dd>Quick age estimate. Subject verification is required; spur outlines and length measurements were not run.</dd>
                 {% else %}
                 <dt>Chicken assessment:</dt>
                 <dd>{{ result.chicken_detected }}<br><small>{{ result.chicken_evidence }}</small></dd>
@@ -143,7 +144,7 @@
                 <dt>Image quality:</dt>
                 <dd>{{ result.image_assessment }}</dd>
             </dl>
-            <p><a class="btn btn-outline-primary" href="{{ result.measurement_review_url }}">Review outline, base and tip</a></p>
+            {% if result.subject_verification.accepted %}<p><a class="btn btn-outline-primary" href="{{ result.measurement_review_url }}">Review outline, base and tip</a></p>{% endif %}
             {% if result.reviewed_measurement %}
                 <p><strong>User-marked base:</strong> {{ result.reviewed_measurement.base }}
                 <strong>Tip:</strong> {{ result.reviewed_measurement.tip }}. Model detections remain separate.</p>
@@ -194,11 +195,11 @@
                 </div>
                 <div>
                     <div class="rooster-saved-title">
-                        <strong>{{ estimate.estimated_age_range }}</strong>
+                        <strong>{{ estimate.display_age }}</strong>
                         <span>{{ estimate.created_at|date:"M d, Y h:i A" }}</span>
                     </div>
-                    <p>{{ estimate.spur_observations }}</p>
-                    {% if estimate.analysis.age_prediction_status == 'experimental' %}
+                    <p>{{ estimate.display_observations }}</p>
+                    {% if estimate.subject_verified and estimate.analysis.age_prediction_status == 'experimental' %}
                         <p>Experimental model result; independent validation pending.</p>
                     {% endif %}
                     {% if estimate.analysis.spur_review %}
@@ -208,7 +209,7 @@
                         <p>{{ estimate.analysis.anatomy_assessment.leg_detection_status }} {{ estimate.analysis.anatomy_assessment.spur_segmentation_status }}</p>
                         <small>{{ estimate.analysis.anatomy_assessment.spur_length_assessment }}</small>
                     {% endif %}
-                    <small>Confidence: {{ estimate.confidence }}{% if estimate.photo_name %} · {{ estimate.photo_name }}{% endif %}</small>
+                    <small>Confidence: {{ estimate.display_confidence }}{% if estimate.photo_name %} · {{ estimate.photo_name }}{% endif %}</small>
                     <div><a href="?estimate={{ estimate.pk }}#latest-results">View saved analysis</a></div>
                 </div>
             </article>

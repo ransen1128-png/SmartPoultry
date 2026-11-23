@@ -220,11 +220,11 @@ def mask_polygons(prototypes,coefficients,boxes,width,height):
     return polygons
 
 
-def analyze_anatomy(source,pixels_per_cm=None):
+def analyze_anatomy(source,pixels_per_cm=None,*,detection_only=False):
     from core.poultry_vision import _box_iou,_centerline_measurement
     result={'status':'unavailable','legs':[],'spurs':[],'masks':[],'unconfirmed_masks':[],'measurements':[],
             'image_width':None,'image_height':None,'message':'Anatomy models are unavailable.'}
-    if not all(ready(task) for task in ('detect','segment')):return result
+    if not all(ready(task) for task in (('detect',) if detection_only else ('detect','segment'))):return result
     try:
         if pixels_per_cm is not None and (not math.isfinite(float(pixels_per_cm)) or float(pixels_per_cm)<=0):raise ValueError('Invalid calibration')
         source.seek(0)
@@ -234,18 +234,19 @@ def analyze_anatomy(source,pixels_per_cm=None):
         manifest=json.loads((ROOT/'ml_models/poultry_vision/manifest.json').read_text())
         boxes,scores,labels,_,_=detections('detect',pixels,manifest['detect']['threshold'],12,gain,left,top,width,height)
         for box,score,label in zip(boxes,scores,labels):result['legs' if label==0 else 'spurs'].append({'xyxy':[round(float(v),1) for v in box],'score':round(float(score),4),'source':'experimental_detector'})
-        boxes,scores,labels,coeff,prototypes=detections('segment',pixels,manifest['segment']['threshold'],6,gain,left,top,width,height)
-        for polygon,score in zip(mask_polygons(prototypes,coeff,boxes,width,height),scores):
-            if len(polygon)<3:continue
-            if len(polygon)>240:polygon=polygon[::math.ceil(len(polygon)/240)]
-            polygon[:,0]=polygon[:,0].clip(0,width-1);polygon[:,1]=polygon[:,1].clip(0,height-1)
-            points=[[round(float(x),1),round(float(y),1)] for x,y in polygon]
-            mask={'polygon':points,'score':round(float(score),4),'xyxy':[round(float(v),1) for v in [*polygon.min(0),*polygon.max(0)]]}
-            overlaps=[_box_iou(mask['xyxy'],box['xyxy']) for box in result['spurs']]
-            if not overlaps or max(overlaps)<.15:result['unconfirmed_masks'].append(mask);continue
-            mask['matched_detector_box']=int(np.argmax(overlaps));result['masks'].append(mask)
-            measured=_centerline_measurement(points,width,height,pixels_per_cm)
-            if measured:measured['mask_index']=len(result['masks'])-1;result['measurements'].append(measured)
+        if not detection_only:
+            boxes,scores,labels,coeff,prototypes=detections('segment',pixels,manifest['segment']['threshold'],6,gain,left,top,width,height)
+            for polygon,score in zip(mask_polygons(prototypes,coeff,boxes,width,height),scores):
+                if len(polygon)<3:continue
+                if len(polygon)>240:polygon=polygon[::math.ceil(len(polygon)/240)]
+                polygon[:,0]=polygon[:,0].clip(0,width-1);polygon[:,1]=polygon[:,1].clip(0,height-1)
+                points=[[round(float(x),1),round(float(y),1)] for x,y in polygon]
+                mask={'polygon':points,'score':round(float(score),4),'xyxy':[round(float(v),1) for v in [*polygon.min(0),*polygon.max(0)]]}
+                overlaps=[_box_iou(mask['xyxy'],box['xyxy']) for box in result['spurs']]
+                if not overlaps or max(overlaps)<.15:result['unconfirmed_masks'].append(mask);continue
+                mask['matched_detector_box']=int(np.argmax(overlaps));result['masks'].append(mask)
+                measured=_centerline_measurement(points,width,height,pixels_per_cm)
+                if measured:measured['mask_index']=len(result['masks'])-1;result['measurements'].append(measured)
         result.update(status='completed',image_width=width,image_height=height,model_version=manifest['version'],runtime='onnx-fp32',
                       model_provenance={key:{'sha256':manifest[key]['sha256'],'metrics':manifest[key].get('metrics')} for key in ('detect','segment')})
         result['message']=f"Experimental models found {len(result['legs'])} leg candidate(s), {len(result['spurs'])} spur box(es) and {len(result['masks'])} spur mask(s). {len(result['unconfirmed_masks'])} outline proposal(s) lacked matching spur boxes. No detection above threshold does not establish anatomical absence."

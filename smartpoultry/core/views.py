@@ -1027,6 +1027,8 @@ def _present_rooster_estimate(record, number=1):
             'The improvement is small; prior checkpoint training overlap means this is not independent validation on new chickens.'
         )
     subject = assess_chicken_evidence(detection, anatomy)
+    from core.estimator_subject import verify_subject
+    subject_check = verify_subject(detection, anatomy)
     reviewed = (analysis.get('spur_review') or {}).get('measurement')
     if reviewed:
         assessment['spur_length_assessment'] = (
@@ -1045,11 +1047,12 @@ def _present_rooster_estimate(record, number=1):
         'chicken_location_assessment': detection['message'].replace(old_body_label, body_label),
         'chicken_detection_status': detection['status'], 'chicken_boxes': detection['boxes'],
         **assessment,
-        'estimated_age_range': record.estimated_age_range,
-        'tested_age_range': tested_age_range(analysis.get('age_prediction')),
-        'spur_observations': record.spur_observations.replace(old_body_label, body_label),
+        'estimated_age_range': record.estimated_age_range if subject_check['accepted'] else 'Insufficient evidence',
+        'subject_verification': subject_check,
+        'tested_age_range': tested_age_range(analysis.get('age_prediction')) if subject_check['accepted'] else 'Not available: subject verification did not pass.',
+        'spur_observations': record.spur_observations.replace(old_body_label, body_label) if subject_check['accepted'] else subject_check['message'],
         'image_assessment': quality.get('summary', 'Image quality was not recorded.'),
-        'reasoning': record.reasoning, 'confidence': record.confidence, 'limitations': record.limitations,
+        'reasoning': record.reasoning, 'confidence': record.confidence if subject_check['accepted'] else 'Not available', 'limitations': record.limitations,
         'model_evaluation': evaluation,
         'age_model': analysis.get('age_model', 'original'),
         'analysis_mode': analysis.get('analysis_mode', 'full'),
@@ -1098,8 +1101,8 @@ def rooster_age_estimator_view(request):
             messages.error(request,'Age estimation is temporarily unavailable on this server. No age prediction will be generated until the model is available.')
         from core.chicken_detection import detect_chicken, load_detector
         from core.poultry_vision import analyze_poultry, assess_chicken_evidence, constrain_legs_to_body, summarize_anatomy, vision_is_ready
+        chicken_detector_ready = load_detector() is not None
         if not quick_mode:
-            chicken_detector_ready = load_detector() is not None
             anatomy_ready = vision_is_ready()
         photos = request.FILES.getlist('photos')
         reanalysis_id = request.POST.get('reanalyze_estimate_id', '').strip()
@@ -1136,23 +1139,21 @@ def rooster_age_estimator_view(request):
             photo_analysis = analyze_rooster_photo(photo)
             prediction = None
             original_prediction = None
-            if quick_mode:
-                detection = {'status':'not_run','boxes':[], 'message':'Chicken detection skipped in quick age mode.'}
-                anatomy = {'status':'not_run','legs':[],'spurs':[],'masks':[],'measurements':[],
-                           'message':'Spur detection and measurement skipped in quick age mode.'}
-            else:
-                detection = detect_chicken(photo)
-                anatomy = analyze_poultry(photo, calibration)
+            from core.estimator_subject import verify_subject
+            detection = detect_chicken(photo)
+            anatomy = {'status':'not_run','legs':[],'spurs':[],'masks':[],'measurements':[],
+                       'message':'Spur outlines and length measurements skipped in quick age mode.'}
+            if not quick_mode or not verify_subject(detection, anatomy)['accepted']:
+                anatomy = analyze_poultry(photo, calibration, detection_only=True) if quick_mode else analyze_poultry(photo, calibration)
                 anatomy = constrain_legs_to_body(detection, anatomy)
                 if request.POST.get('use_spur_api') == 'on' and spur_api_available:
                     from core.spur_api_assistance import assist_missed_spurs
                     anatomy = assist_missed_spurs(photo, anatomy, calibration,user=request.user)
+            subject_check = verify_subject(detection, anatomy)
             assessment = summarize_anatomy(anatomy)
 
-            # Quality heuristics are warnings, not a subject detector. Run the
-            # actual age model on every readable upload; only decode/model
-            # failures prevent an experimental estimate.
-            if age_model_ready and photo_analysis['quality'] in {'good', 'limited'}:
+            # Readability alone cannot establish that the photo depicts poultry.
+            if subject_check['accepted'] and age_model_ready and photo_analysis['quality'] in {'good', 'limited'}:
                 try:
                     photo.seek(0)
                     if selected_age_model == 'finetuned':
@@ -1213,6 +1214,10 @@ def rooster_age_estimator_view(request):
                         evidence='No age estimate was provided because this photo exceeds the free server image-size limit.'
                         reasoning=photo_analysis['summary']
 
+                elif not subject_check['accepted']:
+                    evidence = subject_check['message']
+                    reasoning = 'The age model was not run because subject verification did not pass.'
+                    limitations = 'A leg candidate alone, weak detection or an unavailable detector does not authorize age estimation.'
                 elif not age_model_ready:
                     evidence = 'The existing age model could not be loaded.'
                     reasoning = 'No age prediction was made.'
@@ -1246,8 +1251,9 @@ def rooster_age_estimator_view(request):
                 'confidence': confidence,
                 'limitations': limitations,
                 'analysis': {
-                    'workflow_version': 8,
-                    'inference_strategy': ('local_api_combined' if not quick_mode and spur_api_available
+                    'workflow_version': 9,
+                    'subject_verification': subject_check,
+                    'inference_strategy': ('local_api_combined' if spur_api_available
                                            and request.POST.get('use_spur_api') == 'on' else 'local_only'),
                     'reanalysis_of': int(reanalysis_id) if reanalysis_id else None,
                     'chicken_assessment': assess_chicken_evidence(detection, anatomy),
@@ -1285,11 +1291,10 @@ def rooster_age_estimator_view(request):
                 if result['estimated_age_range'] != 'Insufficient evidence'
             )
 
-            messages.success(
-                request,
-                f'Processed {len(results)} image(s). '
-                f'{successful} age estimate(s) generated.'
-            )
+            if successful:
+                messages.success(request, f'Processed {len(results)} image(s). {successful} age estimate(s) generated.')
+            else:
+                messages.error(request, 'No age estimate was generated. Upload a clear chicken or chicken spur photograph; subject verification must pass first.')
 
         if reanalysis_id and results:
             return redirect(reverse('rooster_age_estimator') + f"?estimate={results[-1]['id']}#latest-results")
@@ -1309,13 +1314,22 @@ def rooster_age_estimator_view(request):
         [:20]
     )
 
+    from core.estimator_subject import verify_subject
+    for saved in saved_estimates:
+        data = saved.analysis or {}
+        checked = verify_subject(data.get('chicken_detection') or {}, data.get('anatomy') or {})
+        saved.subject_verified = checked['accepted']
+        saved.display_age = saved.estimated_age_range if checked['accepted'] else 'Insufficient evidence'
+        saved.display_observations = saved.spur_observations if checked['accepted'] else checked['message']
+        saved.display_confidence = saved.confidence if checked['accepted'] else 'Not available'
+
     return render(request, 'rooster_age_estimator.html', {
         'results': results,
         'saved_estimates': saved_estimates,
         'age_model_ready': age_model_ready,
         'chicken_detector_ready': chicken_detector_ready,
         'anatomy_ready': anatomy_ready,
-        'models_checked': request.method == 'POST' and not quick_mode,
+        'models_checked': request.method == 'POST',
         'candidate_available': candidate_available,
         'selected_age_model': selected_age_model,
         'spur_api_available': spur_api_available,
