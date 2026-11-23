@@ -11,6 +11,7 @@
 <div class="panel-card scenario-panel"
      data-base-profit="{{ scenario_metrics.profit|floatformat:2 }}"
      data-base-revenue="{{ scenario_metrics.revenue|floatformat:2 }}"
+     data-base-egg-revenue="{{ scenario_metrics.egg_revenue|floatformat:2 }}"
      data-base-expenses="{{ scenario_metrics.expenses|floatformat:2 }}"
     data-base-feed-cost="{{ scenario_metrics.feed_cost|floatformat:2 }}"
     data-predicted-profit="{{ scenario_metrics.predicted_profit|floatformat:2 }}">
@@ -21,9 +22,10 @@
             <option value="mortality_increase">Mortality Rate Increase</option>
             <option value="egg_price_increase">Egg Price Increase</option>
         </select>
-        <input class="form-control form-control-sm" value="+10%" data-scenario-change aria-label="Scenario change">
+        <input class="form-control form-control-sm" value="+10%" data-scenario-change aria-label="Scenario change" aria-describedby="scenarioChangeError" inputmode="decimal" required>
         <button class="btn btn-primary btn-sm" type="button" data-apply-scenario>Apply</button>
     </div>
+    <p id="scenarioChangeError" class="text-danger small mt-2" data-scenario-error role="alert"></p>
     <div class="scenario-results">
         <div><span data-scenario-label>Current Profit</span><strong data-result="profit" class="{% if scenario_metrics.profit < 0 %}text-danger{% else %}text-success{% endif %}">&#8369;{{ scenario_metrics.profit|floatformat:2 }}</strong></div>
         <div><span data-scenario-label>Current Revenue</span><strong data-result="revenue">&#8369;{{ scenario_metrics.revenue|floatformat:2 }}</strong></div>

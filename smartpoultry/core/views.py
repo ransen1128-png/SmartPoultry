@@ -308,7 +308,8 @@ def dashboard(request):
         active_flocks_query = active_flocks_query.filter(branch=selected_branch)
     total_birds = active_flocks_query.aggregate(total=Sum('quantity'))['total'] or 0
     active_flocks = active_flocks_query.count()
-    mortality_rate = round((mortality_total / total_birds) * 100, 2) if total_birds else 0
+    mortality_population = total_birds + mortality_total
+    mortality_rate = round((mortality_total / mortality_population) * 100, 2) if mortality_population else 0
     feed_stock = decimal_sum(Inventory.objects.filter(user=request.user, item_type='feed'), 'quantity')
     from inventory.quantities import measurement_totals
     feed_stock_by_unit=measurement_totals(Inventory.objects.filter(user=request.user,item_type='feed'))
@@ -1566,18 +1567,22 @@ def scenario_analysis_view(request):
     def decimal_sum(queryset, field):
         return queryset.aggregate(total=Sum(field))['total'] or 0
 
+    next_month_start = add_months(current_month_start, 1)
+    current_revenue = Revenue.objects.filter(user=request.user, date__gte=current_month_start, date__lt=next_month_start)
     revenue = decimal_sum(
-        Revenue.objects.filter(user=request.user, date__gte=current_month_start),
+        current_revenue,
         'total_amount',
     )
+    egg_revenue = decimal_sum(current_revenue.filter(revenue_type='eggs'), 'total_amount')
     expenses = decimal_sum(
-        Expense.objects.filter(user=request.user, date__gte=current_month_start),
+        Expense.objects.filter(user=request.user, date__gte=current_month_start, date__lt=next_month_start),
         'amount',
     )
     feed_cost = decimal_sum(
         Expense.objects.filter(
             user=request.user,
             date__gte=current_month_start,
+            date__lt=next_month_start,
         ).filter(Q(expense_type='feed') | Q(category='inventory') | Q(description__icontains='feed')),
         'amount',
     )
@@ -1619,6 +1624,7 @@ def scenario_analysis_view(request):
     return render(request, 'scenario_analysis.html', {
         'scenario_metrics': {
             'revenue': revenue,
+            'egg_revenue': egg_revenue,
             'expenses': expenses,
             'profit': profit,
             'feed_cost': feed_cost,

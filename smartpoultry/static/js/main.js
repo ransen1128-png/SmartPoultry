@@ -65,8 +65,10 @@ function formatDate(dateString) {
 }
 
 function parseScenarioPercent(value) {
-    const numericValue = parseFloat(String(value).replace('%', '').replace('+', '').trim());
-    return Number.isFinite(numericValue) ? numericValue / 100 : 0;
+    const text = String(value).trim();
+    if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)\s*%?$/.test(text)) return null;
+    const numericValue = Number(text.replace('%', '').trim());
+    return Number.isFinite(numericValue) ? numericValue / 100 : null;
 }
 
 function parseScenarioMoney(value) {
@@ -78,6 +80,17 @@ function updateScenarioPanel(panel) {
     const scenarioType = panel.querySelector('[data-scenario-type]');
     const scenarioChange = panel.querySelector('[data-scenario-change]');
     const percent = parseScenarioPercent(scenarioChange ? scenarioChange.value : 0);
+    const error = panel.querySelector('[data-scenario-error]');
+    if (percent === null || percent < -1) {
+        if (error) error.textContent = 'Enter a valid numeric percentage of -100 or higher, such as 10 or 10%.';
+        scenarioChange?.classList.add('is-invalid');
+        scenarioChange?.setAttribute('aria-invalid', 'true');
+        scenarioChange?.focus();
+        return;
+    }
+    if (error) error.textContent = '';
+    scenarioChange?.classList.remove('is-invalid');
+    scenarioChange?.removeAttribute('aria-invalid');
 
     let revenue = parseScenarioMoney(panel.dataset.baseRevenue);
     let expenses = parseScenarioMoney(panel.dataset.baseExpenses);
@@ -97,7 +110,7 @@ function updateScenarioPanel(panel) {
             expenses += expenses * percent * 0.12;
             break;
         case 'egg_price_increase':
-            revenue += revenue * percent;
+            revenue += parseScenarioMoney(panel.dataset.baseEggRevenue) * percent;
             break;
         default:
             break;
@@ -128,6 +141,10 @@ function initScenarioPanels() {
         }
 
         applyButton.addEventListener('click', () => updateScenarioPanel(panel));
+        panel.querySelector('[data-scenario-change]')?.addEventListener('input', event => {
+            event.target.classList.remove('is-invalid');event.target.removeAttribute('aria-invalid');
+            const error = panel.querySelector('[data-scenario-error]');if (error) error.textContent = '';
+        });
     });
 }
 
