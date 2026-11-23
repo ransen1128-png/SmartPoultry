@@ -304,6 +304,36 @@
             if (confirmed) { modal.dataset.spDiscard='true';modal.querySelectorAll('form').forEach(form => delete form.dataset.spDirty);bootstrap.Modal.getInstance(modal).hide(); }
         });
     });
+    document.addEventListener('hidden.bs.modal', event => {
+        const modal = event.target;
+        if (!modal.matches('.modal') || !modal.querySelector('form')) return;
+        // Run only after a close completes: declining Discard must retain the draft.
+        clearContext(modal);
+        modal.querySelectorAll('form').forEach(form => {
+            form.reset();
+            submitted.delete(form);
+            delete form.dataset.spDirty;
+            delete form.dataset.confirmed;
+            form.classList.remove('was-validated');
+            [...form.elements].forEach(field => {
+                if (typeof field.setCustomValidity === 'function') field.setCustomValidity('');
+                field.classList.remove('is-invalid', 'is-valid');
+                field.removeAttribute('aria-invalid');
+            });
+        });
+        modal.querySelectorAll('[data-branch-error], .errorlist').forEach(node => node.remove());
+        modal.querySelectorAll('.invalid-feedback, [role="alert"], .text-danger[id$="Error"], .text-danger[id$="Errors"]').forEach(node => node.textContent = '');
+        modal.querySelectorAll('[aria-describedby]').forEach(field => {
+            const ids = field.getAttribute('aria-describedby').split(/\s+/).filter(id => document.getElementById(id));
+            if (ids.length) field.setAttribute('aria-describedby', ids.join(' '));
+            else field.removeAttribute('aria-describedby');
+        });
+        modal.querySelectorAll('[data-sp-submitting]').forEach(button => {
+            button.removeAttribute('aria-disabled');delete button.dataset.spSubmitting;
+        });
+        modal.querySelectorAll('[data-password-toggle][aria-pressed="true"]').forEach(button => button.click());
+        modal.dispatchEvent(new CustomEvent('sp:form-reset'));
+    });
     document.addEventListener('click', event => {
         const link = event.target.closest('a[href]');
         if (!link || event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || link.target === '_blank' || !/cancel|\bback\b|already have/i.test(link.textContent)) return;

@@ -4,6 +4,17 @@
     const search = document.getElementById('branchSearchForm');
     if (!list || !search) return;
     const pending = new WeakSet();
+    document.addEventListener('hidden.bs.modal', event => {
+        if (event.target.id !== 'addBranchModal') return;
+        // A page rendered after a failed POST can contain the attempted values
+        // as HTML defaults; Add Branch must still reopen as a fresh draft.
+        const form = document.getElementById('addBranchForm');
+        for (const name of ['branch_name', 'address', 'contact_number', 'description']) {
+            const field = form.elements.namedItem(name);
+            if (field) field.value = '';
+        }
+        if (form.elements.status) form.elements.status.value = 'active';
+    });
     let searchController;
     let revision = 0;
     function updateList(data) {

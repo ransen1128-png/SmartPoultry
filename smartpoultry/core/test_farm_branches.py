@@ -164,6 +164,65 @@ class FarmBranchesTests(TestCase):
 @unittest.skipUnless(importlib.util.find_spec('playwright'),'Desktop Playwright is not installed')
 @override_settings(PASSWORD_HASHERS=['django.contrib.auth.hashers.MD5PasswordHasher'])
 class FarmBranchesBrowserTests(StaticLiveServerTestCase):
+    def test_discard_clears_draft_and_errors_but_declining_preserves_them(self):
+        from playwright.sync_api import sync_playwright, Error, expect
+        user = get_user_model().objects.create_user('discard-farm', password='Strong-secret!79')
+        farm = create_farm(user)
+        Branch.objects.create(farm=farm, name='Existing Branch', address='Saved address', contact_number='09123456789')
+        self.client.force_login(user)
+        session = self.client.cookies['sessionid'].value
+        with sync_playwright() as playwright:
+            try: browser = playwright.chromium.launch(channel='chrome', headless=True)
+            except Error as error: raise unittest.SkipTest(str(error))
+            try:
+                page = browser.new_page()
+                errors = []
+                page.on('pageerror', lambda error: errors.append(str(error)))
+                page.context.add_cookies([{'name':'sessionid', 'value':session, 'url':self.live_server_url}])
+                page.goto(self.live_server_url + '/farm/branches/', wait_until='networkidle')
+                modal = page.locator('#addBranchModal')
+                for close_method in ('cancel', 'x', 'escape', 'backdrop'):
+                    page.get_by_role('button', name='Add Branch', exact=True).first.click()
+                    page.wait_for_function("!bootstrap.Modal.getInstance(document.querySelector('#addBranchModal'))._isTransitioning")
+                    modal.get_by_label('Branch Name', exact=True).fill('Existing Branch')
+                    modal.get_by_label('Address', exact=True).fill('Attempted address')
+                    modal.get_by_label('Contact Number', exact=True).fill('09123456789')
+                    modal.get_by_role('button', name='Add Branch', exact=True).click()
+                    expect(modal.locator('[data-branch-error]')).to_have_count(1)
+                    modal.get_by_label('Contact Number', exact=True).fill('12345')
+                    modal.get_by_role('button', name='Add Branch', exact=True).click()
+                    expect(modal.locator('.sp-field-error')).to_have_count(1)
+                    def close():
+                        if close_method == 'cancel': modal.get_by_role('button', name='Cancel', exact=True).click()
+                        elif close_method == 'x': modal.locator('.btn-close').click()
+                        elif close_method == 'escape': page.keyboard.press('Escape')
+                        else: modal.click(position={'x':5, 'y':5})
+                    close()
+                    page.locator('.sp-popup-cancel').click()
+                    page.wait_for_function("!document.querySelector('#appConfirmDialog').open")
+                    expect(modal).to_be_visible()
+                    expect(modal.get_by_label('Contact Number', exact=True)).to_have_value('12345')
+                    expect(modal.locator('[data-branch-error]')).to_have_count(1)
+                    close()
+                    page.locator('#appConfirmDialogConfirm').click()
+                    expect(modal).not_to_be_visible()
+                    expect(modal.locator('[name=branch_name]')).to_have_value('')
+                    expect(modal.locator('[name=address]')).to_have_value('')
+                    expect(modal.locator('[name=contact_number]')).to_have_value('')
+                    expect(modal.locator('[name=status]')).to_have_value('active')
+                    expect(modal.locator('[data-branch-error], .sp-field-error, .is-invalid')).to_have_count(0)
+                page.get_by_role('button', name='Edit Existing Branch', exact=True).click()
+                edit = page.locator('.modal.show')
+                edit.get_by_label('Branch Name', exact=True).fill('Unsaved edit')
+                edit.locator('.btn-close').click()
+                page.locator('#appConfirmDialogConfirm').click()
+                expect(edit).not_to_be_visible()
+                page.get_by_role('button', name='Edit Existing Branch', exact=True).click()
+                expect(page.locator('.modal.show').get_by_label('Branch Name', exact=True)).to_have_value('Existing Branch')
+                self.assertEqual(errors, [])
+            finally: browser.close()
+        self.assertEqual(Branch.objects.get(farm=farm).name, 'Existing Branch')
+
     def test_create_cancel_edit_search_and_confirm_delete_without_navigation(self):
         from playwright.sync_api import sync_playwright, Error, expect
         user=get_user_model().objects.create_user('browser-farm',password='Strong-secret!79')
