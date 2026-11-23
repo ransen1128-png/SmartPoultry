@@ -31,7 +31,7 @@ class ReportWorkflowTests(TestCase):
                 self.assertEqual(created.status_code, 201)
                 report = Report.objects.get(pk=created.data['id'])
                 self.assertEqual(report.user, self.owner)
-                downloaded = self.client.get(f'/api/reports/{report.pk}/download/')
+                downloaded = self.client.get(f'/api/reports/{report.pk}/download/', {'export': 'csv'})
                 self.assertEqual(downloaded.status_code, 200)
                 self.assertIn('attachment;', downloaded['Content-Disposition'])
                 rows = list(csv.reader(io.StringIO(downloaded.content.decode())))

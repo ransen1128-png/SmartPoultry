@@ -1159,7 +1159,7 @@ class ReportDownloadTests(TestCase):
         )
 
         self.client.force_login(self.user)
-        response = self.client.get(f'/api/reports/{report.id}/download/')
+        response = self.client.get(f'/api/reports/{report.id}/download/', {'export': 'csv'})
         csv_text = response.content.decode()
 
         self.assertEqual(response.status_code, 200)

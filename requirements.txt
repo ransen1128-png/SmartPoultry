@@ -6,6 +6,7 @@ python-dotenv==1.0.0
 Pillow==10.0.1
 gunicorn==21.2.0
 whitenoise==6.7.0
+openpyxl==3.1.5
 
 # Machine Learning
 # Desktop PyTorch runtime; Render/Linux uses the lighter ONNX runtime below.

@@ -46,46 +46,34 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def download(self, request, pk=None):
-        """Download a CSV export for this report using only the owner's records."""
-        report = self.get_object()
-        filename = f"{report.report_type}_report_{report.start_date}_to_{report.end_date}.csv"
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        """Download this report as a formatted Excel workbook (default) or CSV (?export=csv).
 
-        writer = csv.writer(response)
-        self._write_report_csv(writer, report)
+        Only the owner's records are included. `export` is used instead of
+        `format`, which DRF reserves for renderer selection.
+        """
+        report = self.get_object()
+        stem = f"{report.report_type}_report_{report.start_date}_to_{report.end_date}"
+        if request.query_params.get('export') == 'csv':
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename="{stem}.csv"'
+            self._write_report_csv(csv.writer(response), report)
+            return response
+        from .excel_export import build_report_workbook
+        response = HttpResponse(
+            build_report_workbook(report),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        )
+        response['Content-Disposition'] = f'attachment; filename="{stem}.xlsx"'
         return response
 
     def _write_report_csv(self, writer, report):
-        from expenses.models import Expense
-        from flocks.models import Flock
-        from inventory.models import Inventory
-        from production.models import MortalityRecord, ProductionRecord
-        from revenue.models import Revenue
+        from .excel_export import report_records
 
         user = report.user
-        revenue_records = Revenue.objects.filter(
-            user=user,
-            date__gte=report.start_date,
-            date__lte=report.end_date,
-        ).select_related('flock', 'branch','production').order_by('date', 'created_at')
-        expense_records = Expense.objects.filter(
-            user=user,
-            date__gte=report.start_date,
-            date__lte=report.end_date,
-        ).select_related('branch').order_by('date', 'created_at')
-        production_records = ProductionRecord.objects.filter(
-            user=user,
-            date__gte=report.start_date,
-            date__lte=report.end_date,
-        ).select_related('flock', 'branch').order_by('date', 'created_at')
-        mortality_records = MortalityRecord.objects.filter(
-            user=user,
-            date__gte=report.start_date,
-            date__lte=report.end_date,
-        ).select_related('flock', 'branch').order_by('date', 'created_at')
-        inventory_items = Inventory.objects.filter(user=user).order_by('item_type', 'name')
-        flocks = Flock.objects.filter(user=user).select_related('branch').order_by('branch__name', 'flock_id')
+        records = report_records(report)
+        revenue_records, expense_records = records['revenue'], records['expenses']
+        production_records, mortality_records = records['production'], records['mortality']
+        inventory_items, flocks = records['inventory'], records['flocks']
 
         total_revenue = revenue_records.aggregate(total=Sum('total_amount'))['total'] or 0
         total_expenses = expense_records.aggregate(total=Sum('amount'))['total'] or 0
