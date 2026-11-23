@@ -6,8 +6,13 @@ from uuid import uuid4
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url
 
-RECOVERY_URL = 'https://smartpoultry-l3qo.onrender.com/forgot-password/'
+
+RECOVERY_URL = f'{live_base_url()}/forgot-password/'
 
 
 class LiveForgotPasswordTests(unittest.TestCase):
@@ -17,9 +22,9 @@ class LiveForgotPasswordTests(unittest.TestCase):
         email = f'case-014-{uuid4().hex}@example.invalid'
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(RECOVERY_URL, timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_label('Email', exact=True).fill(email)
                 page.get_by_label('Username', exact=True).fill(username)

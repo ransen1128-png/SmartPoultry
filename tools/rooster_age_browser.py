@@ -47,8 +47,13 @@ class RoosterAgeBrowserCase(FeedInventoryBrowserCase):
         return message
 
     def saved_estimate(self, *, measured=False, age_display=None):
-        photo = Path(os.environ.get('SMARTPOULTRY_TEST_CHICKEN_IMAGE', r'C:\Users\Administrator\Downloads\chicken.jpg'))
-        self.assertTrue(photo.is_file(), f'Chicken photo not found: {photo}')
+        configured_photo = os.environ.get('SMARTPOULTRY_TEST_CHICKEN_IMAGE')
+        if configured_photo:
+            photo = Path(configured_photo).expanduser()
+            self.assertTrue(photo.is_file(), f'Chicken photo not found: {photo}')
+        else:
+            photo = Path(self.enterContext(TemporaryDirectory())) / 'chicken-fixture.jpg'
+            Image.new('RGB', (300, 300), 'white').save(photo)
         with Image.open(photo) as image:
             width, height = image.size
         box = {'xyxy': [145, 194, 177, 225], 'score': 0.8}

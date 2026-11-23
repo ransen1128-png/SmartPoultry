@@ -1,26 +1,29 @@
-"""Verify that an invalid purchase date blocks creation of a bought flock."""
+"""Verify that closing the Add New Flock form discards the unsaved flock."""
 
-from getpass import getpass
 import os
 import unittest
-from uuid import uuid4
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 FLOCKS_URL = f'{BASE_URL}/flocks/'
 
 
 
 class LiveFlockTests(unittest.TestCase):
-    def test_case_052_invalid_bought_flock_purchase_date(self):
-        """CASE-052 | Flock creation failed & invalid purchase date error shown."""
+    def test_case_052_close_without_saving(self):
+        """CASE-052 | Form closes & no new flock is added."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
-        password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
+        password = read_test_value('SMARTPOULTRY_TEST_PASSWORD', 'Test account password: ', secret=True)
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
                 page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
@@ -29,53 +32,38 @@ class LiveFlockTests(unittest.TestCase):
                 page.get_by_role('button', name='Login', exact=True).click()
                 expect(page).to_have_url(f'{BASE_URL}/dashboard/', timeout=30_000)
 
-                flock_id = f'QA-052-{uuid4().hex[:10]}'
                 page.goto(FLOCKS_URL, timeout=90_000, wait_until='domcontentloaded')
                 expect(page).to_have_url(FLOCKS_URL)
                 notification = page.locator('dialog#appDialog[open]')
+                modal = page.locator('#addFlockModal')
+                form = modal.locator('#addFlockForm')
+
                 if notification.is_visible():
                     notification.get_by_role('button', name='Close notification').click()
                 expect(notification).to_be_hidden()
-
                 page.get_by_role('button', name='Add New Flock').click()
-                modal = page.locator('#addFlockModal')
-                form = modal.locator('#addFlockForm')
-                branches = form.locator('select[name="branch"] option:not([value=""])')
-                first_branch = branches.first.get_attribute('value')
-                self.assertTrue(first_branch, 'An active branch is required for this test')
-                form.locator('[name="branch"]').select_option(first_branch)
-                form.locator('[name="flock_id"]').fill(flock_id)
-                form.locator('[name="breed"]').select_option('layers')
-                form.locator('[name="acquisition_source"]').select_option('purchased')
-                form.locator('[name="quantity"]').fill('10')
-                form.locator('[name="purchase_amount"]').fill('100')
-                form.locator('[name="delivery_cost"]').fill('25')
-                date = form.get_by_label('Purchase date', exact=True)
-                date.fill('2025-02-28')
-                date.focus()
-                # Move to the day segment and increment February 28 to February 29 in 2025.
-                for key in ('ArrowRight', 'ArrowUp'):
-                    date.press(key)
-                submit = modal.get_by_role('button', name='Save Flock', exact=True)
-                submit.focus()
-                self.assertTrue(date.evaluate('field => field.validity.badInput'))
-                message = date.evaluate('field => field.validationMessage')
-                self.assertIn('invalid date', message.lower())
+                branch = form.locator('select[name="branch"]')
+                branch.select_option(index=1)
 
-                writes = []
+                form.locator('[name="breed"]').select_option('layers')
+                form.locator('[name="acquisition_source"]').select_option('own')
+                form.locator('[name="quantity"]').fill('10')
+                form.locator('[name="status"]').select_option('active')
+
+                creation_requests = []
 
                 def track_creation(request):
                     if request.url == f'{BASE_URL}/api/flocks/' and request.method == 'POST':
-                        writes.append(request)
+                        creation_requests.append(request)
 
                 page.on('request', track_creation)
-                submit.click()
-                expect(notification.locator('#appDialogText')).to_have_text(message)
-                expect(notification).to_be_visible()
-                expect(modal).to_be_visible()
-                expect(page.get_by_role('cell', name=flock_id, exact=True)).to_have_count(0)
-                self.assertFalse(writes, 'The browser sent a flock creation request')
-                print(f'Actual result: {message}')
+                modal.get_by_role('button', name='Close', exact=True).click()
+                confirmation = page.locator('#appConfirmDialog')
+                expect(confirmation.get_by_text('Discard unsaved changes?', exact=True)).to_be_visible()
+                confirmation.get_by_role('button', name='Confirm', exact=True).click()
+                expect(modal).to_be_hidden()
+                self.assertFalse(creation_requests, 'Closing the form sent a flock creation request')
+                print('Actual result: The form closed without sending a save request.')
             finally:
                 browser.close()
 

@@ -1,40 +1,43 @@
-"""Verify that missing purchase details block creation of a bought flock."""
+"""Verify that negative and zero quantities block live flock creation."""
 
-from getpass import getpass
 import os
 import unittest
-from uuid import uuid4
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 FLOCKS_URL = f'{BASE_URL}/flocks/'
 
 
 
 class LiveFlockTests(unittest.TestCase):
-    def test_case_050_missing_bought_flock_purchase_details(self):
-        """CASE-050 | Flock creation failed & required purchase field errors shown."""
+    def test_case_050_nonpositive_flock_quantity(self):
+        """CASE-050 | Flock creation failed & invalid quantity error shown."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
-        password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
+        password = read_test_value('SMARTPOULTRY_TEST_PASSWORD', 'Test account password: ', secret=True)
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_label('Email', exact=True).fill(email)
                 page.get_by_label('Password', exact=True).fill(password)
                 page.get_by_role('button', name='Login', exact=True).click()
                 expect(page).to_have_url(f'{BASE_URL}/dashboard/', timeout=30_000)
 
-                flock_id = f'QA-050-{uuid4().hex[:10]}'
+
                 scenarios = (
-                    ('missing purchase date and costs', '', 'Please fill out this field.'),
-                    ('missing purchase costs', '2025-01-01', 'Enter the total chicken purchase cost or delivery fee.'),
+                    ('negative quantity', '-1'),
+                    ('zero quantity', '0'),
                 )
-                for scenario, purchase_date, message in scenarios:
+                for scenario, quantity in scenarios:
                     with self.subTest(scenario=scenario):
                         page.goto(FLOCKS_URL, timeout=90_000, wait_until='domcontentloaded')
                         expect(page).to_have_url(FLOCKS_URL)
@@ -50,25 +53,25 @@ class LiveFlockTests(unittest.TestCase):
                         first_branch = branches.first.get_attribute('value')
                         self.assertTrue(first_branch, 'An active branch is required for this test')
                         form.locator('[name="branch"]').select_option(first_branch)
-                        form.locator('[name="flock_id"]').fill(flock_id)
                         form.locator('[name="breed"]').select_option('layers')
-                        form.locator('[name="acquisition_source"]').select_option('purchased')
-                        form.locator('[name="quantity"]').fill('10')
-                        for name, value in (
-                            ('purchase_amount', ''),
-                            ('delivery_cost', ''),
-                            ('purchase_date', purchase_date),
-                        ):
-                            field = form.locator(f'[name="{name}"]')
-                            field.fill(value)
-                            expect(field).to_have_value(value)
-                        modal.get_by_role('button', name='Save Flock', exact=True).click()
-
-                        expect(notification).to_be_visible()
-                        expect(notification.locator('#appDialogText')).to_contain_text(message)
+                        form.locator('[name="acquisition_source"]').select_option('own')
+                        form.locator('[name="quantity"]').fill(quantity)
+                        expect(form.locator('[name="quantity"]')).to_have_value(quantity)
+                        field = form.locator('[name="quantity"]')
+                        submit = modal.get_by_role('button', name='Save Flock', exact=True)
+                        if field.evaluate('field => !field.validity.valid'):
+                            submit.click()
+                            expect_field_error(field)
+                        else:
+                            with page.expect_response(
+                                lambda response: response.url == f'{BASE_URL}/api/flocks/'
+                                and response.request.method == 'POST',
+                            ) as creation:
+                                submit.click()
+                            self.assertFalse(creation.value.ok, f'The site saved a flock with quantity {quantity}.')
+                            error = modal.locator('[data-sp-inline-message], [data-sp-field-error]')
+                            expect(error.filter(has_text='quantity').first).to_be_visible()
                         expect(modal).to_be_visible()
-                        expect(page.get_by_role('cell', name=flock_id, exact=True)).to_have_count(0)
-                        print(f'{scenario}: {notification.locator("#appDialogText").inner_text()}')
             finally:
                 browser.close()
 

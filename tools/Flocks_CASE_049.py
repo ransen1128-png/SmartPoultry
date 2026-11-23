@@ -1,67 +1,78 @@
-"""Verify that a valid edit is saved and displayed in Current Flocks."""
+"""Verify that the live form rejects a duplicate Flock ID in the same branch."""
 
-from getpass import getpass
 import os
 import unittest
-
+from uuid import uuid4
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 FLOCKS_URL = f'{BASE_URL}/flocks/'
 
 
 
 class LiveFlockTests(unittest.TestCase):
-    def test_case_049_valid_flock_update(self):
-        """CASE-049 | Flock updated successfully & changes displayed in the Current Flocks list."""
+    def test_case_049_duplicate_flock_id(self):
+        """CASE-049 | Flock creation failed & duplicate Flock ID error shown."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
-        password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
+        password = read_test_value('SMARTPOULTRY_TEST_PASSWORD', 'Test account password: ', secret=True)
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_label('Email', exact=True).fill(email)
                 page.get_by_label('Password', exact=True).fill(password)
                 page.get_by_role('button', name='Login', exact=True).click()
                 expect(page).to_have_url(f'{BASE_URL}/dashboard/', timeout=30_000)
 
-                flock_id = os.environ.get('SMARTPOULTRY_TEST_FLOCK_ID') or 'QA-044-18e6c3e700'
                 page.goto(FLOCKS_URL, timeout=90_000, wait_until='domcontentloaded')
+                expect(page).to_have_url(FLOCKS_URL)
                 notification = page.locator('dialog#appDialog[open]')
-                if notification.is_visible():
-                    notification.get_by_role('button', name='Close notification').click()
-                expect(notification).to_be_hidden()
+                flock_id = f'QA-042-{uuid4().hex[:10]}'
+                modal = page.locator('#addFlockModal')
+                form = modal.locator('#addFlockForm')
 
+                def submit_flock():
+                    if notification.is_visible():
+                        notification.get_by_role('button', name='Close notification').click()
+                    expect(notification).to_be_hidden()
+                    page.get_by_role('button', name='Add New Flock').click()
+                    branch = form.locator('select[name="branch"]')
+                    branch.select_option(index=1)
+                    identifier = form.locator('[name="flock_id"]')
+                    if identifier.evaluate('field => field.readOnly'):
+                        self.skipTest('Flock IDs are assigned automatically; manual duplicates cannot be entered.')
+                    identifier.fill(flock_id)
+                    form.locator('[name="breed"]').select_option('layers')
+                    form.locator('[name="acquisition_source"]').select_option('own')
+                    form.locator('[name="quantity"]').fill('10')
+                    modal.get_by_role('button', name='Save Flock', exact=True).click()
+
+                submit_flock()
                 row = page.locator('#flocksBody tr').filter(
                     has=page.get_by_role('cell', name=flock_id, exact=True),
                 )
-                expect(row).to_be_visible()
-                row.get_by_role('button', name='Edit', exact=True).click()
-                modal = page.locator('#addFlockModal')
-                expect(modal.get_by_role('heading', name='Edit Flock', exact=True)).to_be_visible()
-                quantity = modal.locator('[name="quantity"]')
-                old_quantity = int(quantity.input_value())
-                new_quantity = str(old_quantity + 2)
-                quantity.fill(new_quantity)
-                modal.get_by_label('Reason for correction', exact=True).fill('CASE-049 successful quantity correction')
-                with page.expect_response(
-                    lambda response: response.url.startswith(f'{BASE_URL}/api/flocks/')
-                    and response.request.method == 'PATCH'
-                ) as update:
-                    modal.get_by_role('button', name='Update Flock', exact=True).click()
-                self.assertEqual(update.value.status, 200, f'Flock update failed: {update.value.text()}')
-                expect(modal).to_be_hidden()
-                expect(row.get_by_role('cell').nth(3)).to_have_text(new_quantity)
-
-                page.reload(wait_until='domcontentloaded')
-                expect(page.get_by_role('heading', name='Current Flocks', exact=True)).to_be_visible()
                 expect(row).to_have_count(1)
-                expect(row.get_by_role('cell').nth(3)).to_have_text(new_quantity)
-                print(f'Actual result: {flock_id} changed from {old_quantity} to {new_quantity} and persisted after reload.')
+                expect(modal).to_be_hidden()
+                print(f'Created test flock: {flock_id}', flush=True)
+
+                submit_flock()
+                error = 'This flock ID is already used in this branch.'
+                expect(notification.locator('#appDialogText')).to_contain_text(error)
+                expect(notification).to_be_visible()
+                expect(modal).to_be_visible()
+                expect(row).to_have_count(1)
+                page.reload(wait_until='domcontentloaded')
+                expect(row).to_have_count(1)
+                print(f'Actual result: {error}')
             finally:
                 browser.close()
 

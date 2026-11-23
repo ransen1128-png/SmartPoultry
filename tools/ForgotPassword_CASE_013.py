@@ -1,25 +1,29 @@
 """Test recovery with a registered email and an incorrect username."""
 
-import os
 import unittest
 from uuid import uuid4
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-RECOVERY_URL = 'https://smartpoultry-l3qo.onrender.com/forgot-password/'
+
+RECOVERY_URL = f'{live_base_url()}/forgot-password/'
 
 
 class LiveForgotPasswordTests(unittest.TestCase):
     def test_case_013_registered_email_and_incorrect_username(self):
         """CASE-013 | Verification failed & user cannot proceed."""
-        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Registered email for userx: ')
+        email = read_test_value('SMARTPOULTRY_TEST_EMAIL', 'Registered email for userx: ', secret=False)
         wrong_username = f'case-013-{uuid4().hex}'
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(RECOVERY_URL, timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_label('Email', exact=True).fill(email)
                 page.get_by_label('Username', exact=True).fill(wrong_username)

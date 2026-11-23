@@ -1,27 +1,33 @@
-"""Verify that the deployed reset form rejects mismatched passwords."""
+"""Verify that the deployed reset form updates the password and accepts it at login."""
 
-from getpass import getpass
 import os
 import re
 import unittest
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 RECOVERY_URL = f'{BASE_URL}/forgot-password/'
 
 
 class LiveForgotPasswordTests(unittest.TestCase):
-    def test_case_019_new_password_does_not_match_confirmation(self):
-        """CASE-019 | Password mismatch error shown & password not updated."""
-        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Registered email for userx: ')
+    def test_case_019_matching_passwords_allow_login(self):
+        """CASE-019 | Password updated successfully & user can log in with the new password."""
+        email = read_test_value('SMARTPOULTRY_TEST_EMAIL', 'Registered email for userx: ', secret=False)
         username = os.environ.get('SMARTPOULTRY_TEST_USERNAME') or 'userx'
 
+        new_password = read_test_value('SMARTPOULTRY_TEST_NEW_PASSWORD', 'New password for the dedicated test account: ', secret=True)
+
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_role('link', name='Forgot Password?', exact=True).click()
                 expect(page).to_have_url(RECOVERY_URL)
@@ -34,22 +40,28 @@ class LiveForgotPasswordTests(unittest.TestCase):
                 for number in (1, 2):
                     field_id = f'answer_{number}'
                     question = page.locator(f'label[for="{field_id}"]').inner_text()
-                    answer = os.environ.get(f'SMARTPOULTRY_TEST_RECOVERY_ANSWER_{number}') or getpass(
-                        f'Correct test answer for "{question}": ',
-                    )
+                    answer = read_test_value(f'SMARTPOULTRY_TEST_RECOVERY_ANSWER_{number}', f'Correct test answer for "{question}": ', secret=True)
                     page.locator(f'#{field_id}').fill(answer)
                 page.get_by_role('button', name='Verify Answers', exact=True).click()
 
                 expect(page).to_have_url(f'{RECOVERY_URL}new-password/')
                 expect(page.get_by_role('heading', name='Choose a New Password', exact=True)).to_be_visible()
-                page.get_by_label('New Password', exact=True).fill('SyntheticReset!6319Alpha')
-                page.get_by_label('Confirm Password', exact=True).fill('SyntheticReset!6319Bravo')
+                page.get_by_label('New Password', exact=True).fill(new_password)
+                page.get_by_label('Confirm Password', exact=True).fill(new_password)
                 page.get_by_role('button', name='Update Password', exact=True).click()
 
-                error = page.locator('.errorlist').get_by_text(re.compile(r'The two password fields didn.t match\.'))
-                expect(error).to_be_visible()
-                expect(page).to_have_url(f'{RECOVERY_URL}new-password/')
-                print(f'\nActual result: {error.inner_text()}')
+                expect(page).to_have_url(f'{BASE_URL}/reset-password/complete/')
+                expect(page.get_by_role(
+                    'heading', name='Password Updated Successfully!', exact=True,
+                )).to_be_visible()
+
+                login_page = browser.new_page(locale='en-US')
+                login_page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
+                login_page.get_by_label('Email', exact=True).fill(email)
+                login_page.get_by_label('Password', exact=True).fill(new_password)
+                login_page.get_by_role('button', name='Login', exact=True).click()
+                expect(login_page).to_have_url(re.compile(rf'^{re.escape(BASE_URL)}/(?:admin-)?dashboard/$'))
+                print('\nActual result: Password updated successfully and login with the new password succeeded.')
             finally:
                 browser.close()
 

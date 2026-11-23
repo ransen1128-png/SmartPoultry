@@ -10,6 +10,11 @@ from django.test import override_settings
 from django.utils import timezone
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import expect_field_error, launch_browser
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser
+
 from core.models import Branch, Farm
 from flocks.models import Flock
 from production.models import ProductionRecord
@@ -25,7 +30,7 @@ class ProductionRecordsBrowserCase(StaticLiveServerTestCase):
         cls.enterClassContext(patch.dict(os.environ, DJANGO_ALLOW_ASYNC_UNSAFE='true'))
         playwright = sync_playwright().start()
         cls.addClassCleanup(playwright.stop)
-        cls.browser = playwright.chromium.launch(channel='msedge', headless=True)
+        cls.browser = launch_browser(playwright)
         cls.addClassCleanup(cls.browser.close)
 
     def setUp(self):
@@ -41,7 +46,7 @@ class ProductionRecordsBrowserCase(StaticLiveServerTestCase):
         )
         Flock.objects.create(user=user, branch=other_branch, flock_id='03', breed='layers', quantity=25)
 
-        self.page = self.browser.new_page()
+        self.page = self.browser.new_page(locale='en-US')
         self.addCleanup(self.page.close)
         self.records_url = f'{self.live_server_url}/production-records/'
         self.page.goto(f'{self.live_server_url}/login/')
@@ -52,7 +57,7 @@ class ProductionRecordsBrowserCase(StaticLiveServerTestCase):
 
     def open_add_form(self):
         self.page.goto(self.records_url)
-        self.page.get_by_role('link', name='Add Record').click()
+        self.page.locator('.page-heading').get_by_role('link', name='Add Record', exact=True).click()
         expect(self.page).to_have_url(f'{self.records_url}add/')
 
     def fill_record(self, flock, quantity='12', record_date=None, egg_size='medium'):
@@ -69,7 +74,7 @@ class ProductionRecordsBrowserCase(StaticLiveServerTestCase):
 
     def assert_required(self, field):
         self.assertTrue(self.page.locator(field).evaluate('input => input.validity.valueMissing'))
-        expect(self.page.locator('#appDialog[open]')).to_contain_text('Please Complete All Required Fields!')
+        expect_field_error(self.page.locator(field))
 
     def egg_fixture(self):
         return ProductionRecord.objects.create(

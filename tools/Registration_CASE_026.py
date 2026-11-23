@@ -1,44 +1,51 @@
-"""Verify that empty required fields block registration on the live site."""
+"""Verify that the live registration form rejects duplicate account details."""
 
+import os
 import unittest
+from uuid import uuid4
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-REGISTER_URL = 'https://smartpoultry-l3qo.onrender.com/register/'
+
+REGISTER_URL = f'{live_base_url()}/register/'
 
 
 class LiveRegistrationTests(unittest.TestCase):
-    def test_case_026_empty_required_fields(self):
-        """CASE-026 | Registration failed & required field errors shown."""
+    def test_case_026_duplicate_username_or_email(self):
+        """CASE-026 | Registration failed & duplicate account error shown."""
+        registered_username = os.environ.get('SMARTPOULTRY_TEST_USERNAME') or 'userx'
+        registered_email = read_test_value('SMARTPOULTRY_TEST_EMAIL', 'Registered test email: ', secret=False)
+        unique = f'case-026-{uuid4().hex}'
+        scenarios = (
+            (registered_username, f'{unique}@example.invalid', 'Username already taken.'),
+            (unique, registered_email, 'Email already registered.'),
+        )
+
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
-                page.goto(REGISTER_URL, timeout=90_000, wait_until='domcontentloaded')
-                submit = page.get_by_role('button', name='Register', exact=True)
-                form = page.locator('form').filter(has=submit)
-                missing_fields = form.evaluate('''form => {
-                    const fields = [...form.elements].filter(field => field.willValidate && field.validity.valueMissing);
-                    form.addEventListener('invalid', ({ target }) => {
-                        target.dataset.testValidationMessage = target.validationMessage;
-                    }, true);
-                    return fields.map(field => field.id);
-                }''')
-                self.assertTrue({'username', 'email', 'password', 'password2'}.issubset(missing_fields))
+                page = browser.new_page(locale='en-US')
+                for username, email, expected_error in scenarios:
+                    with self.subTest(expected_error=expected_error):
+                        page.goto(REGISTER_URL, timeout=90_000, wait_until='domcontentloaded')
+                        page.get_by_label('Username', exact=True).fill(username)
+                        page.get_by_label('Email', exact=True).fill(email)
+                        for label in ('Password', 'Confirm Password'):
+                            page.get_by_label(label, exact=True).fill('Synthetic!027Password')
+                        for number, answer in enumerate(('Synthetic cedar answer', 'Synthetic maple answer'), start=1):
+                            page.get_by_label(f'Recovery Question {number}', exact=True).select_option(index=number - 1)
+                            page.get_by_label(f'Answer {number}', exact=True).fill(answer)
 
-                posts = []
-                page.on('request', lambda request: posts.append(request.url) if request.method == 'POST' else None)
-                submit.click()
-
-                expect(page).to_have_url(REGISTER_URL)
-                expect(page.locator(f'#{missing_fields[0]}')).to_be_focused()
-                self.assertEqual(posts, [], 'The browser submitted the incomplete form')
-                for field_id in missing_fields:
-                    with self.subTest(field=field_id):
-                        message = page.locator(f'#{field_id}').get_attribute('data-test-validation-message')
-                        self.assertTrue(message, 'The browser did not report a required-field error')
-                        print(f'{field_id}: {message}')
+                        page.get_by_role('button', name='Register', exact=True).click()
+                        alert = page.get_by_role('alert').get_by_text(expected_error, exact=True)
+                        expect(alert).to_be_visible()
+                        expect(page).to_have_url(REGISTER_URL)
+                        print(f'Actual result: {expected_error}')
             finally:
                 browser.close()
 

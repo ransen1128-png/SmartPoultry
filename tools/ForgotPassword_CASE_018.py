@@ -1,26 +1,30 @@
-"""Verify that the deployed reset form rejects a password that is too short."""
+"""Verify that the deployed reset form rejects mismatched passwords."""
 
-from getpass import getpass
 import os
 import unittest
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 RECOVERY_URL = f'{BASE_URL}/forgot-password/'
 
 
 class LiveForgotPasswordTests(unittest.TestCase):
-    def test_case_018_new_password_fails_validation(self):
-        """CASE-018 | Password update failed & validation error shown."""
-        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Registered email for userx: ')
+    def test_case_018_new_password_does_not_match_confirmation(self):
+        """CASE-018 | Password mismatch error shown & password not updated."""
+        email = read_test_value('SMARTPOULTRY_TEST_EMAIL', 'Registered email for userx: ', secret=False)
         username = os.environ.get('SMARTPOULTRY_TEST_USERNAME') or 'userx'
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_role('link', name='Forgot Password?', exact=True).click()
                 expect(page).to_have_url(RECOVERY_URL)
@@ -33,20 +37,20 @@ class LiveForgotPasswordTests(unittest.TestCase):
                 for number in (1, 2):
                     field_id = f'answer_{number}'
                     question = page.locator(f'label[for="{field_id}"]').inner_text()
-                    answer = os.environ.get(f'SMARTPOULTRY_TEST_RECOVERY_ANSWER_{number}') or getpass(
-                        f'Correct test answer for "{question}": ',
-                    )
+                    answer = read_test_value(f'SMARTPOULTRY_TEST_RECOVERY_ANSWER_{number}', f'Correct test answer for "{question}": ', secret=True)
                     page.locator(f'#{field_id}').fill(answer)
                 page.get_by_role('button', name='Verify Answers', exact=True).click()
 
                 expect(page).to_have_url(f'{RECOVERY_URL}new-password/')
                 expect(page.get_by_role('heading', name='Choose a New Password', exact=True)).to_be_visible()
-                page.get_by_label('New Password', exact=True).fill('Aa1!')
-                page.get_by_label('Confirm Password', exact=True).fill('Aa1!')
+                page.get_by_label('New Password', exact=True).fill('SyntheticReset!6319Alpha')
+                page.get_by_label('Confirm Password', exact=True).fill('SyntheticReset!6319Bravo')
                 page.get_by_role('button', name='Update Password', exact=True).click()
 
-                error = page.locator('.errorlist').get_by_text('This password is too short.', exact=False)
+                error = page.locator('#resetPasswordMatch')
                 expect(error).to_be_visible()
+                expect(error).to_have_text('Password not match')
+                expect(page.get_by_label('Confirm Password', exact=True)).to_have_attribute('aria-invalid', 'true')
                 expect(page).to_have_url(f'{RECOVERY_URL}new-password/')
                 print(f'\nActual result: {error.inner_text()}')
             finally:

@@ -10,6 +10,11 @@ from django.test import override_settings
 from django.utils import timezone
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import expect_field_error, launch_browser
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser
+
 from core.models import Branch, Farm
 from flocks.models import Flock
 from inventory.models import Inventory, InventoryDistribution
@@ -29,7 +34,7 @@ class FeedInventoryBrowserCase(StaticLiveServerTestCase):
         cls.enterClassContext(patch.dict(os.environ, DJANGO_ALLOW_ASYNC_UNSAFE='true'))
         playwright = sync_playwright().start()
         cls.addClassCleanup(playwright.stop)
-        cls.browser = playwright.chromium.launch(channel='msedge', headless=True)
+        cls.browser = launch_browser(playwright)
         cls.addClassCleanup(cls.browser.close)
 
     def setUp(self):
@@ -43,7 +48,7 @@ class FeedInventoryBrowserCase(StaticLiveServerTestCase):
                 self.flock = Flock.objects.create(
                     user=self.user, branch=self.branch, flock_id='01', breed='layers', quantity=30,
                 )
-        self.page = self.browser.new_page()
+        self.page = self.browser.new_page(locale='en-US')
         self.addCleanup(self.page.close)
         self.page.goto(f'{self.live_server_url}/login/')
         self.page.get_by_label('Email', exact=True).fill(email)
@@ -109,10 +114,10 @@ class FeedInventoryBrowserCase(StaticLiveServerTestCase):
         self.page.locator('#branchUsageQuantity').fill(quantity)
         self.page.locator('#branchUsageReason').fill('Recorded feed usage for the QA flock.')
 
-    def assert_native_error(self, selector, flag, message):
+    def assert_native_error(self, selector, flag):
         field = self.page.locator(selector)
         self.assertTrue(field.evaluate('(field, flag) => field.validity[flag]', flag))
-        expect(self.page.locator('#appDialog[open] #appDialogText')).to_have_text(message)
+        expect_field_error(field)
 
     def assert_stock(self, item, quantity):
         item.refresh_from_db()

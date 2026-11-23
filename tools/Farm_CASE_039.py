@@ -1,28 +1,31 @@
-"""Verify that valid branch details create a branch on the live site."""
+"""Verify that empty required fields block live branch creation."""
 
-from getpass import getpass
 import os
 import unittest
-from uuid import uuid4
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 FARM_URL = f'{BASE_URL}/farm/branches/'
-
+REQUIRED_FIELDS = ('branch_name', 'address', 'contact_number')
 
 
 class LiveFarmTests(unittest.TestCase):
-    def test_case_039_valid_branch_details(self):
-        """CASE-039 | Branch created successfully & displayed in the farm branch list."""
+    def test_case_039_empty_required_branch_fields(self):
+        """CASE-039 | Branch creation failed & required field errors shown."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
-        password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
+        password = read_test_value('SMARTPOULTRY_TEST_PASSWORD', 'Test account password: ', secret=True)
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_label('Email', exact=True).fill(email)
                 page.get_by_label('Password', exact=True).fill(password)
@@ -35,36 +38,35 @@ class LiveFarmTests(unittest.TestCase):
                 if notification.is_visible():
                     notification.get_by_role('button', name='Close notification').click()
                 expect(notification).to_be_hidden()
-
-                branch_name = f'QA Branch 039 {uuid4().hex[:10]}'
-                address = '123 QA Farm Road, Quezon City'
-                phone = '09123456789'
                 page.get_by_role('button', name='Add Branch', exact=True).click()
                 modal = page.get_by_role('dialog', name='Add New Branch', exact=True)
-                for label, value in (
-                    ('Branch Name', branch_name),
-                    ('Address', address),
-                    ('Contact Number', phone),
-                    ('Description (Optional)', 'Synthetic branch created by CASE-039.'),
-                ):
-                    modal.get_by_label(label, exact=True).fill(value)
-                modal.get_by_label('Status', exact=True).select_option('active')
-                modal.get_by_role('button', name='Add Branch', exact=True).click()
+                expect(modal).to_be_visible()
+                submit = modal.get_by_role('button', name='Add Branch', exact=True)
+                form = modal.locator('#addBranchForm')
+                for name in REQUIRED_FIELDS:
+                    expect(form.locator(f'[name="{name}"]')).to_have_value('')
 
-                expect(notification.get_by_role('heading', name='Branch added successfully!', exact=True)).to_be_visible()
-                expect(notification.locator('#appDialogText')).to_have_text('Your farm branch list has been updated.')
-                notification.get_by_role('button', name='Close notification').click()
-                expect(notification).to_be_hidden()
-                expect(modal).to_be_hidden()
-                row = page.locator('#branchList tr[data-branch-id]').filter(
-                    has=page.get_by_role('cell', name=branch_name, exact=True),
-                )
-                expect(row).to_be_visible()
-                page.reload(wait_until='domcontentloaded')
-                expect(row).to_be_visible()
-                for value in (address, phone, 'Active'):
-                    expect(row.get_by_role('cell', name=value, exact=True)).to_be_visible()
-                print(f'Actual result: {branch_name} was created and remains in the branch list after reload.')
+                form.evaluate('''form => {
+                    form.addEventListener('invalid', ({ target }) => {
+                        if (target.validity.valueMissing) {
+                            target.dataset.testValidationMessage = target.validationMessage;
+                        }
+                    }, true);
+                }''')
+                posts = []
+                page.on('request', lambda request: posts.append(request.url) if request.method == 'POST' else None)
+                submit.click()
+
+                expect(page).to_have_url(FARM_URL)
+                expect(modal).to_be_visible()
+                self.assertEqual(posts, [], 'The browser submitted an incomplete branch form')
+                for name in REQUIRED_FIELDS:
+                    with self.subTest(field=name):
+                        field = form.locator(f'[name="{name}"]')
+                        expect_field_error(field)
+                        message = field.get_attribute('data-test-validation-message')
+                        self.assertTrue(message, 'The browser did not report a required-field error')
+                        print(f'{name}: {message}')
             finally:
                 browser.close()
 

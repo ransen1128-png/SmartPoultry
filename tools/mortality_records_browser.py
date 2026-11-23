@@ -9,6 +9,11 @@ from django.test import override_settings
 from django.utils import timezone
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import expect_field_error, launch_browser
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser
+
 from core.models import Branch, Farm
 from flocks.models import Flock
 from production.models import MortalityRecord
@@ -23,7 +28,7 @@ class MortalityRecordsBrowserCase(StaticLiveServerTestCase):
         cls.enterClassContext(patch.dict(os.environ, DJANGO_ALLOW_ASYNC_UNSAFE='true'))
         playwright = sync_playwright().start()
         cls.addClassCleanup(playwright.stop)
-        cls.browser = playwright.chromium.launch(channel='msedge', headless=True)
+        cls.browser = launch_browser(playwright)
         cls.addClassCleanup(cls.browser.close)
 
     def setUp(self):
@@ -36,7 +41,7 @@ class MortalityRecordsBrowserCase(StaticLiveServerTestCase):
         self.flock = Flock.objects.create(
             user=self.user, branch=self.branch, flock_id='01', breed='layers', quantity=30,
         )
-        self.page = self.browser.new_page()
+        self.page = self.browser.new_page(locale='en-US')
         self.addCleanup(self.page.close)
         self.records_url = f'{self.live_server_url}/mortality-records/'
         self.page.goto(f'{self.live_server_url}/login/')
@@ -62,12 +67,10 @@ class MortalityRecordsBrowserCase(StaticLiveServerTestCase):
     def submit(self):
         self.page.locator('main form button[type="submit"]').click()
 
-    def assert_required(self, selector, message):
+    def assert_required(self, selector):
         field = self.page.locator(selector)
         self.assertTrue(field.evaluate('input => input.validity.valueMissing'))
-        dialog = self.page.locator('#appDialog[open]')
-        expect(dialog.get_by_role('heading', name='Please Complete All Required Fields!')).to_be_visible()
-        expect(dialog.locator('#appDialogText')).to_have_text(message)
+        expect_field_error(field)
 
     def assert_no_record_saved(self):
         expect(self.page).to_have_url(f'{self.records_url}add/')

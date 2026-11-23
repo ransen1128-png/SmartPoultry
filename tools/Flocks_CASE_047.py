@@ -1,57 +1,50 @@
-"""Verify that empty required fields block updates to a live test flock."""
+"""Verify that empty required fields block live flock creation."""
 
-from getpass import getpass
 import os
 import unittest
 
-
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 FLOCKS_URL = f'{BASE_URL}/flocks/'
-
+REQUIRED_FIELDS = ('branch', 'breed', 'acquisition_source', 'quantity')
 
 
 class LiveFlockTests(unittest.TestCase):
-    def test_case_047_empty_required_flock_edit_fields(self):
-        """CASE-047 | Flock update failed & required field errors shown."""
+    def test_case_047_empty_required_flock_fields(self):
+        """CASE-047 | Flock creation failed & required field errors shown."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
-        password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
+        password = read_test_value('SMARTPOULTRY_TEST_PASSWORD', 'Test account password: ', secret=True)
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_label('Email', exact=True).fill(email)
                 page.get_by_label('Password', exact=True).fill(password)
                 page.get_by_role('button', name='Login', exact=True).click()
                 expect(page).to_have_url(f'{BASE_URL}/dashboard/', timeout=30_000)
 
-                flock_id = os.environ.get('SMARTPOULTRY_TEST_FLOCK_ID') or 'QA-044-18e6c3e700'
                 page.goto(FLOCKS_URL, timeout=90_000, wait_until='domcontentloaded')
+                expect(page).to_have_url(FLOCKS_URL)
                 notification = page.locator('dialog#appDialog[open]')
                 if notification.is_visible():
                     notification.get_by_role('button', name='Close notification').click()
                 expect(notification).to_be_hidden()
-
-                row = page.locator('#flocksBody tr').filter(
-                    has=page.get_by_role('cell', name=flock_id, exact=True),
-                )
-                expect(row).to_be_visible()
-                row.get_by_role('button', name='Edit', exact=True).click()
+                page.get_by_role('button', name='Add New Flock').click()
                 modal = page.locator('#addFlockModal')
-                expect(modal.get_by_role('heading', name='Edit Flock', exact=True)).to_be_visible()
+                expect(modal).to_be_visible()
+                submit = modal.get_by_role('button', name='Save Flock', exact=True)
                 form = modal.locator('#addFlockForm')
-                identifier = form.locator('[name="flock_id"]')
-                quantity = form.locator('[name="quantity"]')
-                saved_quantity = quantity.input_value()
-                expect(identifier).to_have_value(flock_id)
-                self.assertTrue(saved_quantity)
-                for field in (identifier, quantity, form.locator('[name="correction_reason"]')):
-                    field.fill('')
-                    expect(field).to_have_value('')
+                for name in REQUIRED_FIELDS:
+                    expect(form.locator(f'[name="{name}"]')).to_have_value('')
 
                 form.evaluate('''form => {
                     form.addEventListener('invalid', ({ target }) => {
@@ -60,28 +53,20 @@ class LiveFlockTests(unittest.TestCase):
                         }
                     }, true);
                 }''')
-                writes = []
+                posts = []
+                page.on('request', lambda request: posts.append(request.url) if request.method == 'POST' else None)
+                submit.click()
 
-                def track_update(request):
-                    if request.url.startswith(f'{BASE_URL}/api/flocks/') and request.method in ('PATCH', 'PUT'):
-                        writes.append(request)
-
-                page.on('request', track_update)
-                modal.get_by_role('button', name='Update Flock', exact=True).click()
-
-                expect(notification.get_by_role('heading', name='Please Complete All Required Fields!')).to_be_visible()
-                expect(notification.locator('#appDialogText')).to_have_text('Please fill out this field.')
+                expect(page).to_have_url(FLOCKS_URL)
                 expect(modal).to_be_visible()
-                for name in ('flock_id', 'quantity', 'correction_reason'):
-                    field = form.locator(f'[name="{name}"]')
-                    expect(field).to_have_attribute('data-test-validation-message', 'Please fill out this field.')
-                self.assertFalse(writes, 'The browser sent a flock update request')
-
-                page.reload(wait_until='domcontentloaded')
-                row.get_by_role('button', name='Edit', exact=True).click()
-                expect(identifier).to_have_value(flock_id)
-                expect(quantity).to_have_value(saved_quantity)
-                print(f'Actual result: Required fields were flagged. Flock {flock_id} still has quantity {saved_quantity}.')
+                self.assertEqual(posts, [], 'The browser submitted an incomplete flock form')
+                for name in REQUIRED_FIELDS:
+                    with self.subTest(field=name):
+                        field = form.locator(f'[name="{name}"]')
+                        expect_field_error(field)
+                        message = field.get_attribute('data-test-validation-message')
+                        self.assertTrue(message, 'The browser did not report a required-field error')
+                        print(f'{name}: {message}')
             finally:
                 browser.close()
 

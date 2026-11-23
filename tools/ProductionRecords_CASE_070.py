@@ -1,20 +1,86 @@
-"""Production Records browser test CASE-070."""
+"""Verify that empty required fields block production record creation."""
 
-from playwright.sync_api import expect
+import os
+import unittest
 
-from tools.production_records_browser import ProductionRecordsBrowserCase
+
+from playwright.sync_api import expect, sync_playwright
+
+try:
+    from tools.automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
 
 
-class ProductionRecordsCase070(ProductionRecordsBrowserCase):
-    def test_case_070_correct_egg_quantity(self):
-        record = self.egg_fixture()
-        self.open_egg_edit(record)
-        self.page.locator('#id_quantity').fill('14')
-        self.page.get_by_label('Reason for correction').fill('Corrected the test egg count.')
-        self.submit()
-        expect(self.page).to_have_url(self.records_url)
-        cells = self.record_row(record).get_by_role('cell')
-        expect(cells.nth(6)).to_have_text('14')
-        expect(cells.nth(8)).to_have_text('14')
-        record.refresh_from_db()
-        self.assertEqual(record.quantity, 14)
+BASE_URL = live_base_url()
+PRODUCTION_URL = f'{BASE_URL}/production-records/'
+
+
+
+class LiveProductionRecordsTests(unittest.TestCase):
+    def test_case_070_empty_required_production_fields(self):
+        """CASE-070 | Production record creation failed & required field errors shown."""
+        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
+        password = read_test_value('SMARTPOULTRY_TEST_PASSWORD', 'Test account password: ', secret=True)
+
+        with sync_playwright() as playwright:
+            browser = launch_browser(playwright)
+            try:
+                page = browser.new_page(locale='en-US')
+                page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
+                page.get_by_label('Email', exact=True).fill(email)
+                page.get_by_label('Password', exact=True).fill(password)
+                page.get_by_role('button', name='Login', exact=True).click()
+                expect(page).to_have_url(f'{BASE_URL}/dashboard/', timeout=30_000)
+
+                page.goto(PRODUCTION_URL, timeout=90_000, wait_until='domcontentloaded')
+                expect(page).to_have_url(PRODUCTION_URL)
+                notification = page.locator('dialog#appDialog[open]')
+                if notification.is_visible():
+                    notification.get_by_role('button', name='Close notification').click()
+                expect(notification).to_be_hidden()
+
+                page.locator('.page-heading').get_by_role('link', name='Add Record', exact=True).click()
+                expect(page).to_have_url(f'{PRODUCTION_URL}add/')
+                expect(page.get_by_role('heading', name='Add Production Record', exact=True)).to_be_visible()
+
+                submit = page.get_by_role('button', name='Save Record')
+                form = page.locator('form').filter(has=submit)
+                required = form.evaluate('''form => {
+                    const fields = [...form.elements].filter(field => field.willValidate && field.required);
+                    for (const field of fields) {
+                        if (field.value) field.value = '';
+                    }
+                    form.addEventListener('invalid', ({ target }) => {
+                        if (target.validity.valueMissing) {
+                            target.dataset.testValidationMessage = target.validationMessage;
+                        }
+                    }, true);
+                    return fields.map(field => field.name);
+                }''')
+                self.assertTrue({'flock', 'quantity', 'date'}.issubset(required), required)
+
+                requests = []
+
+                def track_submission(request):
+                    if request.url == f'{PRODUCTION_URL}add/' and request.method == 'POST':
+                        requests.append(request)
+
+                page.on('request', track_submission)
+                submit.click()
+
+                expect(page).to_have_url(f'{PRODUCTION_URL}add/')
+                self.assertFalse(requests, 'The browser submitted the incomplete production record')
+                for name in required:
+                    with self.subTest(field=name):
+                        field = form.locator(f'[name="{name}"]')
+                        expect_field_error(field)
+                        message = field.get_attribute('data-test-validation-message')
+                        self.assertTrue(message, f'No required-field error for {name}')
+                        print(f'{name}: {message}')
+            finally:
+                browser.close()
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

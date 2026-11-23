@@ -1,27 +1,32 @@
-"""Verify that the deployed reset form rejects mismatched passwords."""
+"""Verify that the deployed reset form updates the password and provides a return to login."""
 
-from getpass import getpass
 import os
-import re
 import unittest
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 RECOVERY_URL = f'{BASE_URL}/forgot-password/'
 
 
 class LiveResetPasswordTests(unittest.TestCase):
-    def test_case_021_new_password_does_not_match_confirmation(self):
-        """CASE-021 | Reset fails with error message."""
+    def test_case_021_valid_matching_passwords_return_to_login(self):
+        """CASE-021 | Password reset successful, redirected to Login."""
+        email = read_test_value('SMARTPOULTRY_TEST_EMAIL', 'Registered email for userx: ', secret=False)
         username = os.environ.get('SMARTPOULTRY_TEST_USERNAME') or 'userx'
-        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input(f'Registered email for {username}: ')
+
+        new_password = read_test_value('SMARTPOULTRY_TEST_NEW_PASSWORD', 'New password for the dedicated test account: ', secret=True)
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_role('link', name='Forgot Password?', exact=True).click()
                 expect(page).to_have_url(RECOVERY_URL)
@@ -34,22 +39,28 @@ class LiveResetPasswordTests(unittest.TestCase):
                 for number in (1, 2):
                     field_id = f'answer_{number}'
                     question = page.locator(f'label[for="{field_id}"]').inner_text()
-                    answer = os.environ.get(f'SMARTPOULTRY_TEST_RECOVERY_ANSWER_{number}') or getpass(
-                        f'Correct test answer for "{question}": ',
-                    )
+                    answer = read_test_value(f'SMARTPOULTRY_TEST_RECOVERY_ANSWER_{number}', f'Correct test answer for "{question}": ', secret=True)
                     page.locator(f'#{field_id}').fill(answer)
                 page.get_by_role('button', name='Verify Answers', exact=True).click()
 
                 expect(page).to_have_url(f'{RECOVERY_URL}new-password/')
                 expect(page.get_by_role('heading', name='Choose a New Password', exact=True)).to_be_visible()
-                page.get_by_label('New Password', exact=True).fill('SyntheticReset!6319Alpha')
-                page.get_by_label('Confirm Password', exact=True).fill('SyntheticReset!6319Bravo')
+                page.get_by_label('New Password', exact=True).fill(new_password)
+                page.get_by_label('Confirm Password', exact=True).fill(new_password)
                 page.get_by_role('button', name='Update Password', exact=True).click()
 
-                error = page.locator('.errorlist').get_by_text(re.compile(r'The two password fields didn.t match\.'))
-                expect(error).to_be_visible()
-                expect(page).to_have_url(f'{RECOVERY_URL}new-password/')
-                print(f'\nActual result: {error.inner_text()}')
+                expect(page).to_have_url(f'{BASE_URL}/reset-password/complete/')
+                expect(page.get_by_role(
+                    'heading', name='Password Updated Successfully!', exact=True,
+                )).to_be_visible()
+
+                confirmation = page.get_by_role('dialog', name='Password Changed Successfully!', exact=True)
+                if confirmation.is_visible():
+                    confirmation.get_by_role('button', name='Close notification').click()
+                page.get_by_role('link', name='Go to Login', exact=True).click()
+                expect(page).to_have_url(f'{BASE_URL}/login/')
+                expect(page.get_by_role('button', name='Login', exact=True)).to_be_visible()
+                print('\nActual result: Password reset succeeded and Go to Login opened the login page.')
             finally:
                 browser.close()
 

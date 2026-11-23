@@ -1,25 +1,28 @@
 """Run the successful admin login case against the deployed site."""
 
-from getpass import getpass
-import os
 import unittest
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 
 
 class LiveLoginTests(unittest.TestCase):
     def test_case_009_valid_admin_credentials_redirect_to_admin_dashboard(self):
         """CASE-009 | Valid admin credentials redirect to the Admin Dashboard."""
-        email = os.environ.get('SMARTPOULTRY_TEST_ADMIN_EMAIL') or input('Admin test account email: ')
-        password = os.environ.get('SMARTPOULTRY_TEST_ADMIN_PASSWORD') or getpass('Admin test account password: ')
+        email = read_test_value('SMARTPOULTRY_TEST_ADMIN_EMAIL', 'Admin test account email: ', secret=False)
+        password = read_test_value('SMARTPOULTRY_TEST_ADMIN_PASSWORD', 'Admin test account password: ', secret=True)
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 response = page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 self.assertIsNotNone(response)
                 self.assertTrue(response.ok, f'Login page returned HTTP {response.status}')

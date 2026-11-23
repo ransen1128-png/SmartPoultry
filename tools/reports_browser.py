@@ -36,12 +36,14 @@ class ReportsBrowserCase(NovemberExpenseBrowserCase):
         expect(self.page).to_have_url(f'{self.live_server_url}/reports/')
         expect(self.page.locator('#branchExpenseTotal')).to_have_text('\u20b15358.00')
 
-    def apply_expense_filter(self, branch, *, start='2026-11-01', end='2026-11-21'):
+    def fill_expense_filter(self, branch, *, start='2026-11-01', end='2026-11-21'):
         self.page.get_by_label('Branch', exact=True).select_option(label=branch)
         self.page.get_by_label('From', exact=True).fill(start)
         self.page.get_by_label('To', exact=True).fill(end)
+    def apply_expense_filter(self, branch):
+        self.fill_expense_filter(branch)
         with self.page.expect_response(lambda response: '/api/reports/branch-expenses/?' in response.url) as result:
-            self.page.get_by_role('button', name='Apply', exact=True).click()
+            self.page.get_by_role('button', name='Apply Filter', exact=True).click()
         return result.value
 
     def assert_expense_total(self, amount):
@@ -51,7 +53,7 @@ class ReportsBrowserCase(NovemberExpenseBrowserCase):
         with self.page.expect_response(
             lambda response: response.url.endswith('/api/reports/') and response.request.method == 'POST',
         ) as saved:
-            self.page.get_by_role('button', name='Monthly Report', exact=True).click()
+            self.page.get_by_role('button', name='Monthly', exact=True).click()
         self.assertEqual(saved.value.status, 201, saved.value.text())
         return Report.objects.get(pk=saved.value.json()['id'], user=self.user)
 

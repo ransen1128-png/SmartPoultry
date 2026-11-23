@@ -5,21 +5,26 @@ import unittest
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 RECOVERY_URL = f'{BASE_URL}/forgot-password/'
 
 
 class LiveForgotPasswordTests(unittest.TestCase):
     def test_case_012_registered_email_and_username(self):
         """CASE-012 | Verification successful & user proceeds to recovery questions."""
-        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Registered email for userx: ')
+        email = read_test_value('SMARTPOULTRY_TEST_EMAIL', 'Registered email for userx: ', secret=False)
         username = os.environ.get('SMARTPOULTRY_TEST_USERNAME') or 'userx'
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_role('link', name='Forgot Password?', exact=True).click()
                 expect(page).to_have_url(RECOVERY_URL)

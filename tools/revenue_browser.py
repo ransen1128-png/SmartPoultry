@@ -10,6 +10,11 @@ from django.test import override_settings
 from django.utils import timezone
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import expect_field_error, launch_browser
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser
+
 from core.models import Branch, Farm
 from flocks.models import Flock
 from production.models import ProductionRecord
@@ -27,7 +32,7 @@ class RevenueBrowserCase(StaticLiveServerTestCase):
         cls.enterClassContext(patch.dict(os.environ, DJANGO_ALLOW_ASYNC_UNSAFE='true'))
         playwright = sync_playwright().start()
         cls.addClassCleanup(playwright.stop)
-        cls.browser = playwright.chromium.launch(channel='msedge', headless=True)
+        cls.browser = launch_browser(playwright)
         cls.addClassCleanup(cls.browser.close)
 
     def setUp(self):
@@ -49,7 +54,7 @@ class RevenueBrowserCase(StaticLiveServerTestCase):
             user=self.user, branch=self.branch, flock=broilers, product_type='meat_ready',
             quantity=5, date=self.today,
         )
-        self.page = self.browser.new_page()
+        self.page = self.browser.new_page(locale='en-US')
         self.addCleanup(self.page.close)
         self.page.goto(f'{self.live_server_url}/login/')
         self.page.get_by_label('Email', exact=True).fill(email)
@@ -84,9 +89,9 @@ class RevenueBrowserCase(StaticLiveServerTestCase):
     def submit(self):
         self.modal.get_by_role('button', name='Save Revenue', exact=True).click()
 
-    def assert_sale_blocked(self, field, flag, validation_message):
+    def assert_sale_blocked(self, field, flag):
         self.assertTrue(field.evaluate('(field, flag) => field.validity[flag]', flag))
-        expect(self.page.locator('#appDialog[open] #appDialogText')).to_have_text(validation_message)
+        expect_field_error(field)
         expect(self.modal).to_be_visible()
         self.assertFalse(Revenue.objects.filter(user=self.user).exists())
         self.assertEqual(self.eggs.available_quantity, 14)

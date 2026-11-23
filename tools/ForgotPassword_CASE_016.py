@@ -1,27 +1,30 @@
-"""Verify that one incorrect recovery answer blocks password reset."""
+"""Verify that two correct recovery answers open the password reset page."""
 
-from getpass import getpass
 import os
-from uuid import uuid4
 import unittest
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 RECOVERY_URL = f'{BASE_URL}/forgot-password/'
 
 
 class LiveForgotPasswordTests(unittest.TestCase):
-    def test_case_016_one_correct_and_one_incorrect_answer(self):
-        """CASE-016 | Verification failed & user cannot proceed to password reset."""
-        email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or input('Registered email for userx: ')
+    def test_case_016_both_recovery_answers_correct(self):
+        """CASE-016 | Verification successful & user proceeds to password reset page."""
+        email = read_test_value('SMARTPOULTRY_TEST_EMAIL', 'Registered email for userx: ', secret=False)
         username = os.environ.get('SMARTPOULTRY_TEST_USERNAME') or 'userx'
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_role('link', name='Forgot Password?', exact=True).click()
                 expect(page).to_have_url(RECOVERY_URL)
@@ -29,25 +32,20 @@ class LiveForgotPasswordTests(unittest.TestCase):
                 page.get_by_label('Email', exact=True).fill(email)
                 page.get_by_label('Username', exact=True).fill(username)
                 page.get_by_role('button', name='Continue', exact=True).click()
-
                 expect(page).to_have_url(f'{RECOVERY_URL}questions/')
-                expect(page.get_by_role('heading', name='Answer Your Recovery Questions', exact=True)).to_be_visible()
-                expect(page.locator('#answer_1')).to_be_visible()
-                expect(page.locator('#answer_2')).to_be_visible()
-                expect(page.get_by_role('button', name='Verify Answers', exact=True)).to_be_visible()
-                question = page.locator('label[for="answer_1"]').inner_text()
-                correct_answer = os.environ.get('SMARTPOULTRY_TEST_RECOVERY_ANSWER_1') or getpass(
-                    f'Correct test answer for "{question}": ',
-                )
-                page.locator('#answer_1').fill(correct_answer)
-                page.locator('#answer_2').fill(f'Incorrect test answer {uuid4().hex}')
+
+                for number in (1, 2):
+                    field_id = f'answer_{number}'
+                    question = page.locator(f'label[for="{field_id}"]').inner_text()
+                    answer = read_test_value(f'SMARTPOULTRY_TEST_RECOVERY_ANSWER_{number}', f'Correct test answer for "{question}": ', secret=True)
+                    page.locator(f'#{field_id}').fill(answer)
                 page.get_by_role('button', name='Verify Answers', exact=True).click()
 
-                alert = page.get_by_role('alert')
-                expect(alert).to_contain_text('The answers could not be verified.')
-                expect(alert).to_be_visible()
-                expect(page).to_have_url(f'{RECOVERY_URL}questions/')
-                print(f'\nActual result: {alert.inner_text()}')
+                expect(page).to_have_url(f'{RECOVERY_URL}new-password/')
+                expect(page.get_by_role('heading', name='Choose a New Password', exact=True)).to_be_visible()
+                expect(page.get_by_label('New Password', exact=True)).to_be_visible()
+                expect(page.get_by_label('Confirm Password', exact=True)).to_be_visible()
+                print('\nActual result: Verification succeeded and the password reset form appeared.')
             finally:
                 browser.close()
 

@@ -1,68 +1,80 @@
-"""Verify that empty required fields block live branch creation."""
+"""Verify that invalid contact details block live farm profile creation."""
 
-from getpass import getpass
 import os
 import unittest
 
 from playwright.sync_api import expect, sync_playwright
 
+try:
+    from tools.automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
+except ModuleNotFoundError:
+    from automation_browser import expect_field_error, launch_browser, live_base_url, read_test_value
 
-BASE_URL = 'https://smartpoultry-l3qo.onrender.com'
+
+BASE_URL = live_base_url()
 FARM_URL = f'{BASE_URL}/farm/branches/'
-REQUIRED_FIELDS = ('branch_name', 'address', 'contact_number')
+
 
 
 class LiveFarmTests(unittest.TestCase):
-    def test_case_037_empty_required_branch_fields(self):
-        """CASE-037 | Branch creation failed & required field errors shown."""
+    def test_case_037_invalid_contact_details(self):
+        """CASE-037 | Farm profile creation failed & validation error shown."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
-        password = os.environ.get('SMARTPOULTRY_TEST_PASSWORD') or getpass('Test account password: ')
+        password = read_test_value('SMARTPOULTRY_TEST_PASSWORD', 'Test account password: ', secret=True)
 
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel='msedge', headless=True)
+            browser = launch_browser(playwright)
             try:
-                page = browser.new_page()
+                page = browser.new_page(locale='en-US')
                 page.goto(f'{BASE_URL}/login/', timeout=90_000, wait_until='domcontentloaded')
                 page.get_by_label('Email', exact=True).fill(email)
                 page.get_by_label('Password', exact=True).fill(password)
                 page.get_by_role('button', name='Login', exact=True).click()
                 expect(page).to_have_url(f'{BASE_URL}/dashboard/', timeout=30_000)
 
-                page.goto(FARM_URL, timeout=90_000, wait_until='domcontentloaded')
-                expect(page).to_have_url(FARM_URL)
-                notification = page.locator('dialog#appDialog[open]')
-                if notification.is_visible():
-                    notification.get_by_role('button', name='Close notification').click()
-                expect(notification).to_be_hidden()
-                page.get_by_role('button', name='Add Branch', exact=True).click()
-                modal = page.get_by_role('dialog', name='Add New Branch', exact=True)
-                expect(modal).to_be_visible()
-                submit = modal.get_by_role('button', name='Add Branch', exact=True)
-                form = modal.locator('#addBranchForm')
-                for name in REQUIRED_FIELDS:
-                    expect(form.locator(f'[name="{name}"]')).to_have_value('')
+                scenarios = (
+                    ('contact_email', 'invalid-email', 'typeMismatch'),
+                    ('contact_phone', '12345', 'patternMismatch'),
+                )
+                for field_name, invalid_value, validity_flag in scenarios:
+                    with self.subTest(field=field_name):
+                        page.goto(FARM_URL, timeout=90_000, wait_until='domcontentloaded')
+                        expect(page).to_have_url(FARM_URL)
+                        notification = page.locator('dialog#appDialog[open]')
+                        if notification.is_visible():
+                            notification.get_by_role('button', name='Close notification').click()
+                        expect(notification).to_be_hidden()
 
-                form.evaluate('''form => {
-                    form.addEventListener('invalid', ({ target }) => {
-                        if (target.validity.valueMissing) {
-                            target.dataset.testValidationMessage = target.validationMessage;
+                        if page.locator('#farmBranchesTitle').is_visible():
+                            self.skipTest('Use a dedicated test account without a farm profile for this case.')
+                        submit = page.get_by_role('button', name='Create Farm Profile', exact=True)
+                        form = page.locator('form').filter(has=submit)
+                        values = {
+                            'farm_name': 'Synthetic QA Farm',
+                            'farm_address': 'QA Location',
+                            'established_date': '2025-01-01',
+                            'contact_email': 'farm-test@example.invalid',
+                            'contact_phone': '09123456789',
                         }
-                    }, true);
-                }''')
-                posts = []
-                page.on('request', lambda request: posts.append(request.url) if request.method == 'POST' else None)
-                submit.click()
+                        del values[field_name]
+                        for name, value in values.items():
+                            form.locator(f'[name="{name}"]').fill(value)
 
-                expect(page).to_have_url(FARM_URL)
-                expect(notification.get_by_role('heading', name='Please Complete All Required Fields!')).to_be_visible()
-                expect(notification.get_by_text('Please fill out this field.', exact=True)).to_be_visible()
-                expect(modal).to_be_visible()
-                self.assertEqual(posts, [], 'The browser submitted an incomplete branch form')
-                for name in REQUIRED_FIELDS:
-                    with self.subTest(field=name):
-                        message = form.locator(f'[name="{name}"]').get_attribute('data-test-validation-message')
-                        self.assertTrue(message, 'The browser did not report a required-field error')
-                        print(f'{name}: {message}')
+                        field = form.locator(f'[name="{field_name}"]')
+                        field.fill(invalid_value)
+                        expect(field).to_have_value(invalid_value)
+                        self.assertTrue(
+                            field.evaluate('(field, flag) => field.validity[flag]', validity_flag),
+                            f'Browser did not report {validity_flag} for {field_name}.',
+                        )
+                        message = field.evaluate('field => field.validationMessage')
+                        self.assertTrue(message)
+
+                        submit.click()
+                        expect_field_error(field)
+                        expect(submit).to_be_visible()
+                        expect(page).to_have_url(FARM_URL)
+                        print(f'{field_name}: {message}')
             finally:
                 browser.close()
 
