@@ -21,18 +21,12 @@
             [report.report_type.charAt(0).toUpperCase() + report.report_type.slice(1), report.title,
                 `${displayDate(report.start_date)} – ${displayDate(report.end_date)}`, displayDate(report.generated_at)]
                 .forEach(value => row.insertCell().textContent = value);
-            const base = `/api/reports/${encodeURIComponent(report.id)}/download/`;
             const excel = document.createElement('a');
-            excel.className = 'btn btn-outline-primary btn-sm me-1';
-            excel.href = base;
-            excel.textContent = 'Excel';
+            excel.className = 'btn btn-outline-primary btn-sm';
+            excel.href = `/api/reports/${encodeURIComponent(report.id)}/download/`;
+            excel.innerHTML = '<i class="bi bi-file-earmark-excel me-1" aria-hidden="true"></i>Download Excel';
             excel.setAttribute('aria-label', `Download ${report.title} as Excel`);
-            const csv = document.createElement('a');
-            csv.className = 'btn btn-link btn-sm';
-            csv.href = `${base}?export=csv`;
-            csv.textContent = 'CSV';
-            csv.setAttribute('aria-label', `Download ${report.title} as CSV`);
-            row.insertCell().append(excel, csv);
+            row.insertCell().append(excel);
         }
         if (!reports.length) {
             const cell = body.insertRow().insertCell();

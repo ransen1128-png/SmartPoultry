@@ -4,6 +4,7 @@ from datetime import date, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from openpyxl import load_workbook
 from rest_framework.test import APIClient
 
 from expenses.models import Expense
@@ -31,15 +32,16 @@ class ReportWorkflowTests(TestCase):
                 self.assertEqual(created.status_code, 201)
                 report = Report.objects.get(pk=created.data['id'])
                 self.assertEqual(report.user, self.owner)
-                downloaded = self.client.get(f'/api/reports/{report.pk}/download/', {'export': 'csv'})
+                downloaded = self.client.get(f'/api/reports/{report.pk}/download/')
                 self.assertEqual(downloaded.status_code, 200)
                 self.assertIn('attachment;', downloaded['Content-Disposition'])
-                rows = list(csv.reader(io.StringIO(downloaded.content.decode())))
-                self.assertIn(['Total Expenses', '625'], rows)
-                self.assertIn(['Date Range', f'{start} to {self.end}'], rows)
-                self.assertIn('Owner feed', downloaded.content.decode())
-                self.assertNotIn('Private other feed', downloaded.content.decode())
-                self.assertNotIn('Outside range', downloaded.content.decode())
+                workbook = load_workbook(io.BytesIO(downloaded.content))
+                text = ' '.join(str(cell.value) for sheet in workbook for row in sheet.iter_rows() for cell in row if cell.value is not None)
+                self.assertEqual(workbook['Summary']['B8'].value, 625)  # Total expenses card
+                self.assertIn(f'{start:%B %d, %Y}', workbook['Summary']['A2'].value)
+                self.assertIn('Owner feed', text)
+                self.assertNotIn('Private other feed', text)
+                self.assertNotIn('Outside range', text)
                 self.client.force_authenticate(self.other)
                 self.assertEqual(self.client.get(f'/api/reports/{report.pk}/download/').status_code, 404)
                 self.client.force_authenticate(self.owner)

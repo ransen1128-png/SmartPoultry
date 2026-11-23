@@ -1159,17 +1159,19 @@ class ReportDownloadTests(TestCase):
         )
 
         self.client.force_login(self.user)
-        response = self.client.get(f'/api/reports/{report.id}/download/', {'export': 'csv'})
-        csv_text = response.content.decode()
+        response = self.client.get(f'/api/reports/{report.id}/download/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertEqual(response['Content-Type'], 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         self.assertIn('attachment; filename="daily_report_', response['Content-Disposition'])
-        self.assertIn('SMARTPOULTRY Report Export', csv_text)
-        self.assertIn('Owner sale', csv_text)
-        self.assertIn('Owner feed', csv_text)
-        self.assertIn('1000.00', csv_text)
-        self.assertIn('Monthly Financial Summary', csv_text)
-        self.assertIn('Profit', csv_text)
-        self.assertNotIn('Other sale', csv_text)
-        self.assertNotIn('9000.00', csv_text)
+        from io import BytesIO
+        from openpyxl import load_workbook
+        workbook = load_workbook(BytesIO(response.content))
+        text = ' '.join(str(cell.value) for sheet in workbook for row in sheet.iter_rows() for cell in row if cell.value is not None)
+        summary = workbook['Summary']
+        self.assertEqual(summary['A1'].value, 'SMARTPOULTRY · Daily Report')
+        self.assertEqual((summary['A8'].value, summary['B8'].value, summary['C8'].value), (1000, 300, 700))
+        self.assertIn('Owner sale', text)
+        self.assertIn('Owner feed', text)
+        self.assertNotIn('Other sale', text)
+        self.assertNotIn('9000', text)
