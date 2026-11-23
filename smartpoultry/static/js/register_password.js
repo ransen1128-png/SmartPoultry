@@ -25,7 +25,23 @@
         confirm.setCustomValidity(mismatch ? 'Passwords do not match.' : '');
         feedback.textContent = confirm.value ? (mismatch ? 'Passwords do not match.' : 'Passwords match.') : 'Re-enter your password to make sure it matches.';
         feedback.style.color = confirm.value ? (mismatch ? '#b42318' : '#15803d') : '';
+        feedback.dataset.state = mismatch ? 'error' : confirm.value ? 'success' : 'neutral';
+        confirm.classList.toggle('is-invalid', Boolean(mismatch));
+        if (mismatch) confirm.setAttribute('aria-invalid', 'true');
+        else confirm.removeAttribute('aria-invalid');
     }
+    // This field owns its single feedback line; other fields retain shared validation.
+    confirm.addEventListener('invalid', event => {
+        event.preventDefault();
+        feedback.textContent = confirm.validationMessage;
+        feedback.style.color = '#b42318';
+        feedback.dataset.state = 'error';
+        confirm.classList.add('is-invalid');
+        confirm.setAttribute('aria-invalid', 'true');
+        requestAnimationFrame(() => {
+            if (password.form.querySelector(':invalid') === confirm) confirm.focus();
+        });
+    });
     password.addEventListener('input', update);
     confirm.addEventListener('input', update);
     password.form.addEventListener('submit', (event) => {

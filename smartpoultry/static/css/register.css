@@ -20,6 +20,9 @@ body{display:flex;justify-content:center;align-items:center;min-height:100vh;min
 .register-action-buttons .btn{font-size:.85rem;min-height:36px}
 .register-action-buttons svg{width:18px;height:18px;margin-right:6px;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .register-container .is-invalid{border-color:#dc3545}
+.register-container .password-field .form-control.is-invalid{background-image:none}
+#passwordMatch[data-state="error"]{display:flex;align-items:flex-start;gap:6px;color:#b42318}
+#passwordMatch[data-state="error"]::before{content:"!";display:inline-grid;place-items:center;flex:0 0 13px;height:13px;margin-top:2px;border:1px solid currentColor;border-radius:50%;font-size:10px;line-height:1;font-weight:700}
 .register-container .sp-field-error{font-size:.75rem}
         .errorlist { color: #b42318; font-size: .9rem; padding-left: 20px; }
         .password-rules { color: #596579; font-size: .85rem; list-style: none; padding-left: 0; margin: 10px 0 0; }
