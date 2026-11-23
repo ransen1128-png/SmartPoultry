@@ -16,7 +16,14 @@ if not RUNNING_ON_RENDER:
     load_dotenv(BASE_DIR / '.env', override=False)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
+# The fallback is public (it is in source control): anyone could forge session
+# cookies and password-reset tokens with it, so hosted deployments refuse it.
+SECRET_KEY = os.getenv('SECRET_KEY', '').strip()
+if not SECRET_KEY:
+    if RUNNING_ON_RENDER:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured('SECRET_KEY must be set in the Render environment.')
+    SECRET_KEY = 'django-insecure-dev-key-change-in-production'
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
 
@@ -73,6 +80,23 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# HTTPS hardening for the hosted site. Render terminates TLS at its proxy and
+# forwards the original scheme. Local runs stay on plain HTTP.
+if RUNNING_ON_RENDER:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    # Render's internal health probe may not arrive over HTTPS.
+    SECURE_REDIRECT_EXEMPT = [r'^__health/$']
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # Start HSTS short; raise to a year once HTTPS is confirmed stable.
+    SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '3600'))
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'same-origin'
+
+# The estimator runs several CPU models per photo behind one inference slot.
+ROOSTER_ESTIMATOR_MAX_PHOTOS = int(os.getenv('ROOSTER_ESTIMATOR_MAX_PHOTOS', '5'))
 
 ROOT_URLCONF = 'core.urls'
 LOGIN_URL = 'login'

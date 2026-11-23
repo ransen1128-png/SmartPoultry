@@ -22,7 +22,7 @@ from django.utils import timezone
 from django.utils.text import capfirst
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_GET, require_http_methods
-from PIL import Image, ImageFilter, ImageStat, UnidentifiedImageError
+from PIL import Image, ImageFilter, ImageOps, ImageStat, UnidentifiedImageError
 from notifications.utils import create_activity_notification
 from .forms import MortalityRecordForm, ProductionRecordForm
 from .contact_validation import PHONE_ERROR, valid_contact_phone
@@ -35,7 +35,14 @@ logger=logging.getLogger(__name__)
 
 
 def health_check(request):
-    """Lightweight production diagnostic that avoids templates and database queries."""
+    """Lightweight production diagnostic that avoids templates and database queries.
+
+    Anonymous callers (uptime monitors, Render's probe) get liveness only. The
+    detailed payload exposes database host/name and server paths, so it is
+    restricted to staff.
+    """
+    if not is_admin_user(request.user):
+        return JsonResponse({'ok': True, 'marker': DEPLOY_MARKER})
     database = settings.DATABASES['default']
     from core.vision_deployment import deployment_status
     from core.vision_api import is_configured, spur_model, spur_backup_model
@@ -952,7 +959,8 @@ def analyze_rooster_photo(photo):
                 try:check_image_size(image)
                 except ValueError as error:
                     return {'quality':'unreadable','summary':str(error),'penalty':2,'too_large':True}
-            image = image.convert('L')
+            # Report upright dimensions so overlays match the detectors' coordinates.
+            image = ImageOps.exif_transpose(image).convert('L')
             width, height = image.size
             resized = image.resize((min(width, 512), max(1, int(height * min(width, 512) / width))))
             stat = ImageStat.Stat(resized)
@@ -1131,7 +1139,13 @@ def rooster_age_estimator_view(request):
                 calibration = None
                 messages.warning(request, 'The scale must be a positive finite pixels-per-centimeter value. No centimeter measurement will be generated.')
 
-        if not photos:
+        max_photos = settings.ROOSTER_ESTIMATOR_MAX_PHOTOS
+        if len(photos) > max_photos:
+            # Each photo runs several CPU models; an unbounded batch can exceed the
+            # worker timeout and block every other user behind the inference slot.
+            messages.error(request, f'Upload at most {max_photos} photos at a time. You selected {len(photos)}.')
+            photos = []
+        elif not photos:
             messages.error(request, 'Upload at least one image to continue.')
 
         for index, photo in enumerate(photos):
@@ -1337,6 +1351,7 @@ def rooster_age_estimator_view(request):
         'selected_age_model': selected_age_model,
         'spur_api_available': spur_api_available,
         'viewing_saved': bool(request.method == 'GET' and selected_estimate),
+        'max_photos': settings.ROOSTER_ESTIMATOR_MAX_PHOTOS,
     })
 
 

@@ -8,7 +8,7 @@ import threading
 from pathlib import Path
 
 import torch
-from PIL import Image
+from PIL import Image, ImageOps
 from torch import nn
 from torchvision import models, transforms
 
@@ -129,7 +129,8 @@ def _predict_rooster_age(image_source, model_variant='original'):
 
     try:
         with Image.open(image_source) as image:
-            image = image.convert("RGB")
+            # Match the upright training images; see free_inference.predict_age.
+            image = ImageOps.exif_transpose(image).convert("RGB")
             image_tensor = artifact["transform"](image).unsqueeze(0)
 
         with torch.inference_mode():

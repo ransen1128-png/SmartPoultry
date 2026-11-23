@@ -2,8 +2,13 @@
     const input = document.getElementById('photos');
     const zone = document.getElementById('estimatorDropzone');
     const selection = document.getElementById('photoSelection');
+    const maxFiles = Number(input.dataset.maxFiles) || 0;
     input.addEventListener('change', () => {
-        selection.textContent = input.files.length === 1 ? input.files[0].name
+        // The server enforces the same limit; this just fails fast before uploading.
+        const tooMany = maxFiles && input.files.length > maxFiles;
+        input.setCustomValidity(tooMany ? `Select at most ${maxFiles} photos at a time.` : '');
+        selection.textContent = tooMany ? `${input.files.length} photos selected. The limit is ${maxFiles}.`
+            : input.files.length === 1 ? input.files[0].name
             : input.files.length ? `${input.files.length} photos selected` : 'Drag and drop or click to upload';
     });
     ['dragenter', 'dragover'].forEach(name => zone.addEventListener(name, event => {

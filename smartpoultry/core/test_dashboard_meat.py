@@ -8,15 +8,19 @@ from flocks.models import Flock
 from production.models import ProductionRecord
 
 
+# Broiler harvests require a delivery / hatch date at least 25 days earlier (1c82784).
+HATCHED=date(2026,9,1)
+
+
 class DashboardMeatProductionTests(TestCase):
     def test_meat_is_filtered_by_owner_branch_month_and_keeps_units_separate(self):
         user=get_user_model().objects.create_user(username='meat-dashboard')
         other=get_user_model().objects.create_user(username='meat-dashboard-other')
         farm=Farm.objects.create(owner=user,name='Farm',location='Town',established_date=date(2026,1,1),contact_email='a@example.com',contact_phone='123')
         north=Branch.objects.create(farm=farm,name='North');south=Branch.objects.create(farm=farm,name='South')
-        a=Flock.objects.create(user=user,branch=north,flock_id='A',breed='broilers',quantity=100)
-        b=Flock.objects.create(user=user,branch=south,flock_id='B',breed='broilers',quantity=100)
-        foreign=Flock.objects.create(user=other,flock_id='C',breed='broilers',quantity=100)
+        a=Flock.objects.create(user=user,branch=north,flock_id='A',breed='broilers',quantity=100,placement_date=HATCHED)
+        b=Flock.objects.create(user=user,branch=south,flock_id='B',breed='broilers',quantity=100,placement_date=HATCHED)
+        foreign=Flock.objects.create(user=other,flock_id='C',breed='broilers',quantity=100,placement_date=HATCHED)
         def record(owner,flock,branch,amount,unit,day):
             ProductionRecord.objects.create(user=owner,flock=flock,branch=branch,product_type='meat_ready',quantity=amount,unit=unit,date=day)
         record(user,a,north,10,'units',date(2026,11,10))

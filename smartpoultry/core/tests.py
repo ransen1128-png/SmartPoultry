@@ -30,9 +30,12 @@ class RegistrationTests(TestCase):
             'email': 'new-owner@example.com',
             'password': 'RegistrationTest123!',
             'password2': 'RegistrationTest123!',
+            # Recovery questions became mandatory at registration (f19d16f).
+            'question_one': 'school_trip', 'answer_one': 'Private mountain trip',
+            'question_two': 'stuffed_toy', 'answer_two': 'Purple toy dragon',
         }, follow=True)
         self.assertEqual(response.redirect_chain, [(reverse('login'), 302)])
-        self.assertContains(response, 'Account created successfully. Please log in.')
+        self.assertContains(response, 'Registration Successful!')
         self.assertNotIn('_auth_user_id', self.client.session)
         account = get_user_model().objects.get(username='new-farm-owner')
         self.assertTrue(account.is_active)
@@ -342,6 +345,8 @@ class InventoryDistributionTests(TestCase):
             contact_phone='09123456789',
         )
         branch = Branch.objects.create(farm=farm, name='North Branch')
+        # Distribution requires a live flock at the receiving branch (1c82784).
+        Flock.objects.create(user=user, branch=branch, flock_id='F1', breed='layers', quantity=20)
         inventory = Inventory.objects.create(
             user=user,
             item_type='feed',

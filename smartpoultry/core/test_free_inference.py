@@ -127,6 +127,7 @@ class FreeHostedEstimatorTests(TestCase):
         self.assertFalse(RoosterAgeEstimate.objects.filter(user=self.user).exists())
 
     def test_health_does_not_hash_models_or_import_inference_runtime(self):
+        self.user.is_staff=True;self.user.save(update_fields=['is_staff'])
         with patch.object(free,'ready',side_effect=AssertionError('Heavy readiness called')):
             response=self.client.get('/__health/')
         self.assertEqual(response.status_code,200)

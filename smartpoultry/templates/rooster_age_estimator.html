@@ -12,7 +12,7 @@
     {% csrf_token %}
     <div class="estimator-layout">
         <label class="estimator-dropzone" id="estimatorDropzone" for="photos">
-            <input class="visually-hidden" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required aria-describedby="photoSelection">
+            <input class="visually-hidden" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required aria-describedby="photoSelection" data-max-files="{{ max_photos }}">
             <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i><strong>Choose a photo</strong>
             <span id="photoSelection" role="status">Drag and drop or click to upload</span>
             <span class="btn btn-outline-primary btn-sm"><i class="bi bi-image me-1" aria-hidden="true"></i>Choose Files</span>
@@ -222,7 +222,7 @@
 
 {% block extra_js %}
 <script src="{% static 'js/record_help.js' %}?v=1"></script>
-<script src="{% static 'js/estimator_upload.js' %}?v=1"></script>
+<script src="{% static 'js/estimator_upload.js' %}?v=2"></script>
 {{ results|json_script:"poultry-analysis-results" }}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
