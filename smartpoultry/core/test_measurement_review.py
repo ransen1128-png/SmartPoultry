@@ -47,7 +47,8 @@ class MeasurementReviewTests(TestCase):
         response=self.client.get(reverse('rooster_age_estimator'),{'estimate':self.record.pk})
         self.assertContains(response,'data-spur-api-error')
         html=response.content.decode()
-        self.assertLess(html.index('Spur API request failed:'),html.index('<details>'))
+        # The error must appear above the collapsed "Model details and limitations" section.
+        self.assertLess(html.index('Spur API request failed:'),html.index('<details class="rooster-model-details"'))
         self.assertContains(response,'Gemini HTTP 403: API key is not permitted.')
         self.assertContains(response,'The age result is retained.')
 
