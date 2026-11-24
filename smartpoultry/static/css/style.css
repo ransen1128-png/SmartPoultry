@@ -1675,3 +1675,31 @@ footer {
 .app-content a:not(.btn):not(.dropdown-item) { color: #0a58ca; }
 .btn-outline-primary:not(:hover):not(:active):not(.active) { color: #0a58ca; }
 .btn-outline-secondary:not(:hover):not(:active):not(.active) { color: #565e64; }
+
+/* Keep the administrator Actions column in view when the table scrolls sideways. */
+.table-responsive .admin-table tr > :last-child {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    background: #fff;
+    box-shadow: -8px 0 8px -8px rgba(15, 23, 42, 0.35);
+}
+.table-responsive .admin-table th:last-child { background: #fbfdff; }
+
+/* Administrator pages on tablets and phones: menu on top, content below. */
+@media (max-width: 900px) {
+    .admin-shell { display: block; }
+    .admin-sidebar { position: static; width: 100%; height: auto; padding: 10px 12px; }
+    .admin-brand { padding: 4px 8px 10px; }
+    .admin-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+    .admin-sidebar-card { display: none; }
+    .admin-topbar { height: auto; flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+    .admin-content { padding: 16px; }
+    .admin-stat-card { padding-bottom: 32px; }
+    .admin-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .admin-panel-header { grid-template-columns: minmax(0, 1fr); }
+    .admin-panel-header.compact { flex-wrap: wrap; }
+}
+@media (max-width: 420px) {
+    .admin-stat-card { gap: 10px; padding: 14px 12px 32px; }
+}
