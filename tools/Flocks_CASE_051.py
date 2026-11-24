@@ -55,9 +55,10 @@ class LiveFlockTests(unittest.TestCase):
                 modal.get_by_role('button', name='Save Flock', exact=True).click()
             self.assertEqual(creation.value.status, 201, 'The flock creation request failed')
             flock_id = creation.value.json()['flock_id']
+            # Flock IDs are numbered per branch, so the same ID can appear in other branches.
             row = page.locator('#flocksBody tr').filter(
                 has=page.get_by_role('cell', name=flock_id, exact=True),
-            )
+            ).filter(has=page.get_by_role('cell', name=branch_name, exact=True))
             print(f'Created test flock: {flock_id}', flush=True)
 
             expect(modal).to_be_hidden()

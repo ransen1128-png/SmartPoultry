@@ -89,11 +89,14 @@ class RenderAdminOperationsCase(unittest.TestCase):
                 expect(self.page.get_by_label(label, exact=True)).to_be_visible()
 
     def test_case_184(self):
-        view = self.sample_row().locator('a[title="View"]')
-        expect(view).to_be_visible()
-        target = self.base + view.get_attribute('href')
+        # Staff without account permissions get no View link, and the account page refuses them.
+        row = self.sample_row()
+        expect(row.locator('a[title="View"]')).to_have_count(0)
+        toggle = row.locator('form[action*="/toggle/"]').get_attribute('action')
+        user_id = toggle.strip('/').split('/')[-2]
+        target = f'{self.base}/admin/accounts/userprofile/{user_id}/change/'
         with self.page.expect_response(
             lambda response: response.url == target and response.request.method == 'GET',
         ) as response:
-            view.click()
-        self.assertTrue(response.value.ok, f'Visible View link returned HTTP {response.value.status}.')
+            self.page.goto(target)
+        self.assertEqual(response.value.status, 403, 'Staff without account permissions must not open the account page.')

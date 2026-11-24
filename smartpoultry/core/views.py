@@ -1576,6 +1576,8 @@ def ensure_month_end_forecast_notification(user):
         f"Review your month-end forecast for {today:%B %Y}, including projected revenue, profit, feed demand, and production.",
         notification_type='info',
     )
+    if notification is None:  # In-app notifications are turned off.
+        return
     notification.related_object_type = 'month_end_forecast'
     notification.related_object_id = month_marker
     notification.save(update_fields=['related_object_type', 'related_object_id'])
