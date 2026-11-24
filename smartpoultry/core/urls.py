@@ -51,6 +51,7 @@ urlpatterns = [
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-dashboard/notifications/', admin_notifications.poll, name='admin_notifications_poll'),
     path('admin-dashboard/password-requests/', admin_notifications.requests_page, name='admin_password_reset_requests'),
+    path('admin-dashboard/users/export/', views.admin_export_users, name='admin_export_users'),
     path('admin-dashboard/users/<int:user_id>/toggle/', views.admin_toggle_user, name='admin_toggle_user'),
     path('admin-dashboard/users/<int:user_id>/delete/', views.admin_delete_user, name='admin_delete_user'),
     path('admin-dashboard/users/<int:user_id>/reset-password/', views.admin_reset_user_password, name='admin_reset_user_password'),

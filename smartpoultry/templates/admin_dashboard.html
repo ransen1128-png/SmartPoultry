@@ -70,7 +70,7 @@
                 <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
             </select>
         </form>
-        <a class="admin-lite-btn" href="/admin/accounts/userprofile/">
+        <a class="admin-lite-btn" href="{% url 'admin_export_users' %}?q={{ query|urlencode }}&amp;status={{ status|urlencode }}" download>
             <i class="bi bi-download"></i> Export
         </a>
     </div>
@@ -137,14 +137,14 @@
                                     {% else %}
                                         <input type="hidden" name="action" value="activate">
                                     {% endif %}
-                                    <button type="submit" title="Activate or deactivate" {% if account.id == user.id %}disabled{% endif %}>
+                                    <button type="submit" title="{% if account.locked %}Only a superuser can change an administrator{% else %}Activate or deactivate{% endif %}" {% if account.locked or account.id == user.id %}disabled{% endif %}>
                                         <i class="bi bi-lock"></i>
                                     </button>
                                 </form>
                                 <a href="{% url 'admin_reset_user_password' account.id %}" title="Reset password"><i class="bi bi-wrench"></i></a>
                                 <form method="post" action="{% url 'admin_delete_user' account.id %}">
                                     {% csrf_token %}
-                                    <button type="submit" title="Delete" {% if account.id == user.id %}disabled{% endif %} data-confirm="Delete {{ account.username }}? This cannot be undone.">
+                                    <button type="submit" title="{% if account.locked %}Only a superuser can delete an administrator{% else %}Delete{% endif %}" {% if account.locked or account.id == user.id %}disabled{% endif %} data-confirm="Delete {{ account.username }}? This cannot be undone.">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -161,13 +161,6 @@
     </div>
     <div class="admin-table-footer">
         <span>Showing {{ managed_users|length }} of {{ stats.total_users }} database users</span>
-        <div class="admin-pagination">
-            <button type="button"><i class="bi bi-chevron-left"></i></button>
-            <button type="button" class="active">1</button>
-            <button type="button">2</button>
-            <button type="button">3</button>
-            <button type="button"><i class="bi bi-chevron-right"></i></button>
-        </div>
     </div>
 </section>
 

@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db.models import Count, Min, Q, Sum
 from django.db.models.functions import TruncMonth
-from django.http import FileResponse, Http404, HttpResponseForbidden, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import capfirst
@@ -568,9 +568,13 @@ def farm_branches(request):
     return render(request, 'farm_branches.html', branch_context(request, farm))
 
 
-@admin_required
-def admin_dashboard(request):
-    """Admin dashboard for user accounts and feedback management."""
+def may_manage_account(administrator, target):
+    """Only a superuser may disable or delete administrator accounts."""
+    return administrator.is_superuser or not (target.is_staff or target.is_superuser)
+
+
+def filtered_users(request):
+    """Users matching the Admin Dashboard search and status filter."""
     query = request.GET.get('q', '').strip()
     status = request.GET.get('status', '').strip()
     users = User.objects.select_related('farm').order_by('id')
@@ -586,7 +590,16 @@ def admin_dashboard(request):
         users = users.filter(is_active=True, is_active_user=True)
     elif status == 'inactive':
         users = users.filter(Q(is_active=False) | Q(is_active_user=False))
+    return users, query, status
 
+
+@admin_required
+def admin_dashboard(request):
+    """Admin dashboard for user accounts and feedback management."""
+    users, query, status = filtered_users(request)
+    users = list(users)
+    for account in users:
+        account.locked = not may_manage_account(request.user, account)
     feedback_items = Feedback.objects.select_related('user').all()[:10]
     stats = {
         'total_users': User.objects.count(),
@@ -608,6 +621,36 @@ def admin_dashboard(request):
 
 
 @admin_required
+@require_GET
+def admin_export_users(request):
+    """Download the listed users as CSV, using the current search and status filter."""
+    import csv
+
+    def safe(value):
+        # Stop spreadsheet programs from running user-entered text as a formula.
+        text = str(value or '')
+        return "'" + text if text.lstrip().startswith(('=', '+', '-', '@', '\t', '\r')) else text
+
+    users, _, _ = filtered_users(request)
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="smartpoultry_users_{timezone.localdate()}.csv"'
+    response.write('\ufeff')  # Lets Excel read accented names correctly.
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Username', 'Name', 'Email', 'Phone', 'Role', 'Farm Name', 'Status', 'Admin', 'Registered Date', 'Last Login'])
+    for account in users:
+        administrator = account.is_staff or account.is_superuser
+        writer.writerow([
+            account.pk, safe(account.username), safe(account.get_full_name()), safe(account.email), safe(account.phone),
+            'Administrator' if administrator else 'Poultry Farm Owner', safe(account.farm.name if account.farm else ''),
+            'Active' if account.is_active and account.is_active_user else 'Inactive',
+            'Superuser' if account.is_superuser else 'Staff' if account.is_staff else '',
+            timezone.localtime(account.date_joined).strftime('%Y-%m-%d'),
+            timezone.localtime(account.last_login).strftime('%Y-%m-%d %H:%M') if account.last_login else '',
+        ])
+    return response
+
+
+@admin_required
 def admin_toggle_user(request, user_id):
     if request.method != 'POST':
         return redirect('admin_dashboard')
@@ -615,6 +658,8 @@ def admin_toggle_user(request, user_id):
     target_user = get_object_or_404(User, pk=user_id)
     if target_user.pk == request.user.pk:
         messages.error(request, 'You cannot deactivate your own account.')
+    elif not may_manage_account(request.user, target_user):
+        messages.error(request, 'Only a superuser can activate or deactivate an administrator.')
     else:
         activate = request.POST.get('action') == 'activate'
         target_user.is_active = activate
@@ -632,8 +677,8 @@ def admin_delete_user(request, user_id):
     target_user = get_object_or_404(User, pk=user_id)
     if target_user.pk == request.user.pk:
         messages.error(request, 'You cannot delete your own account.')
-    elif target_user.is_superuser and not request.user.is_superuser:
-        messages.error(request, 'Only a superuser can delete another superuser.')
+    elif not may_manage_account(request.user, target_user):
+        messages.error(request, 'Only a superuser can delete an administrator.')
     else:
         username = target_user.username
         target_user.delete()
