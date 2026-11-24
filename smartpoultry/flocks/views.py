@@ -1,9 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from notifications.utils import create_activity_notification
 from .models import Flock
+from .numbering import next_flock_id
 from .serializers import FlockSerializer
 from rest_framework.exceptions import ValidationError
 
@@ -25,16 +26,22 @@ class FlockViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def perform_create(self, serializer):
-        user = get_user_model().objects.select_for_update().get(pk=self.request.user.pk)
-        existing_ids = set(self.get_queryset().values_list('flock_id', flat=True))
-        flock_id = next((f'{number:02d}' for number in range(1, 101)
-                         if f'{number:02d}' not in existing_ids and str(number) not in existing_ids), None)
-        if flock_id is None:
-            raise ValidationError({'flock_id': 'All Flock IDs from 01 to 100 are already in use.'})
-        flock = serializer.save(user=user, flock_id=flock_id)
+        user = get_user_model().objects.get(pk=self.request.user.pk)
+        branch = serializer.validated_data.get('branch')
+        # Each branch (and the main branch) numbers its own flocks; the primary key stays the global identifier.
+        for attempt in range(3):
+            flock_id = next_flock_id(user.pk, branch.pk if branch else None)
+            try:
+                with transaction.atomic():
+                    flock = serializer.save(user=user, flock_id=flock_id)
+                break
+            except IntegrityError:
+                # The branch unique constraint caught a concurrent writer; pick the next number.
+                if attempt == 2:
+                    raise ValidationError({'flock_id': 'A Flock ID could not be assigned. Please try again.'})
         create_activity_notification(
             self.request.user,
             f"Successfully added a new flock of {flock.get_breed_display().lower()}",
-            f"{flock.quantity} {flock.get_breed_display().lower()} were added as flock {flock.flock_id}.",
+            f"{flock.quantity} {flock.get_breed_display().lower()} were added as flock {flock.display_label}.",
             flock,
         )

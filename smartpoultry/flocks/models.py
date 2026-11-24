@@ -6,6 +6,47 @@ from decimal import Decimal,ROUND_HALF_UP
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from datetime import timedelta
+from django.db import IntegrityError
+
+# Flocks without a Branch belong to the original farm, shown as the main branch.
+MAIN_BRANCH_LABEL = 'Main Branch'
+
+
+def numeric_flock_id(value):
+    """Return the number for an all-digit Flock ID ("07" -> 7); legacy text IDs return None."""
+    value = (value or '').strip()
+    return int(value) if value.isascii() and value.isdigit() else None
+
+
+class FlockIdSequence(models.Model):
+    """Highest Flock ID number used in one branch of one account (branch NULL = main branch).
+
+    It only ever increases, so numbers of deleted, archived or moved flocks are not reissued.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='flock_id_sequences')
+    branch = models.ForeignKey('core.Branch', on_delete=models.CASCADE, related_name='flock_id_sequences', null=True, blank=True)
+    last_number = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'branch'], condition=models.Q(branch__isnull=False), name='flock_seq_branch_uniq'),
+            models.UniqueConstraint(fields=['user'], condition=models.Q(branch__isnull=True), name='flock_seq_main_uniq'),
+        ]
+
+    @classmethod
+    def reserve(cls, user_id, branch_id, flock_id):
+        """Raise the branch counter to at least this Flock ID's number."""
+        number = numeric_flock_id(flock_id)
+        if not number or not user_id:
+            return
+        rows = cls.objects.filter(user_id=user_id, branch_id=branch_id)
+        if rows.filter(last_number__lt=number).update(last_number=number) or rows.exists():
+            return
+        try:
+            with transaction.atomic():
+                cls.objects.create(user_id=user_id, branch_id=branch_id, last_number=number)
+        except IntegrityError:  # Another transaction created the counter first.
+            rows.filter(last_number__lt=number).update(last_number=number)
 
 
 class Flock(models.Model):
@@ -24,7 +65,9 @@ class Flock(models.Model):
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='flocks', null=True, blank=True)
-    branch = models.ForeignKey('core.Branch', on_delete=models.SET_NULL, related_name='flocks', null=True, blank=True)
+    # RESTRICT, not SET_NULL: moving a branch's flocks to the main branch would collide with its Flock IDs.
+    # Deleting the whole account still works because the flocks are deleted with their user.
+    branch = models.ForeignKey('core.Branch', on_delete=models.RESTRICT, related_name='flocks', null=True, blank=True)
     flock_id = models.CharField(max_length=100)
     breed = models.CharField(max_length=50, choices=BREED_CHOICES)
     quantity = models.IntegerField()
@@ -79,8 +122,19 @@ class Flock(models.Model):
         self.validate_acquisition()
         with transaction.atomic():
             super().save(*args,**kwargs)
+            # Remember every numeric ID ever stored in a branch so it is never issued again there.
+            FlockIdSequence.reserve(self.user_id,self.branch_id,self.flock_id)
             from .purchase_expenses import sync_purchase_expense
             sync_purchase_expense(self)
+
+    @property
+    def branch_label(self):
+        return self.branch.name if self.branch_id else MAIN_BRANCH_LABEL
+
+    @property
+    def display_label(self):
+        """Flock IDs are unique only within a branch, so name the branch wherever no branch column is shown."""
+        return f'{self.flock_id} ({self.branch_label})'
 
     @property
     def in_history(self):

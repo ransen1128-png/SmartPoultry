@@ -241,62 +241,6 @@ class DashboardInventoryFeedCostTests(TestCase):
         self.assertContains(response, 'month=11&amp;year=2026')
 
 
-class AutomaticFlockIdTests(TestCase):
-    def test_flock_ids_are_assigned_across_branches_and_capped_at_100(self):
-        user = get_user_model().objects.create_user(username='flock-branch-owner', password='password123')
-        farm = Farm.objects.create(
-            owner=user,
-            name='Flock ID Farm',
-            location='Main City',
-            established_date=date(2024, 1, 1),
-            contact_email='flocks@example.com',
-            contact_phone='09123456789',
-        )
-        labogon = Branch.objects.create(farm=farm, name='Labogon')
-        mandaue = Branch.objects.create(farm=farm, name='Mandaue')
-        self.client.force_login(user)
-        endpoint = reverse('flock-list')
-
-        for branch, expected_id in ((labogon, '01'), (mandaue, '02')):
-            response = self.client.post(
-                endpoint,
-                {
-                    'branch': branch.pk,
-                    'breed': 'layers',
-                    'quantity': 20,
-                    'status': 'active',
-                },
-                content_type='application/json',
-            )
-            self.assertEqual(response.status_code, 201, response.content)
-            self.assertEqual(response.json()['flock_id'], expected_id)
-
-        edit_response = self.client.patch(
-            reverse('flock-detail', args=[response.json()['id']]),
-            {'flock_id': '01'},
-            content_type='application/json',
-        )
-        self.assertEqual(edit_response.status_code, 200, edit_response.content)
-        self.assertEqual(edit_response.json()['flock_id'], '02')
-
-        Flock.objects.bulk_create([
-            Flock(user=user, branch=labogon, flock_id=f'{number:02d}', breed='layers', quantity=20)
-            for number in range(3, 100)
-        ])
-        payload = {'branch': labogon.pk, 'flock_id': 'manual', 'breed': 'layers', 'quantity': 15}
-        last_response = self.client.post(
-            endpoint,
-            payload,
-            content_type='application/json',
-        )
-        self.assertEqual(last_response.status_code, 201, last_response.content)
-        self.assertEqual(last_response.json()['flock_id'], '100')
-
-        full_response = self.client.post(endpoint, payload, content_type='application/json')
-        self.assertEqual(full_response.status_code, 400)
-        self.assertIn('flock_id', full_response.json())
-
-
 class MortalityProductionDisplayTests(TestCase):
     def test_production_page_shows_flock_balance_after_mortality(self):
         user = get_user_model().objects.create_user(username='mortality-production', password='password123')

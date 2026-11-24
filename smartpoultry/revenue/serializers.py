@@ -36,6 +36,9 @@ class RevenueSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'production': 'Select available production stock.'})
         if production.user_id != self.context['request'].user.pk:
             raise serializers.ValidationError({'production': 'Select production from your account.'})
+        # Branch and flock always come from the batch; a different submitted branch is a mismatched selection.
+        if 'branch' in attrs and attrs['branch'] != production.branch:
+            raise serializers.ValidationError({'production': 'Select production stock from the selected branch.'})
         attrs.update(branch=production.branch, flock=production.flock,
                      revenue_type='eggs' if production.product_type == 'eggs' else 'meat', unit=production.unit)
         return attrs

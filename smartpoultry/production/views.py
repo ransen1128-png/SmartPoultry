@@ -25,7 +25,7 @@ class ProductionRecordViewSet(viewsets.ModelViewSet):
         create_activity_notification(
             self.request.user,
             f"Successfully added {record.get_product_type_display().lower()} production record",
-            f"Recorded {record.quantity:g} {record.unit} for flock {record.flock.flock_id} on {record.date}.",
+            f"Recorded {record.quantity:g} {record.unit} for flock {record.flock.display_label} on {record.date}.",
             record,
         )
 
@@ -45,7 +45,7 @@ class MortalityRecordViewSet(viewsets.ModelViewSet):
             self.request.user,
             "Successfully added mortality record",
             (
-                f"Recorded {record.quantity} mortality for flock {record.flock.flock_id} due to "
+                f"Recorded {record.quantity} mortality for flock {record.flock.display_label} due to "
                 f"{record.get_reason_display().lower()}."
             ),
             record,

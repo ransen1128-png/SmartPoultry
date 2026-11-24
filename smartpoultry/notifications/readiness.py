@@ -14,7 +14,7 @@ def notify_ready_flocks(user=None):
         if NotificationPreference.objects.filter(user_id=flock.user_id,in_app_notifications=False).exists():continue
         _,created=Notification.objects.get_or_create(user_id=flock.user_id,
             deduplication_key=f'broiler-ready:{flock.pk}:{flock.placement_date}',defaults={
-                'notification_type':'info','title':f'Broilers ready: {flock.flock_id}'[:255],
+                'notification_type':'info','title':f'Broilers ready: {flock.display_label}'[:255],
                 'message':f'{flock.branch.name}: flock {flock.flock_id} is {(today-flock.placement_date).days} days after delivery / hatch. Production and sale are allowed from {flock.ready_from}; expected window ends {flock.readiness_window_end}.',
                 'related_object_type':'Flock','related_object_id':flock.pk})
         count+=created

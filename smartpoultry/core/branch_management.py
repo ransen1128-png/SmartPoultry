@@ -94,7 +94,9 @@ def branch_page(request, farm):
         if action == 'delete':
             if not branch:
                 error = 'Select an additional branch to delete. The original farm cannot be deleted here.'
-            elif any(getattr(branch, relation.get_accessor_name()).exists() for relation in Branch._meta.related_objects):
+            # The Flock ID counter is bookkeeping, not a linked record; it is removed with the branch.
+            elif any(getattr(branch, relation.get_accessor_name()).exists() for relation in Branch._meta.related_objects
+                     if relation.related_model._meta.label != 'flocks.FlockIdSequence'):
                 error = 'This branch has linked records. Deactivate it instead to preserve its flock, inventory and financial history.'
             else:
                 branch.delete()

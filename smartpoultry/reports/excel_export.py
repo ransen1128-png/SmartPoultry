@@ -19,6 +19,7 @@ from decimal import Decimal
 from io import BytesIO
 
 from django.db.models import Sum
+from django.db.models.functions import Length
 from django.utils import timezone
 from openpyxl import Workbook
 from openpyxl.chart import BarChart, PieChart, Reference
@@ -62,7 +63,7 @@ def report_records(report):
         'production': ProductionRecord.objects.filter(**period).select_related('flock', 'branch').order_by('date', 'created_at'),
         'mortality': MortalityRecord.objects.filter(**period).select_related('flock', 'branch').order_by('date', 'created_at'),
         'inventory': Inventory.objects.filter(user=report.user).order_by('item_type', 'name'),
-        'flocks': Flock.objects.filter(user=report.user).select_related('branch').order_by('branch__name', 'flock_id'),
+        'flocks': Flock.objects.filter(user=report.user).select_related('branch').order_by('branch__name', Length('flock_id'), 'flock_id'),  # 02 before 100
     }
 
 

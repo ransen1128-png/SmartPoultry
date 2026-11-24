@@ -1414,7 +1414,7 @@ def production_record_create(request):
             create_activity_notification(
                 request.user,
                 f"Successfully added {record.get_product_type_display().lower()} production record",
-                f"Recorded {record.quantity:g} {record.unit} for flock {record.flock.flock_id} on {record.date}.",
+                f"Recorded {record.quantity:g} {record.unit} for flock {record.flock.display_label} on {record.date}.",
                 record,
             )
             messages.success(request, 'Production record added.')
@@ -1499,12 +1499,12 @@ def mortality_record_create(request):
             request.user,
             "Successfully added mortality record",
             (
-                f"Recorded {record.quantity} mortality for flock {record.flock.flock_id} due to "
+                f"Recorded {record.quantity} mortality for flock {record.flock.display_label} due to "
                 f"{record.get_reason_display().lower()}."
             ),
             record,
         )
-        messages.success(request, f'Mortality record added. Flock {record.flock.flock_id} was updated.')
+        messages.success(request, f'Mortality record added. Flock {record.flock.display_label} was updated.')
         return redirect('mortality_records')
     return render(request, 'mortality_record_form.html', {
         'form': form,
