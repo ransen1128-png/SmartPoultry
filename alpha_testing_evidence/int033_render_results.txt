@@ -1,0 +1,7 @@
+INT-033 on Render (commit 4e8ee38), run at 2026-11-24T15:06:13
+preferences at start: {'email_alerts': True, 'email_notifications': True, 'in_app_notifications': True, 'push_notifications': False}
+in-app ON (control): item HTTP 201; notifications naming the item: API 1, Notifications page 1; test item deleted HTTP 204
+in-app set to: False
+in-app OFF: item HTTP 201; notifications naming the item: API 0, Notifications page 0; test item deleted HTTP 204
+preferences restored: {'email_alerts': True, 'email_notifications': True, 'in_app_notifications': True, 'push_notifications': False}
+RESULT: PASS (notifications created: ON=1, OFF=0)

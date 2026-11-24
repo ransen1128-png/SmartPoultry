@@ -1,0 +1,39 @@
+{
+ "run_at": "2026-11-24T15:06:58",
+ "pages_desktop": "see first run",
+ "components": "see first run",
+ "expense_ui_flow": "see first run",
+ "production_negative_quantity": {
+  "url": "/production-records/add/",
+  "messages": [
+   "Logout",
+   "Production quantity must be greater than zero."
+  ],
+  "browser_validation": "",
+  "saved": false
+ },
+ "scenario_egg_price": "see first run",
+ "int033_inapp_preference": "see first run",
+ "accuracy_dataset": "see first run",
+ "browser_timing_throttled": "see first run",
+ "account_b_isolation": {
+  "register_url": "/login/",
+  "register_message": "\u00d7 \u2713 Registration Successful! Your account has been created. OK",
+  "account_b": {
+   "username": "alphab11241506",
+   "email": "alpha.b.11241506@example.com"
+  },
+  "b_lists": {
+   "flocks": 0,
+   "production/records": 0,
+   "revenue": 0,
+   "expenses": 0,
+   "inventory/items": 0
+  },
+  "a_names_visible_to_b": {},
+  "b_get_a_flock_25": 404,
+  "b_get_a_production_6": 404,
+  "b_edit_a_production_6": 404,
+  "b_patch_a_flock_25": 404
+ }
+}

@@ -1,0 +1,1225 @@
+{
+ "run_at": "2026-11-24T15:00:41",
+ "pages_desktop": {
+  "/dashboard/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 141,
+   "lowContrast": 43,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.06,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 5,
+   "loadMs": 384,
+   "domMs": 384,
+   "consoleErrors": []
+  },
+  "/farm/branches/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 113,
+   "lowContrast": 25,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.06,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 35,
+   "loadMs": 373,
+   "domMs": 373,
+   "consoleErrors": []
+  },
+  "/flocks/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 262,
+   "lowContrast": 45,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.06,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 44,
+   "loadMs": 179,
+   "domMs": 178,
+   "consoleErrors": []
+  },
+  "/production-records/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 65,
+   "lowContrast": 27,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.06,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 9,
+   "loadMs": 187,
+   "domMs": 187,
+   "consoleErrors": []
+  },
+  "/mortality-records/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 37,
+   "lowContrast": 25,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 3,
+   "loadMs": 99,
+   "domMs": 99,
+   "consoleErrors": []
+  },
+  "/inventory/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 57,
+   "lowContrast": 25,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 4,
+   "loadMs": 209,
+   "domMs": 208,
+   "consoleErrors": []
+  },
+  "/revenue/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 57,
+   "lowContrast": 24,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 4,
+   "loadMs": 103,
+   "domMs": 103,
+   "consoleErrors": []
+  },
+  "/expenses/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 76,
+   "lowContrast": 28,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 5,
+   "loadMs": 185,
+   "domMs": 185,
+   "consoleErrors": []
+  },
+  "/analytics/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 44,
+   "lowContrast": 25,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 2,
+   "loadMs": 236,
+   "domMs": 236,
+   "consoleErrors": []
+  },
+  "/forecasting/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 77,
+   "lowContrast": 30,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 3,
+   "loadMs": 217,
+   "domMs": 217,
+   "consoleErrors": []
+  },
+  "/scenario-analysis/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 70,
+   "lowContrast": 30,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 3,
+   "loadMs": 129,
+   "domMs": 124,
+   "consoleErrors": []
+  },
+  "/rooster-age-estimator/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 95,
+   "lowContrast": 56,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 7,
+   "loadMs": 208,
+   "domMs": 208,
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()"
+   ]
+  },
+  "/reports/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 100,
+   "lowContrast": 25,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 18,
+   "loadMs": 179,
+   "domMs": 178,
+   "consoleErrors": []
+  },
+  "/change-history/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 848,
+   "lowContrast": 25,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 53,
+   "loadMs": 288,
+   "domMs": 269,
+   "consoleErrors": []
+  },
+  "/notifications/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 110,
+   "lowContrast": 52,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 2,
+   "loadMs": 123,
+   "domMs": 121,
+   "consoleErrors": []
+  },
+  "/profile/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 36,
+   "lowContrast": 25,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 5,
+   "loadMs": 93,
+   "domMs": 93,
+   "consoleErrors": []
+  },
+  "/settings/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 36,
+   "lowContrast": 25,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 8,
+   "loadMs": 157,
+   "domMs": 156,
+   "consoleErrors": []
+  },
+  "/feedback/": {
+   "bodyFont": "-apple-system",
+   "bodySize": "16px",
+   "sidebarBg": "rgba(0, 0, 0, 0)",
+   "sidebarVisible": true,
+   "heading": "Notifications",
+   "headingSize": "16px",
+   "minFont": 9.6,
+   "textElements": 34,
+   "lowContrast": 24,
+   "lowContrastSamples": [
+    {
+     "t": "SMARTPOULTRY",
+     "cr": 1.06,
+     "fs": 15.68
+    },
+    {
+     "t": "Dashboard",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Poultry",
+     "cr": 2.4,
+     "fs": 10.56
+    },
+    {
+     "t": "Farms",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Flocks",
+     "cr": 1.17,
+     "fs": 13.12
+    },
+    {
+     "t": "Production Records",
+     "cr": 1.17,
+     "fs": 13.12
+    }
+   ],
+   "hOverflow": false,
+   "buttons": 3,
+   "loadMs": 99,
+   "domMs": 95,
+   "consoleErrors": []
+  }
+ },
+ "components": {
+  "/flocks/": {
+   "addButton": "Add New Flock",
+   "tables": 1,
+   "search": false,
+   "filters": 0,
+   "edit": 20,
+   "del": 20,
+   "btnClasses": [
+    "btn-outline-primary",
+    "btn-primary",
+    ""
+   ]
+  },
+  "/production-records/": {
+   "addButton": "Add Record",
+   "tables": 1,
+   "search": false,
+   "filters": 0,
+   "edit": 2,
+   "del": 2,
+   "btnClasses": [
+    "btn-outline-primary",
+    "btn-primary",
+    "btn-outline-danger"
+   ]
+  },
+  "/mortality-records/": {
+   "addButton": "Add Record",
+   "tables": 1,
+   "search": false,
+   "filters": 0,
+   "edit": 0,
+   "del": 0,
+   "btnClasses": [
+    "btn-primary"
+   ]
+  },
+  "/inventory/": {
+   "addButton": "Add Item",
+   "tables": 3,
+   "search": false,
+   "filters": 0,
+   "edit": 0,
+   "del": 0,
+   "btnClasses": [
+    "btn-outline-primary",
+    "btn-primary"
+   ]
+  },
+  "/revenue/": {
+   "addButton": "Add Revenue",
+   "tables": 1,
+   "search": false,
+   "filters": 0,
+   "edit": 0,
+   "del": 0,
+   "btnClasses": [
+    "btn-primary",
+    "btn-outline-primary"
+   ]
+  },
+  "/expenses/": {
+   "addButton": "Add Expense",
+   "tables": 2,
+   "search": false,
+   "filters": 0,
+   "edit": 0,
+   "del": 0,
+   "btnClasses": [
+    "btn-primary",
+    "btn-outline-primary"
+   ]
+  }
+ },
+ "expense_ui_flow": {
+  "expense_types": [
+   [
+    "feed",
+    "Feed"
+   ],
+   [
+    "medicine",
+    "Medicine"
+   ],
+   [
+    "equipment",
+    "Equipment"
+   ],
+   [
+    "labor",
+    "Labor"
+   ],
+   [
+    "utilities",
+    "Utilities"
+   ],
+   [
+    "other",
+    "Other"
+   ]
+  ],
+  "save_message": "\u00d7 \u2713 Successfully Added! Your operation was completed successfully. OK",
+  "row_after_save": 1,
+  "confirm_prompt": "? Confirm Action Are you sure you want to delete this record? Alpha test expense 11241500 Cancel Confirm",
+  "row_after_cancel": 1,
+  "delete_message": "\u00d7 \u2713 Successfully Deleted! Your operation was completed successfully. OK",
+  "row_after_confirm_reload": 0
+ },
+ "production_negative_quantity": {
+  "error": "TimeoutError: Page.select_option: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"select[name=branch]\")\n    - locator resolved to <select name=\"branch\" id=\"id_branch\" class=\"form-select\">\u2026</select>\n  - attempting select option action\n    2 \u00d7 waiting for element to be visible and enabled\n      - did not find some options\n    - retrying select option action\n    - waiting 20ms\n    2 \u00d7 waiting for element to be visible and enabled\n      - did not find some options\n    - retrying select ",
+  "trace": "wait func()\n           ^^^^^^^^^^^^\nplaywright._impl._errors.TimeoutError: Page.select_option: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"select[name=branch]\")\n    - locator resolved to <select name=\"branch\" id=\"id_branch\" class=\"form-select\">\u2026</select>\n  - attempting select option action\n    2 \u00d7 waiting for element to be visible and enabled\n      - did not find some options\n    - retrying select option action\n    - waiting 20ms\n    2 \u00d7 waiting for element to be visible and enabled\n      - did not find some options\n    - retrying select option action\n      - waiting 100ms\n    58 \u00d7 waiting for element to be visible and enabled\n       - did not find some options\n     - retrying select option action\n       - waiting 500ms\n    - waiting for element to be visible and enabled\n\n"
+ },
+ "scenario_egg_price": {
+  "dataset": {
+   "baseProfit": "-700.00",
+   "baseRevenue": "50.00",
+   "baseEggRevenue": "50.00",
+   "baseExpenses": "750.00",
+   "baseFeedCost": "0.00",
+   "predictedProfit": "-233.33"
+  },
+  "revenue_before": "\u20b150.00",
+  "revenue_after": "\u20b155.00"
+ },
+ "int033_inapp_preference": {
+  "error": "TimeoutError: Locator.set_checked: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[name=in_app_notifications]\")\n    - locator resolved to <input role=\"switch\" type=\"checkbox\" id=\"in_app_notifications\" name=\"in_app_notifications\" class=\"form-check-input settings-switch\"/>\n  - attempting click action\n    2 \u00d7 waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <di",
+  "trace": "\u00d7 waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <dialog open=\"\" id=\"appDialog\" class=\"sp-popup\" data-type=\"success\" aria-labelledby=\"appDialogTitle\" aria-describedby=\"appDialogText\">\u2026</dialog> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    57 \u00d7 waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <dialog open=\"\" id=\"appDialog\" class=\"sp-popup\" data-type=\"success\" aria-labelledby=\"appDialogTitle\" aria-describedby=\"appDialogText\">\u2026</dialog> intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n"
+ },
+ "accuracy_dataset": {
+  "branch": 14,
+  "production": [
+   201,
+   "{'id': 9, 'branch': 14, 'branch_name': 'ID Test B', 'flock': 26, 'product_type': 'eggs', 'egg_size': 'large', 'quantity': '100.00', 'sold_quantity': '0.00', 'av"
+  ],
+  "sale": [
+   201,
+   "{'id': 6, 'production': 9, 'branch': 14, 'branch_name': 'ID Test B', 'revenue_type': 'eggs', 'revenue_type_display': 'Eggs', 'flock': 26, 'quantity': '60.00', '"
+  ],
+  "expenses": [
+   [
+    201,
+    "{'id': 21, 'branch': 14, 'branch_name': 'ID Test B', 'expense_type': 'feed', 'description': 'Alpha feed 11241500', 'amou"
+   ],
+   [
+    201,
+    "{'id': 22, 'branch': 14, 'branch_name': 'ID Test B', 'expense_type': 'labor', 'description': 'Alpha labor 11241500', 'am"
+   ]
+  ],
+  "expected": {
+   "revenue": 480.0,
+   "expenses": 180.5,
+   "revenue_rows": 1,
+   "expense_rows": 2,
+   "net": 299.5
+  },
+  "dashboard": {
+   "revenue": "480.00",
+   "expenses": "180.50",
+   "net": "299.50"
+  },
+  "branch_expense_report": "{'start': '2026-11-01', 'end': '2026-11-24', 'date_basis': 'Original financial/purchase date', 'total': '180.50', 'summary': [{'branch_id': 14, 'expense_type': 'feed', 'amount': '150.00', 'records': 1, 'branch_name': 'ID Test B'}, {'branch_id': 14, 'expense_type': 'labor', 'amount': '30.50', 'records': 1, 'branch_name': 'ID Test B'}]}",
+  "report_create": [
+   201,
+   "{'id': 9, 'report_type': 'monthly', 'title': 'Alpha accuracy 11241500', 'start_date': '2026-11-01', 'end_date': '2026-11-30', 'summary': '', 'generated_at': '2026-11-24T07:02:39.096851Z', 'updated_at'"
+  ],
+  "excel": {
+   "status": 200,
+   "seconds": 1.75
+  },
+  "available": [
+   {
+    "id": 9,
+    "branch": 14,
+    "branch_name": "ID Test B",
+    "flock": 26,
+    "product_type": "eggs",
+    "egg_size": "large",
+    "quantity": "100.00",
+    "sold_quantity": "60.00",
+    "available_quantity": "40.00",
+    "unit": "units",
+    "date": "2026-11-20",
+    "notes": "",
+    "created_at": "2026-11-24T07:02:36.454461Z"
+   }
+  ]
+ },
+ "browser_timing_throttled": {
+  "mobile_pages": {
+   "/dashboard/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 43,
+    "loadMs": 485,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/farm/branches/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 25,
+    "loadMs": 320,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/flocks/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 45,
+    "loadMs": 166,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/production-records/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 27,
+    "loadMs": 194,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/mortality-records/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 25,
+    "loadMs": 92,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/inventory/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 25,
+    "loadMs": 161,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/revenue/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 24,
+    "loadMs": 99,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/expenses/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 29,
+    "loadMs": 160,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/analytics/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 25,
+    "loadMs": 201,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/forecasting/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 30,
+    "loadMs": 109,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/scenario-analysis/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 30,
+    "loadMs": 107,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/rooster-age-estimator/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 56,
+    "loadMs": 179,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/reports/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 25,
+    "loadMs": 166,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/change-history/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 25,
+    "loadMs": 166,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/notifications/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 53,
+    "loadMs": 117,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/profile/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 25,
+    "loadMs": 103,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/settings/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 25,
+    "loadMs": 158,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   },
+   "/feedback/": {
+    "hOverflow": false,
+    "minFont": 9.6,
+    "lowContrast": 24,
+    "loadMs": 103,
+    "sidebarVisible": true,
+    "bodySize": "16px"
+   }
+  },
+  "throttled_3g_ms": {
+   "/dashboard/": 462,
+   "/forecasting/": 209,
+   "/analytics/": 291,
+   "/reports/": 227,
+   "/revenue/": 443
+  },
+  "second_device_flocks": 20
+ },
+ "account_b_isolation": {
+  "error": "TimeoutError: Page.wait_for_url: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+  "trace": "Desktop\\SMARTPOULTRY\\.venv\\Lib\\site-packages\\playwright\\_impl\\waiter.py\", line 201, in wait_for_promise\n    raise rewrite_error_message(\n  File \"C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\.venv\\Lib\\site-packages\\playwright\\_impl\\waiter.py\", line 184, in wait_for_promise\n    result = await race([promise, *self._failures])\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Administrator\\Desktop\\SMARTPOULTRY\\.venv\\Lib\\site-packages\\playwright\\_impl\\utils\\tasks.py\", line 131, in race\n    return winner.result()\n           ^^^^^^^^^^^^^^^\nplaywright._impl._errors.TimeoutError: Page.wait_for_url: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n"
+ }
+}
