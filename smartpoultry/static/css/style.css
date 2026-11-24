@@ -1650,15 +1650,17 @@ footer {
     }
 }
 
-/* When a record table is wider than the screen (small laptops, tablets, phones), it scrolls
+/* When a record table is wider than the screen (laptops up to 1500 px, tablets, phones; some browsers
+   do not wrap dates and IDs, so tables can be wider there), it scrolls
    sideways; keep its Edit/Delete column in view. */
-@media (max-width: 1300px) {
+@media (max-width: 1500px) {
     .table-responsive table:has(tbody td:last-child .btn) tr > :last-child {
         position: sticky;
         right: 0;
         z-index: 1;
         background-color: #fff;
-        box-shadow: -8px 0 8px -8px rgba(15, 23, 42, 0.35);
+        /* Keep Bootstrap's row hover/stripe colour (its inset shadow) and add the edge shadow. */
+        box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg, transparent), -8px 0 8px -8px rgba(15, 23, 42, 0.35);
     }
 
     .table-responsive table:has(tbody td:last-child .btn) thead tr > :last-child {
