@@ -514,13 +514,13 @@
   "id": "AT-42",
   "criterion": "Efficiency",
   "title": "Rooster estimate time",
-  "steps": "Time AT-29 and AT-30 (Quick Age Estimate).",
-  "expected": "Machine learning predictions within 10 seconds (manuscript).",
-  "actual": "A spur photo took 58 s and a non-rooster image 47 s.",
-  "status": "Fail",
-  "evidence": "AT-29.png",
-  "at": "2026-11-25T02:38:35",
-  "review": "Added after the run using its measured times. If the 10-second requirement is meant only for financial forecasts (2.71 s), the manuscript should say so."
+  "steps": "Time Quick Age Estimate and Estimate Age on two photos, one at a time, site awake.",
+  "expected": "A documented time limit for the estimator. The team decided on November 25 that the 10-second limit for machine learning predictions does not cover it; no separate limit is documented yet.",
+  "actual": "11 timed runs, all with an estimate: Quick 18.1 to 39.6 s (median 27.2 s, 6 runs); full Estimate Age 44.4 to 64.5 s (median 47.1 s, 5 runs). Earlier single runs in AT-29 and AT-30 took 58 s and 47 s. The server stops any request at 180 s.",
+  "status": "Blocked",
+  "evidence": "AT-42_timings.json",
+  "at": "2026-11-25T02:59:35",
+  "review": "First recorded as Fail against 10 seconds, which the team says does not apply. It cannot pass or fail until the limit is written in the manuscript; it should then be timed again rather than judged on these runs."
  },
  {
   "id": "AT-43",
@@ -687,7 +687,7 @@
   "actual": "Staff could deactivate a superuser, and deactivate and delete another staff administrator. Deleting a superuser was refused. After the fix (6d96a51), the same local test refuses every one of these actions; a superuser can still do them.",
   "status": "Pass",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": "First result Fail. Found by reading the code and tested on a local copy only, never on the live site. The expected result is the reviewer's; the manuscript requires role-based access but does not describe administrator levels. Disabling the only superuser would lock the team out of functions only a superuser has."
  },
  {
@@ -699,8 +699,20 @@
   "actual": "Buttons 1, 2 and 3 are always shown, even for one result, and have no action; all users are already on one page. After the fix (6d96a51) the buttons are gone on the live page.",
   "status": "Pass",
   "evidence": "AD-14_retest.png",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": "First result Fail (AD-02.png). Retested live on November 25 in an administrator session."
+ },
+ {
+  "id": "AD-15",
+  "criterion": "Conformance to the Requirements",
+  "title": "Administrator pages at different widths",
+  "steps": "On a local copy with sample users, check the Actions buttons and sideways scrolling at 390 to 1920 px.",
+  "expected": "All action buttons are visible and the page does not scroll sideways (manuscript: responsive interface for administrators).",
+  "actual": "First: at 1366 px the Actions column was cut off, and at 390 px the page scrolled sideways with 10 of 20 user buttons off-screen. After the fix: all 28 buttons visible and no sideways page scrolling at 390, 768, 1280, 1366, 1600 and 1920 px.",
+  "status": "Pass",
+  "evidence": "AD-15_local.png",
+  "at": "2026-11-25T02:59:35",
+  "review": "First result Fail. Tested on a local copy."
  },
  {
   "id": "AT-B1",
@@ -711,7 +723,7 @@
   "actual": "Must be rated by the researchers.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": ""
  },
  {
@@ -723,7 +735,7 @@
   "actual": "Needs people's judgement; the measurable parts are AT-18, AT-19 and AT-41.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": ""
  },
  {
@@ -735,7 +747,7 @@
   "actual": "Would change or remove an account; not approved for this run.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": ""
  },
  {
@@ -747,7 +759,7 @@
   "actual": "Would create another account or change this account's password.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": ""
  },
  {
@@ -759,7 +771,7 @@
   "actual": "The profile was not changed, as agreed before the run.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": ""
  },
  {
@@ -771,7 +783,7 @@
   "actual": "Objectives 1 and 3 are research findings; objective 4 needs the owners' evaluation.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": ""
  },
  {
@@ -783,7 +795,7 @@
   "actual": "Needs monitoring over time and Render access.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": ""
  },
  {
@@ -795,7 +807,7 @@
   "actual": "Needs a load test plan; not safe to improvise on the live site.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:38:35",
+  "at": "2026-11-25T02:59:35",
   "review": ""
  }
 ]

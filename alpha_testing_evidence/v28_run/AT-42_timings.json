@@ -1,0 +1,79 @@
+[
+ {
+  "photo": "spur close-up",
+  "mode": "Quick Age Estimate",
+  "seconds": 35.4,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "spur close-up",
+  "mode": "Estimate Age",
+  "seconds": 44.4,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "whole chicken",
+  "mode": "Quick Age Estimate",
+  "seconds": 18.5,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "whole chicken",
+  "mode": "Estimate Age",
+  "seconds": 47.8,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "spur close-up",
+  "mode": "Quick Age Estimate",
+  "seconds": 38.8,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "spur close-up",
+  "mode": "Estimate Age",
+  "seconds": 47.1,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "whole chicken",
+  "mode": "Quick Age Estimate",
+  "seconds": 18.1,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "whole chicken",
+  "mode": "Estimate Age",
+  "seconds": 64.5,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "spur close-up",
+  "mode": "Quick Age Estimate",
+  "seconds": 39.6,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "spur close-up",
+  "mode": "Estimate Age",
+  "seconds": 47.1,
+  "result": "estimate",
+  "http": 200
+ },
+ {
+  "photo": "whole chicken",
+  "mode": "Quick Age Estimate",
+  "seconds": 19.0,
+  "result": "estimate",
+  "http": 200
+ }
+]
