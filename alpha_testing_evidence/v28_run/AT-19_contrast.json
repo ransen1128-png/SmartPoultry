@@ -1,0 +1,21 @@
+{
+ "P 4.08": "dashboard: \"Overview of your poultry farm \"",
+ "SPAN 4.34": "dashboard: \"Production\"",
+ "SPAN 4.18": "dashboard: \"Latest Alert\"",
+ "SPAN 4.26": "dashboard: \"Current Expenses\"",
+ "text-danger 4.44": "dashboard: \"\u20b1-155.00\"",
+ "SMALL 4.34": "dashboard: \"0\u00a0minutes ago\"",
+ "text-muted.mb-0 4.41": "farm/branches: \"Manage your poultry farm branc\"",
+ "btn.btn-outline-primary 4.23": "flocks: \"History (0)\"",
+ "btn.btn-sm 4.31": "flocks: \"Edit\"",
+ "A 4.00": "production-records: \"Review older revenue records\"",
+ "mb-0 4.08": "expenses: \"Track and manage poultry farm \"",
+ "btn.btn-outline-primary 4.34": "expenses: \"Add Return\"",
+ "H5 1.96": "analytics: \"Actual Revenue vs Forecast\"",
+ "btn.btn-outline-primary 4.31": "rooster-age-estimator: \"Choose Files\"",
+ "SPAN 4.16": "rooster-age-estimator: \"0 recent records\"",
+ "text-muted 4.41": "forecasting: \"Farm feed inventory: 10 kg. Br\"",
+ "text-danger 4.30": "scenario-analysis: \"\u20b1-51.67\"",
+ "btn.btn-outline-secondary 4.41": "profile: \"Dashboard\"",
+ "P 4.34": "settings: \"Manage your account password.\""
+}

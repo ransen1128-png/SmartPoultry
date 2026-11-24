@@ -1,0 +1,186 @@
+{
+ "run_at": "2026-11-25T00:51:04",
+ "results": [
+  {
+   "browser": "Firefox",
+   "mobile": false,
+   "pages": {
+    "/dashboard/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": [],
+     "charts": 4
+    },
+    "/farm/branches/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/flocks/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": [],
+     "table": {
+      "maxOffset": 0,
+      "actionsVisible": true
+     }
+    },
+    "/production-records/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": [],
+     "table": {
+      "maxOffset": 0,
+      "actionsVisible": true
+     }
+    },
+    "/mortality-records/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/health-records/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/health-records/add/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/inventory/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/revenue/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": [],
+     "table": {
+      "maxOffset": 0,
+      "actionsVisible": true
+     }
+    },
+    "/expenses/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": [],
+     "table": {
+      "maxOffset": 0,
+      "actionsVisible": true
+     }
+    },
+    "/analytics/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/forecasting/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/scenario-analysis/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/rooster-age-estimator/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/reports/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/change-history/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/notifications/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/profile/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/settings/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    },
+    "/feedback/": {
+     "overflow": false,
+     "sidebar": true,
+     "title": "SMARTPOULTRY - Poultry Farm Management System",
+     "status": 200,
+     "errors": []
+    }
+   },
+   "problems": [],
+   "version": "159.0",
+   "login": true,
+   "sidebar_collapse": {
+    "expanded": 238,
+    "collapsed": 68,
+    "restored": 238
+   },
+   "delete_prompt": {
+    "shown": true,
+    "closed": true,
+    "rows_unchanged": true
+   },
+   "scenario": {
+    "before": "\u20b1530.00",
+    "after": "\u20b1583.00"
+   },
+   "logout_redirects_to_login": true
+  }
+ ]
+}

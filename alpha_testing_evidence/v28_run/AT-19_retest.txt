@@ -1,0 +1,3 @@
+1366 checked 36 min font 12.16 below AA 0 {}
+1366 checked 2307 min font 11.2 below AA 0 {}
+390 checked 2293 min font 11.2 below AA 0 {}
