@@ -103,7 +103,113 @@ body {
 
 .sidebar-link i {
     width: 16px;
+    flex: 0 0 16px;
     font-size: 0.9rem;
+    text-align: center;
+}
+
+.app-sidebar,
+.app-sidebar .sidebar-label {
+    transition: width 0.2s ease, flex-basis 0.2s ease, opacity 0.15s ease;
+}
+
+.sidebar-label {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding-right: 12px;
+}
+
+.sidebar-header .sidebar-brand {
+    min-width: 0;
+}
+
+.sidebar-toggle {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #dbe8f7;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+}
+
+.sidebar-toggle:hover,
+.sidebar-toggle:focus-visible {
+    color: #fff;
+    border-color: var(--blue);
+    background: rgba(11, 110, 232, 0.25);
+    outline: none;
+}
+
+.sidebar-tooltip {
+    position: fixed;
+    z-index: 1080;
+    padding: 5px 10px;
+    color: #fff;
+    border-radius: 6px;
+    background: #111827;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Collapsed (icon-only) sidebar */
+.sidebar-collapsed .app-sidebar {
+    width: 68px;
+    flex-basis: 68px;
+    overflow-x: hidden;
+}
+
+.sidebar-collapsed .app-sidebar .sidebar-label {
+    width: 0;
+    opacity: 0;
+}
+
+.sidebar-collapsed .sidebar-header {
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 0 6px;
+}
+
+.sidebar-collapsed .sidebar-brand {
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+}
+
+.sidebar-collapsed .sidebar-nav {
+    padding: 4px 10px 18px;
+}
+
+.sidebar-collapsed .sidebar-section {
+    height: 1px;
+    margin: 12px 6px;
+    overflow: hidden;
+    color: transparent;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.sidebar-collapsed .sidebar-link {
+    justify-content: center;
+    gap: 0;
+    padding: 9px 0;
+}
+
+.sidebar-collapsed .sidebar-link i {
+    font-size: 1.05rem;
 }
 
 .app-main {
@@ -1032,6 +1138,108 @@ body {
     font-size: 0.86rem;
 }
 
+.rooster-model-details {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fbfcfe;
+    overflow: hidden;
+}
+
+.rooster-model-details > summary {
+    padding: 10px 14px;
+    color: #132033;
+    font-size: 0.9rem;
+    font-weight: 650;
+    cursor: pointer;
+    user-select: none;
+}
+
+.rooster-model-details > summary:hover {
+    background: #f1f4f9;
+}
+
+.rooster-model-details[open] > summary {
+    border-bottom: 1px solid var(--border);
+}
+
+.rooster-model-details-body {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+}
+
+.rooster-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.rooster-detail-block {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+}
+
+.rooster-detail-block h3 {
+    margin: 0 0 6px;
+    color: #2a3550;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.rooster-detail-block p {
+    margin: 0;
+    color: #172033;
+    font-size: 0.85rem;
+    line-height: 1.55;
+}
+
+.rooster-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.rooster-detail-tag {
+    padding: 2px 9px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #f4f6fa;
+    color: #2a3550;
+    font-size: 0.74rem;
+}
+
+.rooster-detail-tag-completed {
+    border-color: #b7e0c4;
+    background: #eaf7ee;
+    color: #1d6b39;
+}
+
+.rooster-detail-tag-error,
+.rooster-detail-tag-unconfigured {
+    border-color: #f1c9c4;
+    background: #fdeeec;
+    color: #9a2f22;
+}
+
+.rooster-detail-attempts {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    color: #4a5568;
+    font-size: 0.8rem;
+}
+
+.rooster-detail-limitations {
+    border-color: #f0dca8;
+    border-left: 3px solid #e0a82e;
+    background: #fffbef;
+}
+
 .rooster-result-photo {
     display: block;
     width: min(100%, 520px);
@@ -1313,6 +1521,39 @@ footer {
         grid-column: 1 / -1;
     }
 
+    /* Phones use the stacked sidebar; the collapse toggle does not apply there. */
+    .sidebar-toggle,
+    .sidebar-tooltip {
+        display: none !important;
+    }
+
+    .sidebar-collapsed .app-sidebar {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .sidebar-collapsed .app-sidebar .sidebar-label {
+        width: auto;
+        opacity: 1;
+    }
+
+    .sidebar-collapsed .sidebar-header {
+        flex-direction: row;
+    }
+
+    .sidebar-collapsed .sidebar-section {
+        height: auto;
+        margin: 18px 10px 8px;
+        color: #8ca4c2;
+        background: none;
+    }
+
+    .sidebar-collapsed .sidebar-link {
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 8px 10px;
+    }
+
     .app-content {
         padding: 16px;
     }
@@ -1342,7 +1583,8 @@ footer {
 
     .rooster-input-card,
     .rooster-fields,
-    .rooster-result-card dl {
+    .rooster-result-card dl,
+    .rooster-detail-grid {
         grid-template-columns: 1fr;
     }
 

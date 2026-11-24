@@ -149,29 +149,47 @@
                 <p><strong>User-marked base:</strong> {{ result.reviewed_measurement.base }}
                 <strong>Tip:</strong> {{ result.reviewed_measurement.tip }}. Model detections remain separate.</p>
             {% endif %}
-            <details>
-                <summary>Model details and limitations</summary>
-                <dl>
-                <dt>Evidence:</dt>
-                <dd>{{ result.spur_observations }}</dd>
-                {% if result.api_spur_assistance %}
-                <dt>API assistance:</dt>
-                {% if result.api_spur_assistance.persistent_cache %}<dd>Reused a saved successful API result.{% if result.api_spur_assistance.shared_cache %} Shared with your connected account.{% endif %}</dd>{% endif %}
-                <dd>{{ result.api_spur_assistance.status }} — {{ result.api_spur_assistance.message }}
-                    {% if result.api_spur_assistance.model %}Model: {{ result.api_spur_assistance.model }}.{% endif %}
-                    {% if result.api_spur_assistance.attempts %} Attempts: {{ result.api_spur_assistance.attempts }}.{% endif %}
-                    {% for attempt in result.api_spur_assistance.model_attempts %}
-                        <div>{{ attempt.model }}: {{ attempt.message }}</div>
-                    {% endfor %}
-                </dd>
-                {% endif %}
-                <dt>Confidence:</dt>
-                <dd>{{ result.confidence }}</dd>
-                <dt>Model evaluation:</dt>
-                <dd>{{ result.model_evaluation }}</dd>
-                <dt>Limitations:</dt>
-                <dd>{{ result.limitations }}</dd>
-                </dl>
+            <details class="rooster-model-details">
+                <summary><i class="bi bi-info-circle me-2" aria-hidden="true"></i>Model details and limitations</summary>
+                <div class="rooster-model-details-body">
+                    <section class="rooster-detail-block">
+                        <h3>Evidence</h3>
+                        <p>{{ result.spur_observations }}</p>
+                    </section>
+                    {% if result.api_spur_assistance %}
+                    <section class="rooster-detail-block">
+                        <h3>API assistance</h3>
+                        <div class="rooster-detail-tags">
+                            <span class="rooster-detail-tag rooster-detail-tag-{{ result.api_spur_assistance.status }}">{{ result.api_spur_assistance.status|capfirst }}</span>
+                            {% if result.api_spur_assistance.model %}<span class="rooster-detail-tag">Model: {{ result.api_spur_assistance.model }}</span>{% endif %}
+                            {% if result.api_spur_assistance.attempts %}<span class="rooster-detail-tag">Attempts: {{ result.api_spur_assistance.attempts }}</span>{% endif %}
+                            {% if result.api_spur_assistance.persistent_cache %}<span class="rooster-detail-tag">Saved result reused{% if result.api_spur_assistance.shared_cache %} · shared account{% endif %}</span>{% endif %}
+                        </div>
+                        <p>{{ result.api_spur_assistance.message }}</p>
+                        {% if result.api_spur_assistance.model_attempts %}
+                        <ul class="rooster-detail-attempts">
+                            {% for attempt in result.api_spur_assistance.model_attempts %}
+                                <li><strong>{{ attempt.model }}</strong> — {{ attempt.message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </section>
+                    {% endif %}
+                    <div class="rooster-detail-grid">
+                        <section class="rooster-detail-block">
+                            <h3>Confidence</h3>
+                            <p>{{ result.confidence }}</p>
+                        </section>
+                        <section class="rooster-detail-block">
+                            <h3>Model evaluation</h3>
+                            <p>{{ result.model_evaluation }}</p>
+                        </section>
+                    </div>
+                    <section class="rooster-detail-block rooster-detail-limitations">
+                        <h3><i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>Limitations</h3>
+                        <p>{{ result.limitations }}</p>
+                    </section>
+                </div>
             </details>
         </article>
     {% endfor %}

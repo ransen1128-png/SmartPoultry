@@ -16,6 +16,9 @@
         </style>
         <script src="{% static 'js/auth_session.js' %}?v=20261120-popups" defer data-user-id="{{ user.pk }}" data-status-url="{% url 'session_status' %}" data-login-url="{% url 'login' %}" data-logout-url="{% url 'logout' %}" data-logout-complete-url="{% url 'logout_complete' %}"></script>
     {% endif %}
+    {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+        <script>try { if (localStorage.getItem('sp-sidebar-collapsed') === '1') document.documentElement.classList.add('sidebar-collapsed'); } catch (e) {}</script>
+    {% endif %}
     {% block extra_css %}{% endblock %}
 </head>
 <body data-owner="{{ request.user.pk|default:'' }}">
@@ -90,75 +93,63 @@
 
     {% elif user.is_authenticated %}
         <div class="app-shell">
-            <aside class="app-sidebar">
-                <a class="sidebar-brand" href="{% url 'dashboard' %}">
-                    <img src="{% static 'images/smartpoultry_logo.svg' %}" alt="SMARTPOULTRY logo" class="brand-logo">
-                    <span>SMARTPOULTRY</span>
-                </a>
+            <aside class="app-sidebar" id="appSidebar">
+                <div class="sidebar-header">
+                    <a class="sidebar-brand" href="{% url 'dashboard' %}">
+                        <img src="{% static 'images/smartpoultry_logo.svg' %}" alt="SMARTPOULTRY logo" class="brand-logo">
+                        <span class="sidebar-label">SMARTPOULTRY</span>
+                    </a>
+                    <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-controls="appSidebar" aria-expanded="true" aria-label="Collapse sidebar" data-label="Collapse sidebar">
+                        <i class="bi bi-chevron-double-left" aria-hidden="true"></i>
+                    </button>
+                </div>
 
                 <nav class="sidebar-nav">
-                    <a class="sidebar-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">
-                        <i class="bi bi-house-door-fill"></i> Dashboard
-                    </a>
+                    <a class="sidebar-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}" data-label="Dashboard">
+                        <i class="bi bi-house-door-fill"></i><span class="sidebar-label">Dashboard</span></a>
 
                     <div class="sidebar-section">Poultry</div>
-                    <a class="sidebar-link {% if request.path == '/farm/branches/' %}active{% endif %}" href="{% url 'farm_branches' %}">
-                        <i class="bi bi-geo-alt-fill"></i> Farms
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/flocks/' %}active{% endif %}" href="{% url 'flocks' %}">
-                        <i class="bi bi-grid-3x3-gap-fill"></i> Flocks
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/production-records/' %}active{% endif %}" href="{% url 'production_records' %}">
-                        <i class="bi bi-journal-medical"></i> Production Records
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/mortality-records/' %}active{% endif %}" href="{% url 'mortality_records' %}">
-                        <i class="bi bi-activity"></i> Mortality Records
-                    </a>
+                    <a class="sidebar-link {% if request.path == '/farm/branches/' %}active{% endif %}" href="{% url 'farm_branches' %}" data-label="Farms">
+                        <i class="bi bi-geo-alt-fill"></i><span class="sidebar-label">Farms</span></a>
+                    <a class="sidebar-link {% if request.path == '/flocks/' %}active{% endif %}" href="{% url 'flocks' %}" data-label="Flocks">
+                        <i class="bi bi-grid-3x3-gap-fill"></i><span class="sidebar-label">Flocks</span></a>
+                    <a class="sidebar-link {% if request.path == '/production-records/' %}active{% endif %}" href="{% url 'production_records' %}" data-label="Production Records">
+                        <i class="bi bi-journal-medical"></i><span class="sidebar-label">Production Records</span></a>
+                    <a class="sidebar-link {% if request.path == '/mortality-records/' %}active{% endif %}" href="{% url 'mortality_records' %}" data-label="Mortality Records">
+                        <i class="bi bi-activity"></i><span class="sidebar-label">Mortality Records</span></a>
 
                     <div class="sidebar-section">Inventory</div>
-                    <a class="sidebar-link {% if request.path == '/inventory/' %}active{% endif %}" href="{% url 'inventory' %}">
-                        <i class="bi bi-box-seam"></i> Feed & Inventory
-                    </a>
+                    <a class="sidebar-link {% if request.path == '/inventory/' %}active{% endif %}" href="{% url 'inventory' %}" data-label="Feed & Inventory">
+                        <i class="bi bi-box-seam"></i><span class="sidebar-label">Feed & Inventory</span></a>
 
                     <div class="sidebar-section">Finance</div>
-                    <a class="sidebar-link {% if request.path == '/revenue/' %}active{% endif %}" href="{% url 'revenue' %}">
-                        <i class="bi bi-cash-coin"></i> Revenue
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/expenses/' %}active{% endif %}" href="{% url 'expenses' %}">
-                        <i class="bi bi-receipt"></i> Expenses
-                    </a>
+                    <a class="sidebar-link {% if request.path == '/revenue/' %}active{% endif %}" href="{% url 'revenue' %}" data-label="Revenue">
+                        <i class="bi bi-cash-coin"></i><span class="sidebar-label">Revenue</span></a>
+                    <a class="sidebar-link {% if request.path == '/expenses/' %}active{% endif %}" href="{% url 'expenses' %}" data-label="Expenses">
+                        <i class="bi bi-receipt"></i><span class="sidebar-label">Expenses</span></a>
 
                     <div class="sidebar-section">Analytics</div>
-                    <a class="sidebar-link {% if request.path == '/analytics/' %}active{% endif %}" href="{% url 'analytics' %}">
-                        <i class="bi bi-cpu"></i> ML Predictions
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/rooster-age-estimator/' %}active{% endif %}" href="{% url 'rooster_age_estimator' %}">
-                        <i class="bi bi-camera"></i> Rooster Age
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/forecasting/' %}active{% endif %}" href="{% url 'forecasting' %}">
-                        <i class="bi bi-graph-up-arrow"></i> Forecasting
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/scenario-analysis/' %}active{% endif %}" href="{% url 'scenario_analysis' %}">
-                        <i class="bi bi-diagram-3"></i> Scenario Analysis
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/reports/' %}active{% endif %}" href="{% url 'reports' %}">
-                        <i class="bi bi-file-earmark-bar-graph"></i> Reports
-                    </a>
+                    <a class="sidebar-link {% if request.path == '/analytics/' %}active{% endif %}" href="{% url 'analytics' %}" data-label="ML Predictions">
+                        <i class="bi bi-cpu"></i><span class="sidebar-label">ML Predictions</span></a>
+                    <a class="sidebar-link {% if request.path == '/rooster-age-estimator/' %}active{% endif %}" href="{% url 'rooster_age_estimator' %}" data-label="Rooster Age">
+                        <i class="bi bi-camera"></i><span class="sidebar-label">Rooster Age</span></a>
+                    <a class="sidebar-link {% if request.path == '/forecasting/' %}active{% endif %}" href="{% url 'forecasting' %}" data-label="Forecasting">
+                        <i class="bi bi-graph-up-arrow"></i><span class="sidebar-label">Forecasting</span></a>
+                    <a class="sidebar-link {% if request.path == '/scenario-analysis/' %}active{% endif %}" href="{% url 'scenario_analysis' %}" data-label="Scenario Analysis">
+                        <i class="bi bi-diagram-3"></i><span class="sidebar-label">Scenario Analysis</span></a>
+                    <a class="sidebar-link {% if request.path == '/reports/' %}active{% endif %}" href="{% url 'reports' %}" data-label="Reports">
+                        <i class="bi bi-file-earmark-bar-graph"></i><span class="sidebar-label">Reports</span></a>
 
                     <div class="sidebar-section">Account</div>
-                    <a class="sidebar-link" href="{% url 'activity_history' %}"><i class="bi bi-clock-history"></i> Change History</a>
-                    <a class="sidebar-link {% if request.path == '/notifications/' %}active{% endif %}" href="{% url 'notifications_page' %}">
-                        <i class="bi bi-bell"></i> Notifications
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/profile/' %}active{% endif %}" href="{% url 'profile' %}">
-                        <i class="bi bi-person-lines-fill"></i> Profile
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/feedback/' %}active{% endif %}" href="{% url 'feedback' %}">
-                        <i class="bi bi-chat-square-text"></i> Feedback
-                    </a>
-                    <a class="sidebar-link {% if request.path == '/settings/' %}active{% endif %}" href="{% url 'settings' %}?tab=security">
-                        <i class="bi bi-gear" aria-hidden="true"></i> Settings
-                    </a>
+                    <a class="sidebar-link" href="{% url 'activity_history' %}" data-label="Change History"><i class="bi bi-clock-history"></i><span class="sidebar-label">Change History</span></a>
+                    <a class="sidebar-link {% if request.path == '/notifications/' %}active{% endif %}" href="{% url 'notifications_page' %}" data-label="Notifications">
+                        <i class="bi bi-bell"></i><span class="sidebar-label">Notifications</span></a>
+                    <a class="sidebar-link {% if request.path == '/profile/' %}active{% endif %}" href="{% url 'profile' %}" data-label="Profile">
+                        <i class="bi bi-person-lines-fill"></i><span class="sidebar-label">Profile</span></a>
+                    <a class="sidebar-link {% if request.path == '/feedback/' %}active{% endif %}" href="{% url 'feedback' %}" data-label="Feedback">
+                        <i class="bi bi-chat-square-text"></i><span class="sidebar-label">Feedback</span></a>
+                    <a class="sidebar-link {% if request.path == '/settings/' %}active{% endif %}" href="{% url 'settings' %}?tab=security" data-label="Settings">
+                        <i class="bi bi-gear" aria-hidden="true"></i><span class="sidebar-label">Settings</span></a>
                 </nav>
             </aside>
 
@@ -212,6 +203,7 @@
     <script src="{% static 'js/main.js' %}?v=20261123-scenarios"></script>
     <script src="{% static 'js/financial_requests.js' %}?v=1"></script>
     {% if user.is_authenticated %}<script src="{% static 'js/notification_bell.js' %}?v=1"></script>{% endif %}
+    {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}<script src="{% static 'js/sidebar.js' %}?v=1"></script>{% endif %}
     {% if user.is_staff or user.is_superuser %}<script src="{% static 'js/admin_notifications.js' %}?v=1"></script>{% endif %}
     {% block extra_js %}{% endblock %}
 </body>
