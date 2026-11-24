@@ -78,7 +78,7 @@ body {
 .sidebar-section {
     margin: 18px 10px 8px;
     color: #8ca4c2;
-    font-size: 0.66rem;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
 }
@@ -153,6 +153,10 @@ body {
     border-color: var(--blue);
     background: rgba(11, 110, 232, 0.25);
     outline: none;
+}
+
+.sidebar-mobile-toggle {
+    display: none;
 }
 
 .sidebar-tooltip {
@@ -1377,7 +1381,7 @@ body {
 
 .notification-list small {
     color: var(--muted);
-    font-size: 0.68rem;
+    font-size: 0.75rem;
 }
 
 .report-grid {
@@ -1518,6 +1522,34 @@ footer {
     .sidebar-nav {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* The menu stays closed on phones until the Menu button opens it. */
+    .app-sidebar:not(.sidebar-mobile-open) .sidebar-nav {
+        display: none;
+    }
+
+    .sidebar-mobile-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 40px;
+        padding: 0 14px;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .sidebar-mobile-toggle i {
+        font-size: 1.2rem;
+    }
+
+    .sidebar-mobile-toggle:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
     }
 
     .sidebar-section {

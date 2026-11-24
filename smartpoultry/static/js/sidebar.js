@@ -6,6 +6,17 @@
     var toggle = document.getElementById('sidebarToggle');
     if (!sidebar || !toggle) return;
 
+    // Phones: the menu stays closed behind a Menu button so each page opens on its content.
+    var mobileToggle = document.getElementById('sidebarMobileToggle');
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', function () {
+            var open = sidebar.classList.toggle('sidebar-mobile-open');
+            mobileToggle.setAttribute('aria-expanded', String(open));
+            mobileToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+            mobileToggle.querySelector('i').className = open ? 'bi bi-x-lg' : 'bi bi-list';
+        });
+    }
+
     var STORAGE_KEY = 'sp-sidebar-collapsed';
     var tooltip = document.createElement('div');
     tooltip.className = 'sidebar-tooltip';

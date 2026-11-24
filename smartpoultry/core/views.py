@@ -76,7 +76,7 @@ def health_check(request):
         'static_url': settings.STATIC_URL,
         'static_root': str(settings.STATIC_ROOT),
         'static_dirs': static_dirs,
-        'staticfiles_storage': getattr(settings, 'STATICFILES_STORAGE', ''),
+        'staticfiles_storage': settings.STORAGES.get('staticfiles', {}).get('BACKEND', ''),
         'whitenoise_use_finders': getattr(settings, 'WHITENOISE_USE_FINDERS', None),
         **static_sources,
     })

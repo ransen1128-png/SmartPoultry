@@ -3,6 +3,17 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
 
+class StoredFile(models.Model):
+    """An uploaded file kept in the database (see core.storage.DatabaseStorage)."""
+    name = models.CharField(max_length=255, unique=True)
+    content = models.BinaryField()
+    size = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
 class AccountRecovery(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='account_recovery')
     question_one = models.CharField(max_length=24)

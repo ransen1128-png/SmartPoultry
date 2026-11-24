@@ -164,7 +164,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'smartpoultry' / 'static']
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STORAGES = {
+    # Uploads go to the database because Render's disk is cleared on every deploy.
+    'default': {'BACKEND': 'core.storage.DatabaseStorage'},
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+}
 WHITENOISE_USE_FINDERS = True
 
 # Media files

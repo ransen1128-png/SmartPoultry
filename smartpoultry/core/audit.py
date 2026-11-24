@@ -4,15 +4,16 @@ from django.db.models.signals import pre_save, post_save, pre_delete
 from .models import AuditEvent
 
 audit_context=ContextVar('farm_audit_context',default=(None,''))
+# Notes are included so corrections to them appear in Change History (alpha test DEF-02).
 FIELDS={
-    'inventory.Inventory':['name','item_type','quantity','unit','cost_per_unit','minimum_stock','package_size','content_unit'],
+    'inventory.Inventory':['name','item_type','quantity','unit','cost_per_unit','minimum_stock','package_size','content_unit','notes'],
     'inventory.InventoryDistribution':['inventory_id','branch_id','quantity','date','reversed_at','reversal_reason'],
     'inventory.InventoryUsage':['distribution_id','quantity','date','reason','voided_at','void_reason'],
-    'flocks.Flock':['branch_id','flock_id','breed','quantity','status','placement_date','acquisition_source','purchase_amount','delivery_cost'],
-    'production.ProductionRecord':['branch_id','flock_id','product_type','egg_size','quantity','unit','date'],
-    'production.MortalityRecord':['branch_id','flock_id','quantity','date','reason','description'],
-    'revenue.Revenue':['branch_id','production_id','quantity','price_per_unit','total_amount','date','order_number','transaction_number'],
-    'expenses.Expense':['branch_id','expense_type','amount','date','description'],
+    'flocks.Flock':['branch_id','flock_id','breed','quantity','status','placement_date','acquisition_source','purchase_amount','delivery_cost','notes'],
+    'production.ProductionRecord':['branch_id','flock_id','product_type','egg_size','quantity','unit','date','notes'],
+    'production.MortalityRecord':['branch_id','flock_id','quantity','date','reason','description','notes'],
+    'revenue.Revenue':['branch_id','production_id','quantity','price_per_unit','total_amount','date','order_number','transaction_number','notes'],
+    'expenses.Expense':['branch_id','expense_type','amount','date','description','notes'],
     'core.Branch':['name','location','status'],
 }
 
