@@ -31,6 +31,11 @@ class ExpenseSerializer(serializers.ModelSerializer):
         except ModelError as error:raise serializers.ValidationError(error.message_dict if hasattr(error,'message_dict') else {'non_field_errors':error.messages})
         return attrs
 
+    def validate_amount(self, amount):
+        if amount < 0:
+            raise serializers.ValidationError('Expense amount cannot be negative.')
+        return amount
+
     def validate_branch(self, branch):
         request = self.context.get('request')
         if request and branch and branch.farm.owner_id != request.user.id:

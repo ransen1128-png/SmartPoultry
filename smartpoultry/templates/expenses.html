@@ -57,7 +57,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add Expense</h5>
+                <h5 class="modal-title" id="expenseModalTitle">Add Expense</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -88,11 +88,15 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Amount</label>
-                        <input type="number" class="form-control" name="amount" step="0.01" required>
+                        <input type="number" class="form-control" name="amount" min="0" step="0.01" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Date</label>
                         <input type="date" class="form-control" name="date" required>
+                    </div>
+                    <div class="mb-3" id="expenseCorrectionField" hidden>
+                        <label class="form-label" for="expenseCorrectionReason">Reason for correction</label>
+                        <textarea class="form-control" id="expenseCorrectionReason" name="correction_reason" maxlength="500" rows="2"></textarea>
                     </div>
                 </form>
             </div>
@@ -250,7 +254,18 @@
                         const source=document.createElement('span');source.className='expense-source-badge';
                         source.textContent=expense.flock_purchase ? 'Flock Purchase' : (expense.distribution_reversed_at ? 'Reversed Distribution' : (expense.inventory_distribution ? 'Inventory Distribution' : 'Remaining Inventory Purchase'));
                         actionsCell.append(source);
-                    } else {actionsCell.appendChild(deleteButton);}
+                    } else {
+                        const editButton = document.createElement('button');
+                        editButton.className = 'btn btn-sm btn-outline-primary';
+                        editButton.type = 'button';
+                        editButton.textContent = 'Edit';
+                        editButton.setAttribute('aria-label', 'Edit expense ' + expense.description);
+                        editButton.addEventListener('click', () => editExpense(expense));
+                        const group = document.createElement('div');
+                        group.className = 'd-inline-flex gap-2';
+                        group.append(editButton, deleteButton);
+                        actionsCell.append(group);
+                    }
 
                     tbody.appendChild(row);
                 });
@@ -259,35 +274,93 @@
             }).catch(error => showAppDialog(error.message, 'Expenses'));
     }
 
+    let editingExpenseId = null;
+    const expenseModal = document.getElementById('addExpenseModal');
+    const expenseForm = document.getElementById('addExpenseForm');
+
+    function setExpenseMode(editing) {
+        document.getElementById('expenseModalTitle').textContent = editing ? 'Edit Expense' : 'Add Expense';
+        document.getElementById('saveExpenseBtn').textContent = editing ? 'Update Expense' : 'Save Expense';
+        document.getElementById('expenseCorrectionField').hidden = !editing;
+        expenseForm.elements.correction_reason.required = editing;
+        expenseForm.elements.branch.required = true;
+        expenseForm.querySelectorAll('option[data-current-value]').forEach(option => option.remove());
+    }
+
+    function selectCurrent(select, value, label) {
+        // Keep a value the form does not offer (inactive branch, older type) so editing cannot change it unnoticed.
+        if (![...select.options].some(option => option.value === value)) {
+            const option = new Option(label, value);
+            option.dataset.currentValue = '';
+            select.add(option);
+        }
+        select.value = value;
+    }
+
+    function editExpense(expense) {
+        expenseForm.reset();
+        setExpenseMode(true);
+        editingExpenseId = expense.id;
+        const fields = expenseForm.elements;
+        if (expense.branch == null) {
+            fields.branch.required = false;
+            fields.branch.value = '';
+        } else {
+            selectCurrent(fields.branch, String(expense.branch), expense.branch_name);
+        }
+        selectCurrent(fields.expense_type, expense.expense_type, expenseTypeLabel(expense.expense_type));
+        fields.description.value = expense.description;
+        fields.amount.value = expense.amount;
+        fields.date.value = expense.date;
+        bootstrap.Modal.getOrCreateInstance(expenseModal).show();
+    }
+
+    expenseModal.addEventListener('hidden.bs.modal', () => {
+        if (editingExpenseId === null) return;
+        editingExpenseId = null;
+        expenseForm.reset();
+        setExpenseMode(false);
+    });
+
     document.getElementById('saveExpenseBtn').addEventListener('click', function() {
-        const form = document.getElementById('addExpenseForm');
+        const form = expenseForm;
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
         }
 
         const formData = new FormData(form);
+        const editing = editingExpenseId !== null;
+        const body = {
+            branch: formData.get('branch') ? parseInt(formData.get('branch')) : null,
+            expense_type: formData.get('expense_type'),
+            description: formData.get('description'),
+            amount: editing ? formData.get('amount') : parseFloat(formData.get('amount')),
+            date: formData.get('date')
+        };
+        if (editing) body.correction_reason = formData.get('correction_reason').trim();
+        if (editing && !body.correction_reason) {
+            form.elements.correction_reason.value = '';
+            form.reportValidity();
+            return;
+        }
 
-        fetch('/api/expenses/', {
-            method: 'POST',
+        this.disabled = true;
+        fetch(editing ? `/api/expenses/${editingExpenseId}/` : '/api/expenses/', {
+            method: editing ? 'PATCH' : 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
-            body: JSON.stringify({
-                branch: formData.get('branch') ? parseInt(formData.get('branch')) : null,
-                expense_type: formData.get('expense_type'),
-                description: formData.get('description'),
-                amount: parseFloat(formData.get('amount')),
-                date: formData.get('date')
-            })
+            body: JSON.stringify(body)
         })
         .then(response => { if (!response.ok) throw new Error('The request could not be completed. Please check your information and try again.'); return response.json(); })
         .then(data => {
-            bootstrap.Modal.getInstance(document.getElementById('addExpenseModal')).hide();
+            bootstrap.Modal.getInstance(expenseModal).hide();
             loadExpenses();
-            form.reset();
-        }).catch(() => {});
+            if (!editing) form.reset();
+        }).catch(() => {})
+        .finally(() => { this.disabled = false; });
     });
 
     function confirmDeleteExpense(id, description) {
