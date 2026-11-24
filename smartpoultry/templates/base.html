@@ -141,7 +141,7 @@
                         <i class="bi bi-file-earmark-bar-graph"></i><span class="sidebar-label">Reports</span></a>
 
                     <div class="sidebar-section">Account</div>
-                    <a class="sidebar-link" href="{% url 'activity_history' %}" data-label="Change History"><i class="bi bi-clock-history"></i><span class="sidebar-label">Change History</span></a>
+                    <a class="sidebar-link {% if request.path == '/change-history/' %}active{% endif %}" href="{% url 'activity_history' %}" data-label="Change History"{% if request.path == '/change-history/' %} aria-current="page"{% endif %}><i class="bi bi-clock-history"></i><span class="sidebar-label">Change History</span></a>
                     <a class="sidebar-link {% if request.path == '/notifications/' %}active{% endif %}" href="{% url 'notifications_page' %}" data-label="Notifications">
                         <i class="bi bi-bell"></i><span class="sidebar-label">Notifications</span></a>
                     <a class="sidebar-link {% if request.path == '/profile/' %}active{% endif %}" href="{% url 'profile' %}" data-label="Profile">
