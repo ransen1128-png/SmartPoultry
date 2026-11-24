@@ -13,4 +13,4 @@ import AdminOperations_CASE_184 as workflow_1
 
 class IntegrationCase212(AdminOperationsBrowserCase):
     def test_int_028(self):
-        workflow_1.AdminOperationsCase184.test_case_184_staff_view_permission_reproduction(self)
+        workflow_1.AdminOperationsCase184.test_case_184_staff_view_permission(self)

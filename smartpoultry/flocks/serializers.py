@@ -23,6 +23,8 @@ class FlockSerializer(serializers.ModelSerializer):
 
     def validate_quantity(self,value):
         if value<0:raise serializers.ValidationError('Quantity cannot be negative.')
+        # Existing flocks may still reach 0 when sold or dead; only a new flock needs live chickens.
+        if self.instance is None and value==0:raise serializers.ValidationError('Enter at least 1 chicken for a new flock.')
         return value
 
     def update(self,instance,validated_data):

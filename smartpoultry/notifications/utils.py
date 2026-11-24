@@ -1,8 +1,10 @@
-from notifications.models import Notification
+from notifications.models import Notification, NotificationPreference
 
 
 def create_activity_notification(user, title, message, related_object=None, notification_type='success'):
     if not user or not user.is_authenticated:
+        return None
+    if NotificationPreference.objects.filter(user=user, in_app_notifications=False).exists():
         return None
 
     related_object_type = ''
