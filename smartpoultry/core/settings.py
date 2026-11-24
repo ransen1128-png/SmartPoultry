@@ -156,7 +156,8 @@ PASSWORD_RESET_BASE_URL = os.getenv(
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+# Farm dates are Philippine dates. With UTC, the site was a day behind from midnight to 8 AM.
+TIME_ZONE = 'Asia/Manila'
 USE_I18N = True
 USE_TZ = True
 

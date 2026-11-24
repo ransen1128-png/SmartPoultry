@@ -100,3 +100,15 @@ class MobileMenuTests(TestCase):
         self.assertIn('id="sidebarMobileToggle"', html)
         self.assertIn('aria-controls="sidebarNav"', html)
         self.assertIn('id="sidebarNav"', html)
+
+
+class PhilippineDateTests(TestCase):
+    """Early-morning farm records must use the Philippine date, not the UTC date."""
+
+    def test_today_is_the_philippine_date_before_eight_in_the_morning(self):
+        from datetime import date, datetime, timezone as dt_timezone
+        from unittest import mock
+        from django.utils import timezone
+        early_morning = datetime(2026, 11, 24, 16, 6, tzinfo=dt_timezone.utc)  # 12:06 AM on Nov 25 in Argao
+        with mock.patch('django.utils.timezone.now', return_value=early_morning):
+            self.assertEqual(timezone.localdate(), date(2026, 11, 25))
