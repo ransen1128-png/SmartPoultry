@@ -7,8 +7,10 @@ import unittest
 
 try:
     from tools.automation_browser import expect, launch_browser, live_base_url, read_test_value
+    from tools.flock_rows import flock_row
 except ModuleNotFoundError:
     from automation_browser import expect, launch_browser, live_base_url, read_test_value
+    from flock_rows import flock_row
 
 
 BASE_URL = live_base_url()
@@ -75,13 +77,10 @@ class LiveFlockTests(unittest.TestCase):
             self.assertGreater(int(flock_id), highest)
 
             expect(modal).to_be_hidden()
-            saved_flock = page.locator('#flocksBody tr').filter(
-                has=page.get_by_role('cell', name=flock_id, exact=True),
-            ).filter(has=page.get_by_role('cell', name=branch_name, exact=True))
-            expect(saved_flock).to_be_visible()
+            # Flock IDs are numbered per branch, so match the Branch and Flock ID columns exactly.
+            expect(flock_row(page, flock_id, branch_name)).to_be_visible()
             page.reload(wait_until='domcontentloaded')
-            expect(saved_flock).to_have_count(1)
-            expect(saved_flock).to_be_visible()
+            expect(flock_row(page, flock_id, branch_name)).to_be_visible()
             print(f'Actual result: Flock {flock_id} was assigned automatically and remained saved after reload.')
         finally:
             browser.close()

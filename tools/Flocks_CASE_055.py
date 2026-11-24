@@ -1,4 +1,4 @@
-"""Verify that a duplicate Flock ID is rejected when editing a live test flock."""
+"""Verify that an assigned Flock ID cannot be edited, so it cannot be changed to a duplicate."""
 
 import os
 import unittest
@@ -15,10 +15,9 @@ BASE_URL = live_base_url()
 FLOCKS_URL = f'{BASE_URL}/flocks/'
 
 
-
 class LiveFlockTests(unittest.TestCase):
     def test_case_055_duplicate_flock_id_update(self):
-        """CASE-055 | Flock update failed & duplicate Flock ID error shown."""
+        """CASE-055 | Flock ID cannot be edited & a duplicate ID sent on update is ignored."""
         email = os.environ.get('SMARTPOULTRY_TEST_EMAIL') or 'userx@gmail.com'
         password = read_test_value('SMARTPOULTRY_TEST_PASSWORD', 'Test account password: ', secret=True)
 
@@ -32,6 +31,8 @@ class LiveFlockTests(unittest.TestCase):
             expect(page).to_have_url(f'{BASE_URL}/dashboard/', timeout=30_000)
 
             flock_id = read_test_value('SMARTPOULTRY_TEST_FLOCK_ID', 'Fixture flock ID: ')
+            duplicate_id = read_test_value('SMARTPOULTRY_TEST_DUPLICATE_FLOCK_ID', 'Fixture flock ID: ')
+            self.assertNotEqual(flock_id, duplicate_id)
             page.goto(FLOCKS_URL, timeout=90_000, wait_until='domcontentloaded')
             notification = page.locator('dialog#appDialog[open]')
             if notification.is_visible():
@@ -41,42 +42,33 @@ class LiveFlockTests(unittest.TestCase):
             row = page.locator('#flocksBody tr').filter(
                 has=page.get_by_role('cell', name=flock_id, exact=True),
             )
-            expect(row).to_be_visible()
+            expect(row).to_have_count(1)
             row.get_by_role('button', name='Edit', exact=True).click()
             modal = page.locator('#addFlockModal')
             expect(modal.get_by_role('heading', name='Edit Flock', exact=True)).to_be_visible()
             identifier = modal.locator('[name="flock_id"]')
             expect(identifier).to_have_value(flock_id)
-            if identifier.evaluate('field => field.readOnly'):
-                self.skipTest('Assigned flock IDs cannot be edited.')
-            duplicate_id = read_test_value('SMARTPOULTRY_TEST_DUPLICATE_FLOCK_ID', 'Fixture flock ID: ')
-            self.assertNotEqual(flock_id, duplicate_id)
-            duplicate_row = page.locator('#flocksBody tr').filter(
-                has=page.get_by_role('cell', name=duplicate_id, exact=True),
-            )
-            expect(duplicate_row).to_have_count(1)
-            self.assertEqual(
-                row.get_by_role('cell').first.inner_text(),
-                duplicate_row.get_by_role('cell').first.inner_text(),
-                'Both test flocks must belong to the same branch',
-            )
+            self.assertTrue(identifier.evaluate('field => field.readOnly'), 'An assigned Flock ID must not be editable.')
 
-            identifier.fill(duplicate_id)
-            modal.get_by_label('Reason for correction', exact=True).fill('CASE-055 duplicate ID validation')
-            modal.get_by_role('button', name='Update Flock', exact=True).click()
-
-            expected_error = 'This flock ID is already used in this branch.'
-            error = notification.locator('#appDialogText')
-            expect(error).to_contain_text(expected_error)
-            expect(error).to_be_visible()
-            expect(modal).to_be_visible()
+            # Even a request that bypasses the form cannot change the assigned ID.
+            records = page.request.get(f'{BASE_URL}/api/flocks/').json()['results']
+            target = next(r for r in records if r['flock_id'] == flock_id)
+            result = page.evaluate(
+                """async ([url, duplicate]) => {
+                    const token = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1];
+                    const response = await fetch(url, {method: 'PATCH', headers: {'Content-Type': 'application/json', 'X-CSRFToken': token},
+                        body: JSON.stringify({flock_id: duplicate, correction_reason: 'CASE-055 duplicate ID attempt'})});
+                    return {status: response.status, body: await response.json()};
+                }""",
+                [f"{BASE_URL}/api/flocks/{target['id']}/", duplicate_id],
+            )
+            self.assertEqual(result['status'], 200, result)
+            self.assertEqual(result['body']['flock_id'], flock_id, 'The update changed the assigned Flock ID.')
 
             page.reload(wait_until='domcontentloaded')
             expect(row).to_have_count(1)
-            expect(duplicate_row).to_have_count(1)
-            row.get_by_role('button', name='Edit', exact=True).click()
-            expect(identifier).to_have_value(flock_id)
-            print(f'Actual result: {expected_error} Both original IDs remain saved.')
+            print(f'Actual result: Flock ID {flock_id} is read-only and stayed {flock_id} after an update '
+                  f'that sent {duplicate_id}.')
         finally:
             browser.close()
 

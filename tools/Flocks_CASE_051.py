@@ -6,8 +6,10 @@ import unittest
 
 try:
     from tools.automation_browser import expect, launch_browser, live_base_url, read_test_value
+    from tools.flock_rows import flock_row
 except ModuleNotFoundError:
     from automation_browser import expect, launch_browser, live_base_url, read_test_value
+    from flock_rows import flock_row
 
 
 BASE_URL = live_base_url()
@@ -55,17 +57,14 @@ class LiveFlockTests(unittest.TestCase):
                 modal.get_by_role('button', name='Save Flock', exact=True).click()
             self.assertEqual(creation.value.status, 201, 'The flock creation request failed')
             flock_id = creation.value.json()['flock_id']
-            # Flock IDs are numbered per branch, so the same ID can appear in other branches.
-            row = page.locator('#flocksBody tr').filter(
-                has=page.get_by_role('cell', name=flock_id, exact=True),
-            ).filter(has=page.get_by_role('cell', name=branch_name, exact=True))
             print(f'Created test flock: {flock_id}', flush=True)
 
             expect(modal).to_be_hidden()
-            expect(row).to_be_visible()
+            # Flock IDs are numbered per branch, so match the Branch and Flock ID columns exactly.
+            expect(flock_row(page, flock_id, branch_name)).to_be_visible()
             page.reload(wait_until='domcontentloaded')
             expect(page.get_by_role('heading', name='Current Flocks', exact=True)).to_be_visible()
-            expect(row).to_have_count(1)
+            row = flock_row(page, flock_id, branch_name)
             for value in (branch_name, 'layers', '10', 'active', 'Raised on my farm'):
                 expect(row.get_by_role('cell', name=value, exact=True)).to_be_visible()
             print(f'Actual result: {flock_id} remains in Current Flocks after reload.')
