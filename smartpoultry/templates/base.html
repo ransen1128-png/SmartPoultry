@@ -120,6 +120,8 @@
                         <i class="bi bi-journal-medical"></i><span class="sidebar-label">Production Records</span></a>
                     <a class="sidebar-link {% if request.path == '/mortality-records/' %}active{% endif %}" href="{% url 'mortality_records' %}" data-label="Mortality Records">
                         <i class="bi bi-activity"></i><span class="sidebar-label">Mortality Records</span></a>
+                    <a class="sidebar-link {% if request.path == '/health-records/' %}active{% endif %}" href="{% url 'health_records' %}" data-label="Health Records">
+                        <i class="bi bi-bandaid"></i><span class="sidebar-label">Health Records</span></a>
 
                     <div class="sidebar-section">Inventory</div>
                     <a class="sidebar-link {% if request.path == '/inventory/' %}active{% endif %}" href="{% url 'inventory' %}" data-label="Feed & Inventory">

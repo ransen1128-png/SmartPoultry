@@ -13,6 +13,7 @@ from django.contrib.auth.views import PasswordResetCompleteView
 from .password_reset import RequestPasswordResetView, ConfirmPasswordResetView, ResetRequestDoneView
 from . import admin_notifications
 from notifications.views import notification_preview
+from . import health_records
 from . import recovery_questions
 
 urlpatterns = [
@@ -75,6 +76,10 @@ urlpatterns = [
     path('mortality-records/add/', views.mortality_record_create, name='mortality_record_create'),
     path('mortality-records/<int:record_id>/edit/', views.mortality_record_update, name='mortality_record_update'),
     path('mortality-records/<int:record_id>/delete/', views.mortality_record_delete, name='mortality_record_delete'),
+    path('health-records/', health_records.health_records, name='health_records'),
+    path('health-records/add/', health_records.health_record_create, name='health_record_create'),
+    path('health-records/<int:record_id>/edit/', health_records.health_record_update, name='health_record_update'),
+    path('health-records/<int:record_id>/delete/', health_records.health_record_delete, name='health_record_delete'),
     path('forecasting/', views.forecasting_view, name='forecasting'),
     path('scenario-analysis/', views.scenario_analysis_view, name='scenario_analysis'),
     path('notifications/', views.notifications_page, name='notifications_page'),

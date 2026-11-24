@@ -12,6 +12,7 @@ FIELDS={
     'flocks.Flock':['branch_id','flock_id','breed','quantity','status','placement_date','acquisition_source','purchase_amount','delivery_cost','notes'],
     'production.ProductionRecord':['branch_id','flock_id','product_type','egg_size','quantity','unit','date','notes'],
     'production.MortalityRecord':['branch_id','flock_id','quantity','date','reason','description','notes'],
+    'production.HealthRecord':['flock_id','health_status','disease_name','treatment','medication','vaccination_name','date','notes'],
     'revenue.Revenue':['branch_id','production_id','quantity','price_per_unit','total_amount','date','order_number','transaction_number','notes'],
     'expenses.Expense':['branch_id','expense_type','amount','date','description','notes'],
     'core.Branch':['name','location','status'],
@@ -26,6 +27,7 @@ def snapshot(instance):
 def record_explicit_change(instance,before,after,action):
     owner_id=getattr(instance,'user_id',None)
     if instance._meta.label=='core.Branch':owner_id=instance.farm.owner_id
+    if instance._meta.label=='production.HealthRecord':owner_id=instance.flock.user_id
     if not owner_id:return
     actor,reason=audit_context.get()
     AuditEvent.objects.create(owner_id=owner_id,actor=actor,actor_label=actor.username if actor else 'System',
