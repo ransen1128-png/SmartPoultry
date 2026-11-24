@@ -126,8 +126,11 @@ body {
     padding-right: 12px;
 }
 
+/* Leave room for the full "SMARTPOULTRY" name beside the collapse button. */
 .sidebar-header .sidebar-brand {
     min-width: 0;
+    gap: 8px;
+    padding: 0 0 0 16px;
 }
 
 .sidebar-toggle {
