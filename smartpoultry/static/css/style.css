@@ -8,7 +8,7 @@
     --page-bg: #f5f8fd;
     --border: #d8e4f5;
     --text: #172033;
-    --muted: #6c7a92;
+    --muted: #55627a;
     --success: #16a34a;
     --danger: #f04438;
     --warning: #f59e0b;
@@ -1667,3 +1667,11 @@ footer {
         background-color: #f8fbff;
     }
 }
+
+/* Text colors that meet WCAG AA (4.5:1) on the light page and card backgrounds. */
+.text-muted { color: #566070 !important; }
+.text-danger { color: #b02a37 !important; }
+.text-success { color: #146c43 !important; }
+.app-content a:not(.btn):not(.dropdown-item) { color: #0a58ca; }
+.btn-outline-primary:not(:hover):not(:active):not(.active) { color: #0a58ca; }
+.btn-outline-secondary:not(:hover):not(:active):not(.active) { color: #565e64; }

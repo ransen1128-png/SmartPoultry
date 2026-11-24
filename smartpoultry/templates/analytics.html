@@ -4,12 +4,12 @@
 <h1 class="mb-4">Analytics & Predictions</h1>
 
 <div class="card mb-4">
-    <div class="card-header bg-info text-white">
+    <div class="card-header">
         <h5>Actual Revenue vs Forecast</h5>
     </div>
     <div class="card-body">
         <canvas id="predictionChart"></canvas>
-        <small class="text-muted d-block mt-3">Method: {{ prediction_method }}. Updated {{ last_updated|date:"M d, Y H:i" }}.</small>
+        <small class="text-muted d-block mt-3">Method: {{ prediction_method }} (average of the last three plus the recent slope). Random Forest forecasts are on the <a href="{% url 'forecasting' %}">Forecasting</a> page. Updated {{ last_updated|date:"M d, Y H:i" }}.</small>
     </div>
 </div>
 

@@ -845,18 +845,24 @@ def analytics_view(request):
         for month in history_months
     ]
     actual_expenses = [float(expense_by_month.get(month, 0)) for month in history_months]
+    # An unfinished month or week would look like a sudden drop, so projections use completed
+    # periods. A farm that has recorded only in the current period still gets a projection.
+    completed_months = [month for month in history_months if month < current_month_start]
+    has_completed = any(month in revenue_by_month or month in expense_by_month for month in completed_months)
+    projection_months = completed_months if has_completed else history_months
     revenue_forecast_source = [
         float(revenue_by_month[month])
-        for month in history_months
+        for month in projection_months
         if month in revenue_by_month
     ]
+    expense_forecast_source = [float(expense_by_month.get(month, 0)) for month in projection_months]
     actual_profit = [
         round((actual_revenue[index] or 0) - actual_expenses[index], 2)
         for index in range(len(history_months))
     ]
 
     predicted_revenue = trend_forecast(revenue_forecast_source, 6)
-    predicted_expenses = trend_forecast(actual_expenses, 6)
+    predicted_expenses = trend_forecast(expense_forecast_source, 6)
     predicted_profit = [
         round(predicted_revenue[index] - predicted_expenses[index], 2)
         for index in range(len(future_months))
@@ -876,9 +882,10 @@ def analytics_view(request):
             ),
             'quantity',
         )))
-    predicted_production = trend_forecast(production_by_week, 6)
+    completed_weeks = production_by_week[:-1]
+    predicted_production = trend_forecast(completed_weeks if any(completed_weeks) else production_by_week, 6)
 
-    method = 'SQLite recent trend forecast'
+    method = 'Recent-trend projection from completed periods'
     for index, forecast_month in enumerate(future_months):
         Prediction.objects.update_or_create(
             user=request.user,
