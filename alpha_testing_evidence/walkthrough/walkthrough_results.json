@@ -1,0 +1,81 @@
+{
+ "01_sign_in": {
+  "ok": true,
+  "detail": "wrong password refused; correct password opened Dashboard"
+ },
+ "00_setup_branch": {
+  "ok": true,
+  "detail": "21"
+ },
+ "02_dashboard": {
+  "ok": true,
+  "detail": {
+   "Total Revenue": "0.00",
+   "Total Expenses": "0.00",
+   "Net Profit": "0.00"
+  }
+ },
+ "03_add_flock": {
+  "ok": true,
+  "detail": "Flock ID 01"
+ },
+ "04_record_eggs": {
+  "ok": true,
+  "detail": "× ✓ Successfully Added! Production record added. OK"
+ },
+ "05_sale_and_receipt": {
+  "ok": true,
+  "detail": [
+   "× ✓ Successfully Added! Your operation was completed successfully. OK",
+   "receipt opened with buyer name"
+  ]
+ },
+ "06_expense_changes_profit": {
+  "ok": true,
+  "detail": {
+   "before": {
+    "Total Revenue": "80.00",
+    "Total Expenses": "0.00",
+    "Net Profit": "80.00"
+   },
+   "after": {
+    "Total Revenue": "80.00",
+    "Total Expenses": "30.00",
+    "Net Profit": "50.00"
+   }
+  }
+ },
+ "07_correct_record": {
+  "ok": true,
+  "detail": "production record corrected 12 to 14; reason in Change History"
+ },
+ "08_forecast": {
+  "ok": true,
+  "detail": [
+   "Revenue: Insufficient history — 0 completed recorded months",
+   "Expenses: Insufficient history — 0 completed recorded months",
+   "Production: Insufficient history — 0 completed recorded months"
+  ]
+ },
+ "09_report_download": {
+  "ok": true,
+  "detail": "monthly_report_2026-11-01_to_2026-11-25.xlsx"
+ },
+ "10_second_device": {
+  "ok": true,
+  "detail": "records and correction visible on phone-size second session"
+ },
+ "11_egg_price_mixed_sales": {
+  "ok": true,
+  "detail": {
+   "total": "840.00",
+   "eggs": "240.00",
+   "result": 864.0,
+   "all_revenue_would_be": 924.0000000000001
+  }
+ },
+ "12_health_records": {
+  "ok": true,
+  "detail": "added, corrected, in Change History, delete cancelled"
+ }
+}
