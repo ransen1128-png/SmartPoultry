@@ -1445,9 +1445,14 @@ body {
     vertical-align: middle;
 }
 
+/* Headings and cells share one padding so each heading lines up with its column. */
+.table thead th,
+.table tbody td {
+    padding: 12px;
+}
+
 .table tbody td {
     vertical-align: middle;
-    padding: 12px 15px;
 }
 
 .btn {
@@ -1593,6 +1598,11 @@ footer {
         padding: 16px;
     }
 
+    /* One-line headings keep the heading row short while the table scrolls. */
+    .table-responsive .table thead th {
+        white-space: nowrap;
+    }
+
     .metric-grid,
     .dashboard-grid,
     .scenario-results {
@@ -1637,5 +1647,21 @@ footer {
 
     .rooster-saved-item {
         grid-template-columns: 1fr;
+    }
+}
+
+/* When a record table is wider than the screen (small laptops, tablets, phones), it scrolls
+   sideways; keep its Edit/Delete column in view. */
+@media (max-width: 1300px) {
+    .table-responsive table:has(tbody td:last-child .btn) tr > :last-child {
+        position: sticky;
+        right: 0;
+        z-index: 1;
+        background-color: #fff;
+        box-shadow: -8px 0 8px -8px rgba(15, 23, 42, 0.35);
+    }
+
+    .table-responsive table:has(tbody td:last-child .btn) thead tr > :last-child {
+        background-color: #f8fbff;
     }
 }
