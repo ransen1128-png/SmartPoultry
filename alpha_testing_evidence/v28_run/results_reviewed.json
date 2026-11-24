@@ -519,7 +519,7 @@
   "actual": "A spur photo took 58 s and a non-rooster image 47 s.",
   "status": "Fail",
   "evidence": "AT-29.png",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": "Added after the run using its measured times. If the 10-second requirement is meant only for financial forecasts (2.71 s), the manuscript should say so."
  },
  {
@@ -535,6 +535,174 @@
   "review": ""
  },
  {
+  "id": "AD-01",
+  "criterion": "Conformance to the Requirements",
+  "title": "Administrator Dashboard totals",
+  "steps": "Open the Admin Dashboard and compare the user cards with the user list.",
+  "expected": "Cards equal the listed users.",
+  "actual": "Total, active and inactive cards (13, 13, 0) equal the number of listed users.",
+  "status": "Pass",
+  "evidence": "AD-01.png",
+  "at": "2026-11-25T01:59:21",
+  "review": ""
+ },
+ {
+  "id": "AD-02",
+  "criterion": "Conformance to the Requirements",
+  "title": "User search and status filter",
+  "steps": "Search for Account B and for an unknown name; filter by status.",
+  "expected": "Only matching users are listed.",
+  "actual": "Account B was the only match for its username; an unknown name matched none; active 13 + inactive 0 = 13.",
+  "status": "Pass",
+  "evidence": "AD-02.png",
+  "at": "2026-11-25T01:59:22",
+  "review": ""
+ },
+ {
+  "id": "AD-03",
+  "criterion": "Security",
+  "title": "Owner cannot open admin pages",
+  "steps": "Sign in as a farm owner (Account B) and open four admin pages.",
+  "expected": "None is shown (refused or redirected).",
+  "actual": "HTTP [403, 403, 302, 302]: two refused and two redirected away; no admin page was shown.",
+  "status": "Pass",
+  "evidence": "",
+  "at": "2026-11-25T01:59:25",
+  "review": "A first run counted a redirect to the owner's own dashboard as a page that opened; the check was corrected."
+ },
+ {
+  "id": "AD-04",
+  "criterion": "Security",
+  "title": "Signed-out access to admin pages",
+  "steps": "Open three admin pages while signed out.",
+  "expected": "Login is required.",
+  "actual": "All redirected to Login.",
+  "status": "Pass",
+  "evidence": "",
+  "at": "2026-11-25T01:59:29",
+  "review": ""
+ },
+ {
+  "id": "AD-05",
+  "criterion": "Conformance to the Requirements",
+  "title": "Disable and enable a user",
+  "steps": "Disable Account B, try its open session and sign-in, then enable it.",
+  "expected": "Disabled user cannot use the system; enabled user can; owners cannot use the control.",
+  "actual": "An owner could not use the control (HTTP 403). Disabled: shown Inactive, the open session ended and sign-in was refused. Re-enabled: shown Active and sign-in worked.",
+  "status": "Pass",
+  "evidence": "AD-05.png",
+  "at": "2026-11-25T01:59:30",
+  "review": "The owner refusal was rechecked with a valid security token: \"You do not have permission to access this page.\""
+ },
+ {
+  "id": "AD-06",
+  "criterion": "Conformance to the Requirements",
+  "title": "Feedback review and response",
+  "steps": "Owner submits feedback; admin filters, reads and answers it; owner checks it.",
+  "expected": "Admin can read and answer; the owner sees the response.",
+  "actual": "The message appeared under New, opened in full, and was answered and marked Resolved; the owner saw the response and status.",
+  "status": "Pass",
+  "evidence": "AD-06.png",
+  "at": "2026-11-25T01:59:42",
+  "review": "The screenshot shows only the test message; other messages were removed before capture."
+ },
+ {
+  "id": "AD-07",
+  "criterion": "Forgiveness and Tolerance",
+  "title": "Delete feedback with confirmation",
+  "steps": "Delete the test message: Cancel first, then Confirm.",
+  "expected": "Cancel keeps it; Confirm removes only it.",
+  "actual": "A prompt appeared; Cancel kept the message; Confirm removed only that message.",
+  "status": "Pass",
+  "evidence": "",
+  "at": "2026-11-25T01:59:46",
+  "review": ""
+ },
+ {
+  "id": "AD-08",
+  "criterion": "Forgiveness and Tolerance",
+  "title": "Delete-user confirmation",
+  "steps": "Click Delete for Account B, then Cancel.",
+  "expected": "A confirmation prompt appears and Cancel keeps the account.",
+  "actual": "\"? Confirm Action  Delete alphab11241506? This cannot be undone.  Cancel Confirm\" Cancel kept the account. No user was deleted.",
+  "status": "Pass",
+  "evidence": "AD-08.png",
+  "at": "2026-11-25T01:59:50",
+  "review": ""
+ },
+ {
+  "id": "AD-09",
+  "criterion": "Security",
+  "title": "Admin cannot disable or delete own account",
+  "steps": "Look at the signed-in administrator's own row.",
+  "expected": "Its Disable and Delete buttons are turned off.",
+  "actual": "Exactly one row, the signed-in administrator, has Disable and Delete turned off.",
+  "status": "Pass",
+  "evidence": "",
+  "at": "2026-11-25T01:59:52",
+  "review": ""
+ },
+ {
+  "id": "AD-10",
+  "criterion": "Conformance to the Requirements",
+  "title": "Password reset requests page",
+  "steps": "Open the page without changing anything.",
+  "expected": "Pending and resolved requests are shown.",
+  "actual": "Page opened with pending and resolved sections. Viewed only; no request was changed.",
+  "status": "Pass",
+  "evidence": "",
+  "at": "2026-11-25T01:59:53",
+  "review": ""
+ },
+ {
+  "id": "AD-11",
+  "criterion": "Security",
+  "title": "Password reset needs the user's answers",
+  "steps": "Open the reset page for Account B without submitting.",
+  "expected": "The user's recovery answers are required.",
+  "actual": "The form asks for the account's recovery answers as well as a new password. Nothing was submitted.",
+  "status": "Pass",
+  "evidence": "AD-11.png",
+  "at": "2026-11-25T01:59:53",
+  "review": ""
+ },
+ {
+  "id": "AD-12",
+  "criterion": "Conformance to the Requirements",
+  "title": "Export users button",
+  "steps": "Follow the Export button on the Admin Dashboard.",
+  "expected": "A file of users is downloaded.",
+  "actual": "Export opens /admin/accounts/userprofile/: HTTP 403, text/html; no file is produced.",
+  "status": "Fail",
+  "evidence": "",
+  "at": "2026-11-25T01:59:54",
+  "review": "Fixed in 6d96a51: Export downloads a CSV of the listed users. Passes local tests; live, signed-out visitors go to Login and an owner gets HTTP 403. It stays Fail until an administrator retests the live button."
+ },
+ {
+  "id": "AD-13",
+  "criterion": "Security",
+  "title": "Administrator levels",
+  "steps": "On a local copy, sign in as staff (not superuser) and try to deactivate a superuser and to deactivate and delete another staff administrator.",
+  "expected": "A staff administrator cannot disable or delete administrators.",
+  "actual": "Staff could deactivate a superuser, and deactivate and delete another staff administrator. Deleting a superuser was refused. After the fix (6d96a51), the same local test refuses every one of these actions; a superuser can still do them.",
+  "status": "Pass",
+  "evidence": "",
+  "at": "2026-11-25T02:19:11",
+  "review": "First result Fail. Found by reading the code and tested on a local copy only, never on the live site. The expected result is the reviewer's; the manuscript requires role-based access but does not describe administrator levels. Disabling the only superuser would lock the team out of functions only a superuser has."
+ },
+ {
+  "id": "AD-14",
+  "criterion": "Conformance to the Requirements",
+  "title": "User list page buttons",
+  "steps": "Look at the page buttons under the user list.",
+  "expected": "Page buttons move between pages.",
+  "actual": "Buttons 1, 2 and 3 are always shown, even for one result, and have no action; all users are already on one page. Fixed in 6d96a51: the buttons were removed.",
+  "status": "Fail",
+  "evidence": "AD-02.png",
+  "at": "2026-11-25T02:19:11",
+  "review": "Confirmed in the page code. The fix is deployed and passes a local test; it stays Fail until an administrator retests the live page."
+ },
+ {
   "id": "AT-B1",
   "criterion": "Overall Impression",
   "title": "Overall rating",
@@ -543,7 +711,7 @@
   "actual": "Must be rated by the researchers.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": ""
  },
  {
@@ -555,19 +723,19 @@
   "actual": "Needs people's judgement; the measurable parts are AT-18, AT-19 and AT-41.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": ""
  },
  {
   "id": "AT-B3",
   "criterion": "Conformance to the Requirements",
-  "title": "Administrator dashboard, user management and feedback review",
+  "title": "Administrator: reset a user's password, delete a user, resolve a reset request",
   "steps": "Not run.",
   "expected": "",
-  "actual": "Needs an administrator account.",
+  "actual": "Would change or remove an account; not approved for this run.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": ""
  },
  {
@@ -579,7 +747,7 @@
   "actual": "Would create another account or change this account's password.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": ""
  },
  {
@@ -591,7 +759,7 @@
   "actual": "The profile was not changed, as agreed before the run.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": ""
  },
  {
@@ -603,7 +771,7 @@
   "actual": "Objectives 1 and 3 are research findings; objective 4 needs the owners' evaluation.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": ""
  },
  {
@@ -615,7 +783,7 @@
   "actual": "Needs monitoring over time and Render access.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": ""
  },
  {
@@ -627,7 +795,7 @@
   "actual": "Needs a load test plan; not safe to improvise on the live site.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T01:36:47",
+  "at": "2026-11-25T02:19:11",
   "review": ""
  }
 ]
