@@ -46,3 +46,11 @@ class AnalyticsProjectionTests(TestCase):
         response, _, _ = self.chart()
         self.assertContains(response, 'Recent-trend projection')
         self.assertNotContains(response, 'SQLite')
+
+    def test_egg_forecast_weeks_follow_the_recorded_weeks(self):
+        response, _, _ = self.chart()
+        eggs = response.context['chart_data']['production']
+        self.assertEqual(eggs['labels'], ['Oct 19', 'Oct 26', 'Nov 2', 'Nov 9', 'Nov 16', 'Nov 23',
+                                          'Nov 30', 'Dec 7', 'Dec 14', 'Dec 21', 'Dec 28', 'Jan 4'])
+        self.assertEqual((eggs['actual'][6:], eggs['predicted'][:6]), ([None] * 6, [None] * 6))
+        self.assertNotIn(None, eggs['actual'][:6] + eggs['predicted'][6:])

@@ -942,9 +942,10 @@ def analytics_view(request):
             'values': predicted_profit,
         },
         'production': {
-            'labels': [f'Week {index}' for index in range(1, 7)],
-            'actual': production_by_week,
-            'predicted': predicted_production,
+            # Past weeks first, then the next six, so a forecast is never drawn over a past week.
+            'labels': [f'{week:%b} {week.day}' for week in week_starts + [week_starts[-1] + timedelta(days=7 * step) for step in range(1, 7)]],
+            'actual': production_by_week + [None] * 6,
+            'predicted': [None] * 6 + predicted_production,
         },
     }
 

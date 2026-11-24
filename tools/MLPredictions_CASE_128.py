@@ -18,7 +18,10 @@ class MLPredictionsCase128(MLPredictionsBrowserCase):
         self.assertEqual(set(chart['series']), {'Actual Eggs', 'Forecast Eggs'})
         actual = chart['series']['Actual Eggs']
         forecast = chart['series']['Forecast Eggs']
-        self.assertEqual(len(actual), len(chart['labels']))
-        self.assertEqual(sum(actual), 14)
-        self.assertEqual(len(forecast), len(chart['labels']))
-        self.assertTrue(all(isfinite(value) for value in forecast))
+        # Six past weeks, then the next six; forecasts are not drawn over past weeks.
+        self.assertEqual(len(chart['labels']), 12)
+        self.assertEqual(len(set(chart['labels'])), 12)
+        self.assertEqual((len(actual), len(forecast)), (12, 12))
+        self.assertEqual(sum(actual[:6]), 14)
+        self.assertEqual((actual[6:], forecast[:6]), ([None] * 6, [None] * 6))
+        self.assertTrue(all(isfinite(value) for value in forecast[6:]))
