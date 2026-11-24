@@ -519,7 +519,7 @@
   "actual": "A spur photo took 58 s and a non-rooster image 47 s.",
   "status": "Fail",
   "evidence": "AT-29.png",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": "Added after the run using its measured times. If the 10-second requirement is meant only for financial forecasts (2.71 s), the manuscript should say so."
  },
  {
@@ -672,11 +672,11 @@
   "title": "Export users button",
   "steps": "Follow the Export button on the Admin Dashboard.",
   "expected": "A file of users is downloaded.",
-  "actual": "Export opens /admin/accounts/userprofile/: HTTP 403, text/html; no file is produced.",
-  "status": "Fail",
+  "actual": "First result: Export opened the Django admin list and returned HTTP 403 for a staff administrator. After the fix (6d96a51): a CSV with all 13 listed users and 11 columns was downloaded, and 1 user when filtered. The file was deleted.",
+  "status": "Pass",
   "evidence": "",
   "at": "2026-11-25T01:59:54",
-  "review": "Fixed in 6d96a51: Export downloads a CSV of the listed users. Passes local tests; live, signed-out visitors go to Login and an owner gets HTTP 403. It stays Fail until an administrator retests the live button."
+  "review": "First result Fail. Retested live on November 25; by then the same account was a superuser. Local tests cover staff. Signed-out visitors go to Login and an owner gets HTTP 403."
  },
  {
   "id": "AD-13",
@@ -687,7 +687,7 @@
   "actual": "Staff could deactivate a superuser, and deactivate and delete another staff administrator. Deleting a superuser was refused. After the fix (6d96a51), the same local test refuses every one of these actions; a superuser can still do them.",
   "status": "Pass",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": "First result Fail. Found by reading the code and tested on a local copy only, never on the live site. The expected result is the reviewer's; the manuscript requires role-based access but does not describe administrator levels. Disabling the only superuser would lock the team out of functions only a superuser has."
  },
  {
@@ -696,11 +696,11 @@
   "title": "User list page buttons",
   "steps": "Look at the page buttons under the user list.",
   "expected": "Page buttons move between pages.",
-  "actual": "Buttons 1, 2 and 3 are always shown, even for one result, and have no action; all users are already on one page. Fixed in 6d96a51: the buttons were removed.",
-  "status": "Fail",
-  "evidence": "AD-02.png",
-  "at": "2026-11-25T02:19:11",
-  "review": "Confirmed in the page code. The fix is deployed and passes a local test; it stays Fail until an administrator retests the live page."
+  "actual": "Buttons 1, 2 and 3 are always shown, even for one result, and have no action; all users are already on one page. After the fix (6d96a51) the buttons are gone on the live page.",
+  "status": "Pass",
+  "evidence": "AD-14_retest.png",
+  "at": "2026-11-25T02:38:35",
+  "review": "First result Fail (AD-02.png). Retested live on November 25 in an administrator session."
  },
  {
   "id": "AT-B1",
@@ -711,7 +711,7 @@
   "actual": "Must be rated by the researchers.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": ""
  },
  {
@@ -723,7 +723,7 @@
   "actual": "Needs people's judgement; the measurable parts are AT-18, AT-19 and AT-41.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": ""
  },
  {
@@ -735,7 +735,7 @@
   "actual": "Would change or remove an account; not approved for this run.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": ""
  },
  {
@@ -747,7 +747,7 @@
   "actual": "Would create another account or change this account's password.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": ""
  },
  {
@@ -759,7 +759,7 @@
   "actual": "The profile was not changed, as agreed before the run.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": ""
  },
  {
@@ -771,7 +771,7 @@
   "actual": "Objectives 1 and 3 are research findings; objective 4 needs the owners' evaluation.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": ""
  },
  {
@@ -783,7 +783,7 @@
   "actual": "Needs monitoring over time and Render access.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": ""
  },
  {
@@ -795,7 +795,7 @@
   "actual": "Needs a load test plan; not safe to improvise on the live site.",
   "status": "Blocked",
   "evidence": "",
-  "at": "2026-11-25T02:19:11",
+  "at": "2026-11-25T02:38:35",
   "review": ""
  }
 ]
