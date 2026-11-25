@@ -82,7 +82,7 @@ class RoosterAgeBrowserCase(FeedInventoryBrowserCase):
 
     def open_saved_estimate(self, estimate):
         self.open_estimator()
-        self.page.get_by_role('link', name='View saved analysis', exact=True).and_(
+        self.page.locator('.saved-estimate-details').and_(
             self.page.locator(f'a[href="?estimate={estimate.pk}#latest-results"]'),
         ).click()
         expect(self.page).to_have_url(f'{self.estimator_url}?estimate={estimate.pk}#latest-results')

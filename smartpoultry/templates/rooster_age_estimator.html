@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/record_pages.css' %}?v=1"><link rel="stylesheet" href="{% static 'css/analysis_workspaces.css' %}?v=1">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/record_pages.css' %}?v=1"><link rel="stylesheet" href="{% static 'css/analysis_workspaces.css' %}?v=20261125">{% endblock %}
 
 {% block content %}
 <div class="page-heading">
@@ -13,9 +13,9 @@
     <div class="estimator-layout">
         <label class="estimator-dropzone" id="estimatorDropzone" for="photos">
             <input class="visually-hidden" id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required aria-describedby="photoSelection" data-max-files="{{ max_photos }}">
-            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i><strong>Choose a photo</strong>
-            <span id="photoSelection" role="status">Drag and drop or click to upload</span>
-            <span class="btn btn-outline-primary btn-sm"><i class="bi bi-image me-1" aria-hidden="true"></i>Choose Files</span>
+            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i><strong>Upload Rooster Leg Photo</strong>
+            <span id="photoSelection" role="status">Drag and drop an image here, or click to choose a file</span>
+            <span class="btn btn-outline-primary btn-sm"><i class="bi bi-image me-1" aria-hidden="true"></i>Choose Photo</span>
         </label>
         <div class="estimator-options">
             <h2>Analysis Options</h2>
@@ -199,7 +199,7 @@
 <section class="rooster-saved estimator-saved">
     <div class="section-heading-row">
         <h2 class="section-heading"><i class="bi bi-clock-history me-2" aria-hidden="true"></i>Saved Estimates</h2>
-        <span>{{ saved_estimates|length }} recent record{{ saved_estimates|length|pluralize }}</span>
+        <span>{{ saved_estimates|length }} estimate{{ saved_estimates|length|pluralize }}</span>
     </div>
     <div class="panel-card rooster-saved-list">
         {% for estimate in saved_estimates %}
@@ -211,25 +211,17 @@
                         <i class="bi bi-image"></i>
                     {% endif %}
                 </div>
-                <div>
-                    <div class="rooster-saved-title">
-                        <strong>{{ estimate.display_age }}</strong>
-                        <span>{{ estimate.created_at|date:"M d, Y h:i A" }}</span>
+                <div class="saved-estimate-content">
+                    <h3 class="saved-estimate-age">{{ estimate.display_age }}</h3>
+                    <div class="saved-estimate-badges">
+                        {% if estimate.leg_detected %}<span class="estimate-badge is-detected"><i class="bi bi-check-lg" aria-hidden="true"></i>Leg detected</span>{% endif %}
+                        {% if estimate.spur_detected %}<span class="estimate-badge is-detected"><i class="bi bi-check-lg" aria-hidden="true"></i>Spur detected</span>{% endif %}
+                        <span class="estimate-badge {% if estimate.spur_measured %}is-detected{% endif %}"><i class="bi {% if estimate.spur_measured %}bi-check-lg{% else %}bi-dash-circle{% endif %}" aria-hidden="true"></i>{% if estimate.spur_measured %}{% if estimate.measurement_partial %}Partial spur measured{% else %}Spur measured{% endif %}{% else %}Spur not measured{% endif %}</span>
                     </div>
-                    <p>{{ estimate.display_observations }}</p>
-                    {% if estimate.subject_verified and estimate.analysis.age_prediction_status == 'experimental' %}
-                        <p>Experimental model result; independent validation pending.</p>
-                    {% endif %}
-                    {% if estimate.analysis.spur_review %}
-                        <p>User-reviewed curve: {{ estimate.analysis.spur_review.measurement.length_px|floatformat:1 }} pixels
-                        {% if estimate.analysis.spur_review.measurement.physical_length_cm %}; {{ estimate.analysis.spur_review.measurement.physical_length_cm|floatformat:2 }} cm using the supplied scale{% endif %}.</p>
-                    {% elif estimate.analysis.anatomy_assessment %}
-                        <p>{{ estimate.analysis.anatomy_assessment.leg_detection_status }} {{ estimate.analysis.anatomy_assessment.spur_segmentation_status }}</p>
-                        <small>{{ estimate.analysis.anatomy_assessment.spur_length_assessment }}</small>
-                    {% endif %}
-                    <small>Confidence: {{ estimate.display_confidence }}{% if estimate.photo_name %} · {{ estimate.photo_name }}{% endif %}</small>
-                    <div><a href="?estimate={{ estimate.pk }}#latest-results">View saved analysis</a></div>
+                    <p>{% if not estimate.subject_verified %}{{ estimate.display_observations }}{% elif estimate.quick_analysis %}Quick age estimate; spur outline and length measurements were not run.{% elif estimate.spur_measured %}Visible spur length estimated from the photo.{% else %}Spur length was not measured.{% endif %}{% if estimate.subject_verified %} Model prediction; age accuracy on unseen chickens is not established.{% endif %}</p>
                 </div>
+                <div class="saved-estimate-date"><i class="bi bi-calendar3" aria-hidden="true"></i><time datetime="{{ estimate.created_at|date:'c' }}">{{ estimate.created_at|date:"M d, Y h:i A" }}</time></div>
+                <a class="btn btn-outline-primary btn-sm saved-estimate-details" href="?estimate={{ estimate.pk }}#latest-results" aria-label="View Details for {{ estimate.photo_name|default:'saved estimate' }}">View Details <i class="bi bi-chevron-right ms-1" aria-hidden="true"></i></a>
             </article>
         {% empty %}
             <div class="estimator-empty"><i class="bi bi-folder" aria-hidden="true"></i><strong>No rooster age estimates saved yet.</strong><p>Your saved results will appear here after an analysis.</p></div>

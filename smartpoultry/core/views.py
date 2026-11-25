@@ -1392,6 +1392,12 @@ def rooster_age_estimator_view(request):
         saved.display_age = saved.estimated_age_range if checked['accepted'] else 'Insufficient evidence'
         saved.display_observations = saved.spur_observations if checked['accepted'] else checked['message']
         saved.display_confidence = saved.confidence if checked['accepted'] else 'Not available'
+        anatomy = data.get('anatomy') or {}
+        saved.leg_detected = anatomy.get('status') == 'completed' and bool(anatomy.get('legs'))
+        saved.spur_detected = anatomy.get('status') == 'completed' and bool(anatomy.get('spurs'))
+        saved.spur_measured = anatomy.get('status') == 'completed' and bool(anatomy.get('measurements'))
+        saved.measurement_partial = any(m.get('truncated_at_frame') for m in anatomy.get('measurements', []))
+        saved.quick_analysis = data.get('analysis_mode') == 'age_only'
 
     return render(request, 'rooster_age_estimator.html', {
         'results': results,

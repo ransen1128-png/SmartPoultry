@@ -46,10 +46,9 @@ class ForecastingBrowserCase(FeedInventoryBrowserCase):
         return self.page.locator('.metric-card').filter(has=self.page.get_by_text(label, exact=True))
 
     def assert_readiness(self, completed_months):
-        readiness = self.page.locator('section').filter(
-            has=self.page.get_by_role('heading', name='Model readiness and validation', exact=True),
-        )
-        for name in ('Revenue', 'Expenses', 'Production'):
-            line = readiness.get_by_role('listitem').filter(has_text=f'{name}:')
-            expect(line).to_contain_text('Insufficient history')
-            expect(line).to_contain_text(f'{completed_months} completed recorded months; at least 4 are required.')
+        readiness = self.page.locator('.model-readiness')
+        expect(readiness.get_by_role('heading', name='Model Readiness', exact=True)).to_be_visible()
+        for name in ('revenue', 'expenses', 'production'):
+            card = readiness.locator(f'[data-model="{name}"]')
+            expect(card.locator('.readiness-status')).to_have_text('Not Ready')
+            expect(card).to_contain_text(f'Insufficient Data ({completed_months}/4 months)')
