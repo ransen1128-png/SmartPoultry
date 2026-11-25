@@ -41,6 +41,12 @@
 .report-panel .table{margin-bottom:0}
 .report-evaluation{font-size:.85rem}
 .model-readiness{min-height:0}
+.readiness-validation{padding:0;overflow:hidden;border-color:#d7e3ff;border-radius:10px}
+.readiness-validation .readiness-heading{padding:14px 16px 10px;margin:0;background:linear-gradient(110deg,#f2f6ff,#f8faff)}
+.readiness-validation .readiness-heading h2{font-size:1.2rem}
+.readiness-validation-list{margin:0;padding:10px 22px 16px 46px;font-size:.85rem;line-height:1.5}
+.readiness-validation-list li{padding-left:2px;margin-bottom:6px;overflow-wrap:anywhere}
+.readiness-validation-list li:last-child{margin-bottom:0}
 .readiness-heading{display:flex;align-items:flex-start;gap:12px;margin-bottom:18px}
 .readiness-heading-icon{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:8px;color:#0877ef;background:#e5f2ff;font-size:1.4rem}
 .readiness-heading h2{font-size:1.15rem;font-weight:700;margin:0 0 5px}
