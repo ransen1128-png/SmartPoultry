@@ -1,8 +1,9 @@
 from rest_framework import serializers
+from core.input_rules import RecordDateMixin
 from .models import ProductionRecord, MortalityRecord, BreedInformation, HealthRecord
 
 
-class ProductionRecordSerializer(serializers.ModelSerializer):
+class ProductionRecordSerializer(RecordDateMixin, serializers.ModelSerializer):
     def create(self,validated_data):
         from django.core.exceptions import ValidationError as ModelError
         try:return super().create(validated_data)
@@ -70,7 +71,7 @@ class ProductionRecordSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at']
 
 
-class MortalityRecordSerializer(serializers.ModelSerializer):
+class MortalityRecordSerializer(RecordDateMixin, serializers.ModelSerializer):
     flock_id_display = serializers.CharField(source='flock.flock_id', read_only=True)
     branch_name = serializers.CharField(source='branch.name', read_only=True)
 
@@ -136,7 +137,7 @@ class BreedInformationSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
-class HealthRecordSerializer(serializers.ModelSerializer):
+class HealthRecordSerializer(RecordDateMixin, serializers.ModelSerializer):
     def validate_flock(self, flock):
         request = self.context.get('request')
         if request and flock.user_id != request.user.id:

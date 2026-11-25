@@ -9,9 +9,10 @@ from flocks.models import Flock
 from notifications.utils import create_activity_notification
 from production.models import HealthRecord
 from .forms import StyledModelForm
+from .input_rules import RecordDateFormMixin
 
 
-class HealthRecordForm(StyledModelForm):
+class HealthRecordForm(RecordDateFormMixin, StyledModelForm):
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)
         flocks = Flock.objects.filter(user=user)
@@ -23,12 +24,6 @@ class HealthRecordForm(StyledModelForm):
         field.label_from_instance = lambda flock: flock.display_label
         if not self.instance.pk:
             self.fields['date'].initial = timezone.localdate
-
-    def clean_date(self):
-        value = self.cleaned_data['date']
-        if value > timezone.localdate():
-            raise forms.ValidationError('The health record date cannot be in the future.')
-        return value
 
     def clean(self):
         data = super().clean()

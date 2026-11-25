@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from core.input_rules import record_date_error
 from .models import Flock
 
 
@@ -42,6 +43,12 @@ class FlockSerializer(serializers.ModelSerializer):
             try:return super().update(instance,validated_data)
             except ModelError as error:raise serializers.ValidationError(error.message_dict if hasattr(error,'message_dict') else error.messages)
     branch_name = serializers.CharField(source='branch.name', read_only=True)
+
+    def validate_purchase_date(self, value):
+        error = record_date_error(value, getattr(self.instance, 'purchase_date', None))
+        if error:
+            raise serializers.ValidationError(error)
+        return value
 
     def validate(self, attrs):
         from django.utils import timezone

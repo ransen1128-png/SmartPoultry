@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.exceptions import PermissionDenied
+from core.account_rules import may_manage_account
 from .models import UserProfile, UserRole
 from .serializers import UserProfileSerializer, UserRoleSerializer
 
@@ -21,21 +22,21 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         return UserProfile.objects.filter(pk=self.request.user.pk).order_by('pk')
 
     def perform_update(self,serializer):
-        if serializer.instance.is_superuser and not self.request.user.is_superuser:
-            raise PermissionDenied('Only a superuser can change a superuser account.')
+        if serializer.instance.pk!=self.request.user.pk and not may_manage_account(self.request.user,serializer.instance):
+            raise PermissionDenied('Only a superuser can change an administrator account.')
         serializer.save()
 
     def perform_destroy(self,instance):
         if instance.pk==self.request.user.pk:
             raise PermissionDenied('You cannot delete your own account.')
-        if instance.is_superuser and not self.request.user.is_superuser:
-            raise PermissionDenied('Only a superuser can delete a superuser account.')
+        if not may_manage_account(self.request.user,instance):
+            raise PermissionDenied('Only a superuser can delete an administrator account.')
         instance.delete()
 
 
 class UserRoleViewSet(viewsets.ModelViewSet):
     """ViewSet for user roles."""
-    queryset = UserRole.objects.all()
+    queryset = UserRole.objects.order_by('pk')
     serializer_class = UserRoleSerializer
     permission_classes = [IsAuthenticated]
 

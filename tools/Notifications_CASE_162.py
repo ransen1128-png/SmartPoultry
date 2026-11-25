@@ -23,4 +23,4 @@ class NotificationsCase162(NotificationsBrowserCase):
         })
         self.assertRedirects(response, '/mortality-records/', fetch_redirect_response=False)
         notification = self.notification('Successfully added mortality record')
-        expect(notification).to_contain_text(re.compile(r'Recorded 2 mortality for flock 01 due to accident\.', re.I))
+        expect(notification).to_contain_text(re.compile(r'Recorded 2 mortality for flock 01 (.+) due to accident\.', re.I))

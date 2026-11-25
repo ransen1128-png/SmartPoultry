@@ -1,6 +1,7 @@
 import csv
 import io
 from datetime import date, timedelta
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -52,7 +53,7 @@ class ReportWorkflowTests(TestCase):
         params = {'start': '2026-11-01', 'end': '2026-11-22'}
         result = self.client.get(url, params)
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(result.data['total'], '625')
+        self.assertEqual(Decimal(result.data['total']), 625)
         downloaded = self.client.get(url, {**params, 'export': 'csv'})
         self.assertEqual(downloaded.status_code, 200)
         rows = list(csv.reader(io.StringIO(downloaded.content.decode())))

@@ -25,6 +25,8 @@ from django.views.decorators.http import require_GET, require_http_methods
 from PIL import Image, ImageFilter, ImageOps, ImageStat, UnidentifiedImageError
 from notifications.utils import create_activity_notification
 from .forms import MortalityRecordForm, ProductionRecordForm
+from .account_rules import may_manage_account
+from .input_rules import is_record_id
 from .contact_validation import PHONE_ERROR, valid_contact_phone
 from .models import Feedback, RoosterAgeEstimate, Farm, Branch
 from .age_inference import bound_estimator_requests
@@ -234,7 +236,7 @@ def dashboard(request):
 
     branches = Branch.objects.filter(farm__owner=request.user)
     selected_branch_id = request.GET.get('branch', '')
-    selected_branch = branches.filter(pk=selected_branch_id).first() if selected_branch_id.isdigit() else None
+    selected_branch = branches.filter(pk=selected_branch_id).first() if is_record_id(selected_branch_id) else None
 
     # Keep the overview in the same branch scope as the metrics and charts.
     branch_summaries = []
@@ -432,14 +434,25 @@ def profile_view(request):
         elif User.objects.exclude(pk=user.pk).filter(email=email).exists():
             messages.error(request, 'That email is already registered.')
         else:
-            user.username = username
-            user.email = email
-            user.first_name = request.POST.get('first_name', '').strip()
-            user.last_name = request.POST.get('last_name', '').strip()
-            user.phone = phone
-            user.save()
-            messages.success(request, 'Profile updated successfully.')
-            return redirect('profile')
+            values = {
+                'username': username, 'email': email, 'phone': phone,
+                'first_name': request.POST.get('first_name', '').strip(),
+                'last_name': request.POST.get('last_name', '').strip(),
+            }
+            # Check only what changed, so an older account can still correct its other details.
+            changed = {name for name, value in values.items() if value != getattr(user, name)}
+            for name, value in values.items():
+                setattr(user, name, value)
+            try:
+                user.clean_fields(exclude={field.name for field in User._meta.fields} - changed)
+            except ValidationError as error:
+                messages.error(request, ' '.join(f"{User._meta.get_field(name).verbose_name.capitalize()}: {' '.join(errors)}" for name, errors in error.message_dict.items()))
+                # Do not leave the rejected values on the signed-in user for this page.
+                user.refresh_from_db()
+            else:
+                user.save()
+                messages.success(request, 'Profile updated successfully.')
+                return redirect('profile')
 
     return render(request, 'profile.html')
 
@@ -504,6 +517,8 @@ def feedback_view(request):
 
         if not subject or not message:
             messages.error(request, 'Subject and message are required.')
+        elif len(subject) > 255:
+            messages.error(request, 'The subject can have at most 255 characters.')
         else:
             try:
                 rating = max(1, min(5, int(rating)))
@@ -566,11 +581,6 @@ def farm_branches(request):
     if farm:
         return branch_page(request, farm)
     return render(request, 'farm_branches.html', branch_context(request, farm))
-
-
-def may_manage_account(administrator, target):
-    """Only a superuser may disable or delete administrator accounts."""
-    return administrator.is_superuser or not (target.is_staff or target.is_superuser)
 
 
 def filtered_users(request):
@@ -1168,7 +1178,7 @@ def rooster_age_estimator_view(request):
         photos = request.FILES.getlist('photos')
         reanalysis_id = request.POST.get('reanalyze_estimate_id', '').strip()
         if reanalysis_id:
-            if not reanalysis_id.isdigit():
+            if not is_record_id(reanalysis_id):
                 raise Http404('Estimate not found.')
             original = get_object_or_404(RoosterAgeEstimate, pk=reanalysis_id, user=request.user)
             from django.core.files.uploadedfile import SimpleUploadedFile
@@ -1371,7 +1381,7 @@ def rooster_age_estimator_view(request):
 
     selected_estimate = request.GET.get('estimate', '').strip()
     if request.method == 'GET' and selected_estimate:
-        if not selected_estimate.isdigit():
+        if not is_record_id(selected_estimate):
             raise Http404('Estimate not found.')
         record = get_object_or_404(RoosterAgeEstimate, pk=selected_estimate, user=request.user)
         results = [_present_rooster_estimate(record)]
@@ -1552,19 +1562,23 @@ def mortality_record_create(request):
     if request.method == 'POST' and form.is_valid():
         record = form.save(commit=False)
         record.user = request.user
-        record.save()
-        record.flock.refresh_from_db()
-        create_activity_notification(
-            request.user,
-            "Successfully added mortality record",
-            (
-                f"Recorded {record.quantity} mortality for flock {record.flock.display_label} due to "
-                f"{record.get_reason_display().lower()}."
-            ),
-            record,
-        )
-        messages.success(request, f'Mortality record added. Flock {record.flock.display_label} was updated.')
-        return redirect('mortality_records')
+        try:
+            record.save()
+        except ValidationError as error:
+            form.add_error(None, error)
+        else:
+            record.flock.refresh_from_db()
+            create_activity_notification(
+                request.user,
+                "Successfully added mortality record",
+                (
+                    f"Recorded {record.quantity} mortality for flock {record.flock.display_label} due to "
+                    f"{record.get_reason_display().lower()}."
+                ),
+                record,
+            )
+            messages.success(request, f'Mortality record added. Flock {record.flock.display_label} was updated.')
+            return redirect('mortality_records')
     return render(request, 'mortality_record_form.html', {
         'form': form,
         'title': 'Add Mortality Record',
@@ -1579,9 +1593,13 @@ def mortality_record_update(request, record_id):
     record = get_object_or_404(MortalityRecord, pk=record_id, user=request.user)
     form = MortalityRecordForm(request.POST or None, instance=record, user=request.user)
     if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, 'Mortality record updated.')
-        return redirect('mortality_records')
+        try:
+            form.save()
+        except ValidationError as error:
+            form.add_error(None, error)
+        else:
+            messages.success(request, 'Mortality record updated.')
+            return redirect('mortality_records')
     return render(request, 'mortality_record_form.html', {
         'form': form,
         'title': 'Edit Mortality Record',
@@ -1608,7 +1626,7 @@ def forecasting_view(request):
     selected=None
     branch_id=request.GET.get('branch','').strip()
     if branch_id:
-        if not branch_id.isdigit():raise Http404('Branch not found.')
+        if not is_record_id(branch_id):raise Http404('Branch not found.')
         selected=next((branch for branch in branches if branch.pk==int(branch_id)),None)
         if selected is None:raise Http404('Branch not found.')
     ensure_month_end_forecast_notification(request.user)

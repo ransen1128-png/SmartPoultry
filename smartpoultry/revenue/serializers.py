@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from core.input_rules import RecordDateMixin
 from .models import Revenue
 from django.core.exceptions import ValidationError as DjangoValidationError
 from production.models import ProductionRecord
@@ -19,7 +20,7 @@ class RevenueOrderSerializer(serializers.Serializer):
     items = RevenueOrderItemSerializer(many=True, allow_empty=False, max_length=50)
 
 
-class RevenueSerializer(serializers.ModelSerializer):
+class RevenueSerializer(RecordDateMixin, serializers.ModelSerializer):
     branch_name = serializers.CharField(source='branch.name', read_only=True)
     revenue_type_display = serializers.CharField(source='get_revenue_type_display',read_only=True)
     egg_size = serializers.CharField(source='production.egg_size',read_only=True,default=None)

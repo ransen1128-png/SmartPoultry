@@ -1,5 +1,6 @@
 import json
 from .audit import audit_context
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils.cache import add_never_cache_headers
 
 
@@ -12,6 +13,27 @@ class PrivatePageCacheMiddleware:
         response = self.get_response(request)
         add_never_cache_headers(response)
         return response
+
+
+class UnreadableInputMiddleware:
+    """Refuse NUL characters: PostgreSQL cannot store them, so they would otherwise end in a server error."""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        fields = [request.GET]
+        unreadable = False
+        if request.content_type == 'application/json':
+            unreadable = b'\u0000' in request.body
+        elif request.method == 'POST':
+            fields.append(request.POST)
+        if unreadable or any('\x00' in value for data in fields for _, values in data.lists() for value in values):
+            message = 'The information contains a character that cannot be saved.'
+            return JsonResponse({'detail': message}, status=400) if request.path.startswith('/api/') else HttpResponseBadRequest(message)
+        return None
 
 
 class FarmActivityMiddleware:

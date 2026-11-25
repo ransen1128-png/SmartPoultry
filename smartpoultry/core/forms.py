@@ -1,5 +1,6 @@
 from django import forms
 from production.models import MortalityRecord, ProductionRecord
+from .input_rules import RecordDateFormMixin, is_record_id
 
 
 class StyledModelForm(forms.ModelForm):
@@ -30,7 +31,7 @@ class BranchFlockSelect(forms.Select):
         return option
 
 
-class ProductionRecordForm(StyledModelForm):
+class ProductionRecordForm(RecordDateFormMixin, StyledModelForm):
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['product_type'].choices = [
@@ -43,7 +44,7 @@ class ProductionRecordForm(StyledModelForm):
             if not self.instance.pk:self.fields['flock'].queryset=self.fields['flock'].queryset.filter(quantity__gt=0)
         branch_id = self.data.get('branch') if self.is_bound else getattr(self.instance, 'branch_id', None)
         if branch_id:
-            breeds = set(self.fields['flock'].queryset.filter(branch_id=branch_id).values_list('breed', flat=True)) if str(branch_id).isdigit() else set()
+            breeds = set(self.fields['flock'].queryset.filter(branch_id=branch_id).values_list('breed', flat=True)) if is_record_id(branch_id) else set()
             if breeds and 'other' not in breeds:
                 allowed = {'layers': 'eggs', 'broilers': 'meat_ready'}
                 self.fields['product_type'].choices = [(key, label) for key, label in self.fields['product_type'].choices if key in {allowed.get(breed) for breed in breeds}]
@@ -73,7 +74,7 @@ class ProductionRecordForm(StyledModelForm):
         }
 
 
-class MortalityRecordForm(StyledModelForm):
+class MortalityRecordForm(RecordDateFormMixin, StyledModelForm):
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
         if user is not None:

@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
+from core.input_rules import RecordDateMixin
 from .models import Inventory, InventoryDistribution, FeedType
 from .models import InventoryUsage
 
@@ -57,7 +58,7 @@ class InventorySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'total_value', 'last_updated']
 
 
-class InventoryDistributionSerializer(serializers.ModelSerializer):
+class InventoryDistributionSerializer(RecordDateMixin, serializers.ModelSerializer):
     remaining_quantity = serializers.SerializerMethodField()
 
     def get_remaining_quantity(self,distribution):

@@ -1,5 +1,5 @@
 from rest_framework import mixins, viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from notifications.utils import create_activity_notification
 from .models import Inventory, InventoryDistribution, FeedType
 from .serializers import InventoryDistributionSerializer, InventorySerializer, FeedTypeSerializer
@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ValidationError as ModelError
+from core.input_rules import is_record_id
 from core.idempotency import IdempotentCreateMixin, idempotent
 
 
@@ -40,10 +41,12 @@ class InventoryViewSet(viewsets.ModelViewSet):
 
 
 class FeedTypeViewSet(viewsets.ModelViewSet):
-    """ViewSet for feed types."""
-    queryset = FeedType.objects.all()
+    """Feed types shared by every account: owners read them, administrators maintain them."""
+    queryset = FeedType.objects.order_by('pk')
     serializer_class = FeedTypeSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        return [IsAuthenticated()] if self.action in ('list', 'retrieve') else [IsAdminUser()]
 
 
 class InventoryUsageViewSet(IdempotentCreateMixin, mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -92,7 +95,7 @@ class InventoryDistributionViewSet(IdempotentCreateMixin, mixins.ListModelMixin,
     def get_queryset(self):
         queryset = InventoryDistribution.objects.select_related('inventory', 'branch','expense','flock').filter(user=self.request.user)
         inventory_id = self.request.query_params.get('inventory')
-        if inventory_id and inventory_id.isdigit():
+        if is_record_id(inventory_id):
             queryset = queryset.filter(inventory_id=inventory_id)
         return queryset
 

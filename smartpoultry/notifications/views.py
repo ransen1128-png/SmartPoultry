@@ -82,4 +82,6 @@ class NotificationPreferenceViewSet(viewsets.ModelViewSet):
         return NotificationPreference.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        # Each account has one set of preferences; saving again updates it.
+        serializer.instance, _ = NotificationPreference.objects.get_or_create(user=self.request.user)
         serializer.save(user=self.request.user)

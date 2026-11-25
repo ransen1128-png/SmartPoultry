@@ -76,7 +76,8 @@ class Revenue(models.Model):
 
     def delete(self,*args,**kwargs):
         with transaction.atomic():
-            current=type(self).objects.select_for_update(of=('self',)).get(pk=self.pk)
+            current=type(self).objects.select_for_update(of=('self',)).filter(pk=self.pk).first()
+            if current is None:return 0,{}
             flock=None
             if current.production_id:
                 from production.models import ProductionRecord

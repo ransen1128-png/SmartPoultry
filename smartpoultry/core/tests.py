@@ -789,7 +789,6 @@ class RoosterAgeEstimatorTests(TestCase):
         self.assertEqual(preview.status_code, 200)
         self.assertEqual(preview['Content-Type'], 'image/jpeg')
         self.assertEqual(b''.join(preview.streaming_content), content)
-        preview.close()
 
     def test_photo_preview_is_private_and_requires_a_readable_file(self):
         response = self.client.post(reverse('rooster_age_estimator'), {
@@ -807,7 +806,7 @@ class RoosterAgeEstimatorTests(TestCase):
         record.photo.save('private.jpg', SimpleUploadedFile('private.jpg', content, content_type='image/jpeg'))
         owner_preview = self.client.get(url)
         self.assertEqual(owner_preview.status_code, 200)
-        owner_preview.close()
+        b''.join(owner_preview.streaming_content)  # Reading to the end closes the file.
         other_user = get_user_model().objects.create_user(username='other-photo-owner', password='password123')
         self.client.force_login(other_user)
         self.assertEqual(self.client.get(url).status_code, 404)

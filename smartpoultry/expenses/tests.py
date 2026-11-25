@@ -23,7 +23,7 @@ class ReturnExpenseTests(TestCase):
         self.client.force_login(self.user)
 
     def payload(self,**changes):
-        return {'branch':self.branch.pk,'date':'2026-11-26','expense_type':'return_eggs','description':'Spoiled egg','return_quantity':'5','return_unit':'pcs','amount':'35.00',**changes}
+        return {'branch':self.branch.pk,'date':'2026-11-24','expense_type':'return_eggs','description':'Spoiled egg','return_quantity':'5','return_unit':'pcs','amount':'35.00',**changes}
 
     def test_return_eggs_counts_once_in_expenses_without_restocking_or_reducing_revenue(self):
         response=self.client.post(reverse('expense-list'),self.payload())

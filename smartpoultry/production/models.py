@@ -118,7 +118,8 @@ class ProductionRecord(models.Model):
 
     def delete(self,*args,**kwargs):
         with transaction.atomic():
-            current=type(self).objects.select_for_update(of=('self',)).get(pk=self.pk)
+            current=type(self).objects.select_for_update(of=('self',)).filter(pk=self.pk).first()
+            if current is None:return 0,{}
             flock=Flock.objects.select_for_update(of=('self',)).get(pk=current.flock_id)
             result=super().delete(*args,**kwargs)
             if current.birds_removed:
@@ -204,9 +205,13 @@ class MortalityRecord(models.Model):
 
     def delete(self, *args, **kwargs):
         with transaction.atomic():
-            if self.flock_quantity_applied:
-                flock = Flock.objects.select_for_update().get(pk=self.flock_id)
-                flock.quantity += self.quantity
+            # Read the stored row under a lock: a second delete of the same record must not add the chicken back twice.
+            current = type(self).objects.select_for_update(of=('self',)).filter(pk=self.pk).first()
+            if current is None:
+                return 0, {}
+            if current.flock_quantity_applied:
+                flock = Flock.objects.select_for_update(of=('self',)).get(pk=current.flock_id)
+                flock.quantity += current.quantity
                 flock.save(update_fields=['quantity', 'updated_at'])
             return super().delete(*args, **kwargs)
     

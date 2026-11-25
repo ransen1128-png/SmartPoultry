@@ -20,7 +20,7 @@ class IntegrationCase220(ForecastingBrowserCase):
             self.record_month(month)
         self.open_forecasting()
         self.apply_branch(self.branch)
-        readiness = self.page.get_by_role('listitem').filter(has_text='Random Forest trained')
+        readiness = self.page.locator('.model-readiness .readiness-status.is-ready')
         expect(readiness).to_have_count(3, timeout=20000)
         for label in ('Revenue Forecast', 'Expected Profit', 'Production Forecast'):
             expect(self.metric(label).locator('strong')).not_to_contain_text('—')

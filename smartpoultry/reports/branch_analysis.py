@@ -7,6 +7,7 @@ from rest_framework import serializers
 from core.models import Branch
 from expenses.models import Expense
 from inventory.models import InventoryDistribution
+from core.input_rules import is_record_id
 from production.models import ProductionRecord
 
 
@@ -24,7 +25,7 @@ def filters(request):
     if end<start: raise serializers.ValidationError('End date must be on or after start date.')
     branch=values.get('branch')
     if branch and branch!='unassigned':
-        if not branch.isdigit() or not Branch.objects.filter(pk=branch,farm__owner=request.user).exists():
+        if not is_record_id(branch) or not Branch.objects.filter(pk=branch,farm__owner=request.user).exists():
             raise serializers.ValidationError({'branch':'Select a branch from your farm.'})
         branch=int(branch)
     return start,end,branch

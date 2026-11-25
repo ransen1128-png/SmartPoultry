@@ -2,10 +2,12 @@ from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.http import Http404
 from django.shortcuts import render,get_object_or_404,redirect
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 from .models import AuditEvent
+from .input_rules import is_record_id
 
 
 @login_required
@@ -22,6 +24,7 @@ def sales_receipt(request,sale_id):
 @require_http_methods(['GET','POST'])
 def activity_history(request):
     if request.method=='POST':
+        if not is_record_id(request.POST.get('event')):raise Http404('Change not found.')
         event=get_object_or_404(AuditEvent,owner=request.user,pk=request.POST.get('event'))
         reason=request.POST.get('reason','').strip()
         if reason and len(reason)<=500:

@@ -205,7 +205,7 @@ class BrowserPage(Locator):
 
         def completed_file():
             return next((path for path in directory.iterdir()
-                         if path not in before and path.suffix.lower() == '.csv'), False)
+                         if path not in before and path.suffix.lower() in ('.csv', '.xlsx')), False)
         result.value = SimpleNamespace(suggested_filename=self.wait(completed_file, 30000).name)
 
 

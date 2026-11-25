@@ -1,8 +1,9 @@
 from rest_framework import serializers
+from core.input_rules import RecordDateMixin
 from .models import Expense
 
 
-class ExpenseSerializer(serializers.ModelSerializer):
+class ExpenseSerializer(RecordDateMixin, serializers.ModelSerializer):
     def create(self,validated_data):
         from django.core.exceptions import ValidationError as ModelError
         try:return super().create(validated_data)

@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 
 from .contact_validation import PHONE_ERROR, valid_contact_phone
 from .models import Branch, Farm
+from .input_rules import is_record_id
 
 
 class BranchForm(forms.Form):
@@ -88,7 +89,7 @@ def branch_page(request, farm):
         action = request.POST.get('action', 'save')
         branch_id = request.POST.get('branch_id', '').strip()
         if branch_id:
-            if not branch_id.isdigit():
+            if not is_record_id(branch_id):
                 return JsonResponse({'error': 'The original farm cannot be deleted through branch management.'}, status=400) if json_request else render(request, 'farm_branches.html', branch_context(request, farm), status=400)
             branch = get_object_or_404(Branch, pk=branch_id, farm=farm)
         if action == 'delete':
