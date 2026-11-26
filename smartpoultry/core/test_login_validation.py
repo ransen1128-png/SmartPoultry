@@ -44,6 +44,30 @@ class LoginValidationTests(TestCase):
 @unittest.skipUnless(importlib.util.find_spec('playwright'),'Desktop Playwright is not installed')
 @override_settings(PASSWORD_HASHERS=['django.contrib.auth.hashers.MD5PasswordHasher'])
 class LoginInlineBrowserTests(StaticLiveServerTestCase):
+    def test_password_toggle_is_hidden_until_a_password_is_entered(self):
+        from playwright.sync_api import sync_playwright, Error, expect
+        with sync_playwright() as playwright:
+            try:browser=playwright.chromium.launch(channel='chrome',headless=True)
+            except Error as error:raise unittest.SkipTest(str(error))
+            try:
+                page=browser.new_page()
+                page.goto(self.live_server_url+'/login/',wait_until='networkidle')
+                password=page.locator('#password')
+                toggle=page.locator('[data-password-toggle="password"]')
+                expect(toggle).not_to_be_visible()
+                password.fill('Private-secret!79')
+                expect(toggle).to_be_visible()
+                expect(toggle.locator('[data-eye-closed]')).to_be_visible()
+                expect(toggle.locator('[data-eye-open]')).not_to_be_visible()
+                toggle.click()
+                expect(password).to_have_attribute('type','text')
+                expect(toggle.locator('[data-eye-open]')).to_be_visible()
+                expect(toggle.locator('[data-eye-closed]')).not_to_be_visible()
+                password.fill('')
+                expect(password).to_have_attribute('type','password')
+                expect(toggle).not_to_be_visible()
+            finally:browser.close()
+
     def test_inline_errors_no_popups_and_valid_login_still_works(self):
         from playwright.sync_api import sync_playwright, Error, expect
         get_user_model().objects.create_user('inline-owner','inline@example.invalid','Strong-secret!79')
