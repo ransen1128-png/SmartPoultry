@@ -6,11 +6,12 @@
 <section class="card report-overview" aria-label="Report summary">
  <div class="report-metric"><span class="workspace-icon" aria-hidden="true"><i class="bi bi-wallet2"></i></span><div><h2>Total Expenses</h2><p id="branchExpenseTotal">&#8212;</p></div></div>
  <div class="report-metric"><span class="workspace-icon" aria-hidden="true"><i class="bi bi-bag"></i></span><div><h2>Feed Delivered</h2><p id="reportFeedTotal">&#8212;</p></div></div>
- <div class="report-periods" aria-label="Generate report">
- <button type="button" class="btn btn-outline-success btn-sm" data-report-period="daily"><i class="bi bi-calendar-event me-1" aria-hidden="true"></i>Daily</button>
- <button type="button" class="btn btn-outline-success btn-sm" data-report-period="weekly"><i class="bi bi-calendar-week me-1" aria-hidden="true"></i>Weekly</button>
- <button type="button" class="btn btn-outline-success btn-sm" data-report-period="monthly"><i class="bi bi-calendar-month me-1" aria-hidden="true"></i>Monthly</button>
- <button type="button" class="btn btn-outline-success btn-sm" data-report-period="annual"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>Annual</button>
+ <div id="reportPeriods" class="report-periods" aria-label="Generate report">
+ {% if selected_period %}<p class="small mb-1 w-100">{{ selected_period|title }} report selected. Click {{ selected_period|title }} to generate it.</p>{% endif %}
+ <button type="button" class="btn {% if selected_period == 'daily' %}btn-success{% else %}btn-outline-success{% endif %} btn-sm" {% if selected_period == 'daily' %}aria-current="true"{% endif %} data-report-period="daily"><i class="bi bi-calendar-event me-1" aria-hidden="true"></i>Daily</button>
+ <button type="button" class="btn {% if selected_period == 'weekly' %}btn-success{% else %}btn-outline-success{% endif %} btn-sm" {% if selected_period == 'weekly' %}aria-current="true"{% endif %} data-report-period="weekly"><i class="bi bi-calendar-week me-1" aria-hidden="true"></i>Weekly</button>
+ <button type="button" class="btn {% if selected_period == 'monthly' %}btn-success{% else %}btn-outline-success{% endif %} btn-sm" {% if selected_period == 'monthly' %}aria-current="true"{% endif %} data-report-period="monthly"><i class="bi bi-calendar-month me-1" aria-hidden="true"></i>Monthly</button>
+ <button type="button" class="btn {% if selected_period == 'annual' %}btn-success{% else %}btn-outline-success{% endif %} btn-sm" {% if selected_period == 'annual' %}aria-current="true"{% endif %} data-report-period="annual"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>Annual</button>
  </div>
 </section>
 <nav class="nav nav-pills report-tabs" role="tablist" aria-label="Report categories">

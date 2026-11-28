@@ -17,7 +17,8 @@
     data-predicted-profit="{{ scenario_metrics.predicted_profit|floatformat:2 }}">
     <div class="panel-title">What-if Scenario Analysis</div>
     <div class="scenario-controls">
-        <select class="form-select form-select-sm" data-scenario-type>
+        <label for="scenarioType">Scenario type</label>
+        <select class="form-select form-select-sm" id="scenarioType" data-scenario-type>
             <option value="feed_price_increase">Feed Price Increase</option>
             <option value="mortality_increase">Mortality Rate Increase</option>
             <option value="egg_price_increase">Egg Price Increase</option>
@@ -35,7 +36,7 @@
 
 <div class="panel-card mt-3">
     <div class="panel-title">Monthly Profit Prediction</div>
-    <p class="text-muted">Profit is calculated as monthly revenue minus monthly expenses. The prediction uses the average of the last three months.</p>
+    <p class="text-muted">Profit is monthly revenue minus expenses. The prediction uses these completed months: {{ scenario_metrics.prediction_source_months|join:", " }}.</p>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead>
@@ -49,7 +50,7 @@
             <tbody>
                 {% for month in monthly_profit %}
                     <tr>
-                        <td>{{ month.label }}</td>
+                        <td>{{ month.label }}{% if month.is_partial %} (month to date){% endif %}</td>
                         <td>&#8369;{{ month.revenue|floatformat:2 }}</td>
                         <td>&#8369;{{ month.expenses|floatformat:2 }}</td>
                         <td class="{% if month.profit < 0 %}text-danger{% else %}text-success{% endif %}">&#8369;{{ month.profit|floatformat:2 }}</td>

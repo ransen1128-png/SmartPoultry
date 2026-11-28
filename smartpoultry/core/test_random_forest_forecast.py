@@ -11,17 +11,29 @@ class RandomForestForecastTests(TestCase):
         self.assertEqual(first['status'],'trained')
         self.assertEqual(first['validation_month'],'2026-06-01')
         self.assertEqual(first['validation_training_ends'],'2026-05-01')
-        self.assertEqual(first['held_out_months'],1)
+        self.assertEqual(first['held_out_months'],3)
+        self.assertFalse(first['provisional'])
+        self.assertEqual(first['method'],'Previous-value baseline')
+        self.assertEqual(first['forecasts'],[600.0,600.0])
         self.assertEqual(first['training_samples'],5)
         self.assertIsNotNone(first['validation_mae'])
         fitted_forecast.cache_clear()
         second=random_forest_forecast('test:revenue',data,date(2026,7,1),future)
         self.assertEqual(first['forecasts'],second['forecasts'])
 
+    def test_random_forest_can_win_the_rolling_comparison(self):
+        data = {date(2026, month, 1): 100 if month % 2 else 1000 for month in range(1, 11)}
+        report = random_forest_forecast('test:alternating', data, date(2026, 11, 1), [date(2026, 12, 1)])
+        self.assertEqual(report['method'], 'Random Forest')
+        self.assertLess(report['validation_mae'], report['baseline_mae'])
+        self.assertEqual(report['held_out_months'], 6)
+
     def test_current_partial_month_cannot_leak_into_training(self):
         data={date(2026,month,1):100 for month in range(1,5)}
         future=[date(2026,6,1)]
         first=random_forest_forecast('test:cutoff',data,date(2026,5,1),future)
+        self.assertTrue(first['provisional'])
+        self.assertEqual(first['held_out_months'],1)
         data[date(2026,5,1)]=9999999
         second=random_forest_forecast('test:cutoff',data,date(2026,5,1),future)
         self.assertEqual(first['data_sha256'],second['data_sha256'])

@@ -1450,8 +1450,11 @@ def rooster_estimate_photo(request, estimate_id):
 def reports_view(request):
     """Reports view."""
     from .evaluation_status import age_evaluation_status
+    period = request.GET.get('period')
+    if period not in {'daily', 'weekly', 'monthly', 'annual'}:
+        period = None
     return render(request, 'reports.html',{'branches':Branch.objects.filter(farm__owner=request.user),'today':timezone.localdate(),
-        'age_evaluation_status':age_evaluation_status()})
+        'age_evaluation_status':age_evaluation_status(), 'selected_period': period})
 
 
 @login_required(login_url='login')
@@ -1721,12 +1724,13 @@ def scenario_analysis_view(request):
         )
         monthly_profit.append({
             'label': month_start.strftime('%b %Y'),
+            'is_partial': month_start == current_month_start,
             'revenue': float(month_revenue),
             'expenses': float(month_expenses),
             'profit': float(month_revenue - month_expenses),
         })
 
-    recent_months = monthly_profit[-3:]
+    recent_months = monthly_profit[-4:-1]
     predicted_revenue = sum(month['revenue'] for month in recent_months) / len(recent_months)
     predicted_expenses = sum(month['expenses'] for month in recent_months) / len(recent_months)
     predicted_profit = predicted_revenue - predicted_expenses
@@ -1743,6 +1747,7 @@ def scenario_analysis_view(request):
             'predicted_expenses': predicted_expenses,
             'predicted_profit': predicted_profit,
             'prediction_month': next_month.strftime('%B %Y'),
+            'prediction_source_months': [month['label'] for month in recent_months],
         },
         'monthly_profit': monthly_profit,
         'has_encoded_data': any([revenue, expenses]),

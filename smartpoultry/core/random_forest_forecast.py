@@ -8,6 +8,8 @@ import hashlib,json
 from datetime import date
 
 MIN_MONTHS=4
+MIN_VALIDATION_MONTHS = 3
+MAX_VALIDATION_MONTHS = 6
 SEED=2026
 
 
@@ -22,7 +24,7 @@ def features(history,target):
 def fitted_forecast(scope,observations,targets):
     # scope isolates account/branch/target caches; it is not a model feature.
     history=[(date.fromisoformat(month),float(value)) for month,value in observations]
-    report={'method':'Random Forest','status':'insufficient_history','observed_months':len(history),
+    report={'method':None,'status':'insufficient_history','observed_months':len(history),
         'minimum_months':MIN_MONTHS,'forecasts':[None]*len(targets),'validation_mae':None,
         'baseline_mae':None,'held_out_months':0,'training_samples':0,'seed':SEED}
     report['data_sha256']=hashlib.sha256(json.dumps(observations).encode()).hexdigest()
@@ -32,19 +34,37 @@ def fitted_forecast(scope,observations,targets):
     def model():return RandomForestRegressor(n_estimators=80,max_depth=4,min_samples_leaf=1,random_state=SEED,n_jobs=1)
     x=[features(history[:index],history[index][0]) for index in range(1,len(history))]
     y=[value for _,value in history[1:]]
-    validation=model().fit(x[:-1],y[:-1])
-    held_out=max(0,float(validation.predict([x[-1]])[0]))
-    forest=model().fit(x,y)
-    working=list(history);predictions=[]
-    for target in targets:
-        month=date.fromisoformat(target)
-        value=max(0,float(forest.predict([features(working,month)])[0]))
-        predictions.append(round(value,2));working.append((month,value))
-    report.update(status='trained',forecasts=predictions,validation_mae=round(abs(held_out-y[-1]),2),
-        baseline_mae=round(abs(history[-2][1]-y[-1]),2),held_out_months=1,training_samples=len(y),
+    # Each validation prediction uses only records before its target month.
+    validation_indices = range(max(MIN_MONTHS - 2, len(y) - MAX_VALIDATION_MONTHS), len(y))
+    forest_errors = []
+    baseline_errors = []
+    for index in validation_indices:
+        validation = model().fit(x[:index], y[:index])
+        prediction = max(0.0, float(validation.predict([x[index]])[0]))
+        forest_errors.append(abs(prediction - y[index]))
+        baseline_errors.append(abs(history[index][1] - y[index]))
+    held_out_months = len(forest_errors)
+    forest_mae = sum(forest_errors) / held_out_months
+    baseline_mae = sum(baseline_errors) / held_out_months
+    use_forest = forest_mae < baseline_mae
+    if use_forest:
+        forest = model().fit(x, y)
+        working = list(history)
+        predictions = []
+        for target in targets:
+            month = date.fromisoformat(target)
+            value = max(0.0, float(forest.predict([features(working, month)])[0]))
+            predictions.append(round(value, 2))
+            working.append((month, value))
+    else:
+        predictions = [round(history[-1][1], 2)] * len(targets)
+    report.update(status='trained', method='Random Forest' if use_forest else 'Previous-value baseline',
+        provisional=held_out_months < MIN_VALIDATION_MONTHS,
+        forecasts=predictions,validation_mae=round(forest_mae,2),
+        baseline_mae=round(baseline_mae,2),held_out_months=held_out_months,training_samples=len(y),
         validation_month=history[-1][0].isoformat(),validation_training_ends=history[-2][0].isoformat(),
         feature_names=['previous recorded value','recent average','month sine','month cosine','months since previous observation'],
-        sklearn_version=__version__,limitation='One held-out month is a limited validation, not established forecast accuracy.')
+        sklearn_version=__version__)
     return report
 
 

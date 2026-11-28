@@ -50,6 +50,13 @@ class RecoveryQuestionTests(TestCase):
         for changed in ({'question_two': 'school_trip'}, {'answer_two': self.details['answer_one']}, {'answer_one': '123456'}):
             self.assertFalse(RecoverySetupForm({**self.details, **changed}).is_valid())
 
+    def test_registration_rejects_duplicate_questions_without_javascript(self):
+        details = {**self.details, 'username': 'duplicate-question-owner',
+                   'email': 'duplicate-question@example.com', 'question_two': self.details['question_one']}
+        response = self.client.post(reverse('register'), details)
+        self.assertContains(response, 'Choose two different recovery questions.')
+        self.assertFalse(get_user_model().objects.filter(username=details['username']).exists())
+
     def test_wrong_answers_block_password_form_and_change(self):
         self.challenge()
         response = self.answer('wrong answer', 'wrong answer')

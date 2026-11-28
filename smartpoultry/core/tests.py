@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from io import BytesIO
 import shutil
@@ -1019,6 +1019,15 @@ class ScenarioAnalysisPageTests(TestCase):
 
     def test_scenario_analysis_uses_logged_in_users_encoded_data(self):
         today = timezone.localdate()
+        prior_month = today.replace(day=1) - timedelta(days=1)
+        Revenue.objects.create(
+            user=self.user, revenue_type='eggs', quantity=Decimal('9'), unit='tray',
+            price_per_unit=Decimal('100'), date=prior_month,
+        )
+        Expense.objects.create(
+            user=self.user, expense_type='feed', description='Previous month feed',
+            amount=Decimal('150.00'), date=prior_month,
+        )
         Revenue.objects.create(
             user=self.user,
             revenue_type='eggs',
@@ -1052,9 +1061,11 @@ class ScenarioAnalysisPageTests(TestCase):
         self.assertEqual(metrics['expenses'], Decimal('300.00'))
         self.assertEqual(metrics['profit'], Decimal('700.00'))
         self.assertEqual(metrics['feed_cost'], Decimal('300.00'))
-        self.assertEqual(metrics['predicted_revenue'], 1000.0 / 3)
-        self.assertEqual(metrics['predicted_expenses'], 100.0)
-        self.assertEqual(metrics['predicted_profit'], 1000.0 / 3 - 100.0)
+        self.assertEqual(metrics['predicted_revenue'], 300.0)
+        self.assertEqual(metrics['predicted_expenses'], 50.0)
+        self.assertEqual(metrics['predicted_profit'], 250.0)
+        self.assertIn(prior_month.strftime('%b %Y'), metrics['prediction_source_months'])
+        self.assertNotIn(today.strftime('%b %Y'), metrics['prediction_source_months'])
         self.assertEqual(len(response.context['monthly_profit']), 6)
         self.assertNotContains(response, '120,000.00')
         self.assertNotContains(response, '9,000.00')
@@ -1065,6 +1076,17 @@ class ReportDownloadTests(TestCase):
         User = get_user_model()
         self.user = User.objects.create_user(username='report-owner', password='password123')
         self.other_user = User.objects.create_user(username='report-other', password='password123')
+
+    def test_dashboard_report_shortcuts_preselect_period(self):
+        self.client.force_login(self.user)
+        dashboard = self.client.get(reverse('dashboard'))
+        for period in ('daily', 'weekly', 'monthly', 'annual'):
+            with self.subTest(period=period):
+                self.assertContains(dashboard, f'{reverse("reports")}?period={period}#reportPeriods')
+                response = self.client.get(reverse('reports'), {'period': period})
+                self.assertContains(response, f'aria-current="true" data-report-period="{period}"', count=1)
+        invalid = self.client.get(reverse('reports'), {'period': 'invalid'})
+        self.assertIsNone(invalid.context['selected_period'])
 
     def test_report_download_exports_logged_in_users_data_as_csv(self):
         today = timezone.localdate()

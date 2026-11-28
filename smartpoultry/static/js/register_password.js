@@ -2,6 +2,19 @@
     const password = document.getElementById('password');
     const confirm = document.getElementById('password2');
     const feedback = document.getElementById('passwordMatch');
+    const firstQuestion = document.getElementById('id_question_one');
+    const secondQuestion = document.getElementById('id_question_two');
+    const recoveryError = document.getElementById('recoveryQuestionError');
+
+    function updateRecoveryQuestions() {
+        const duplicate = firstQuestion.value !== '' && firstQuestion.value === secondQuestion.value;
+        const message = duplicate ? 'Choose two different recovery questions.' : '';
+        secondQuestion.setCustomValidity(message);
+        recoveryError.textContent = message;
+        secondQuestion.classList.toggle('is-invalid', duplicate);
+        if (duplicate) secondQuestion.setAttribute('aria-invalid', 'true');
+        else secondQuestion.removeAttribute('aria-invalid');
+    }
     function update() {
         const checks = {
             length: password.value.length >= 8,
@@ -46,7 +59,18 @@
     confirm.addEventListener('input', update);
     password.form.addEventListener('submit', (event) => {
         update();
+        updateRecoveryQuestions();
         if (!password.form.reportValidity()) event.preventDefault();
     });
+    firstQuestion.addEventListener('change', updateRecoveryQuestions);
+    secondQuestion.addEventListener('change', updateRecoveryQuestions);
+    secondQuestion.setAttribute('aria-describedby', recoveryError.id);
+    secondQuestion.setAttribute('data-inline-validation', '');
+    secondQuestion.addEventListener('invalid', event => {
+        if (!secondQuestion.validity.customError) return;
+        event.preventDefault();
+        if (password.form.querySelector(':invalid') === secondQuestion) secondQuestion.focus();
+    });
+    updateRecoveryQuestions();
     update();
 })();

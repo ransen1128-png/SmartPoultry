@@ -172,7 +172,8 @@
          data-base-feed-cost="{{ metrics.feed_cost|floatformat:2 }}">
         <div class="panel-title">What-if Scenario Analysis</div>
         <div class="scenario-controls">
-            <select class="form-select form-select-sm" data-scenario-type>
+            <label for="dashboardScenarioType">Scenario type</label>
+            <select class="form-select form-select-sm" id="dashboardScenarioType" data-scenario-type>
                 <option value="feed_price_increase">Feed Price Increase</option>
                 <option value="lower_mortality">Lower Mortality Rate</option>
             </select>
@@ -197,10 +198,10 @@
     <div class="panel-card">
         <div class="panel-title">Reports</div>
         <div class="report-grid">
-            <a href="{% url 'reports' %}"><i class="bi bi-file-earmark-text"></i><span>Daily Report</span></a>
-            <a href="{% url 'reports' %}"><i class="bi bi-file-earmark-bar-graph"></i><span>Weekly Report</span></a>
-            <a href="{% url 'reports' %}"><i class="bi bi-file-earmark-spreadsheet"></i><span>Monthly Report</span></a>
-            <a href="{% url 'reports' %}"><i class="bi bi-file-earmark-pdf"></i><span>Annual Report</span></a>
+            <a href="{% url 'reports' %}?period=daily#reportPeriods"><i class="bi bi-file-earmark-text"></i><span>Daily Report</span></a>
+            <a href="{% url 'reports' %}?period=weekly#reportPeriods"><i class="bi bi-file-earmark-bar-graph"></i><span>Weekly Report</span></a>
+            <a href="{% url 'reports' %}?period=monthly#reportPeriods"><i class="bi bi-file-earmark-spreadsheet"></i><span>Monthly Report</span></a>
+            <a href="{% url 'reports' %}?period=annual#reportPeriods"><i class="bi bi-file-earmark-pdf"></i><span>Annual Report</span></a>
         </div>
     </div>
 </section>
