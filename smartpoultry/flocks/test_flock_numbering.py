@@ -66,6 +66,17 @@ class FlockNumberingTests(FlockApiMixin, TestCase):
         response = self.create_flock(self.branch_a, flock_id='99')
         self.assertEqual(response.json()['flock_id'], '01')
 
+    def test_broilers_and_layers_start_at_01_in_each_branch(self):
+        for branch in (self.branch_a, self.branch_b, None):
+            with self.subTest(branch=branch):
+                for number in ('01', '02'):
+                    layers = self.new_flock(branch, breed='layers')
+                    broilers = self.new_flock(branch, breed='broilers')
+                    self.assertEqual((layers.flock_id, broilers.flock_id), (number, number))
+                    self.assertNotEqual(layers.pk, broilers.pk)
+                    self.assertIn('Layers', layers.display_label)
+                    self.assertIn('Broilers', broilers.display_label)
+
     def test_numbering_continues_past_99_without_a_cap(self):
         Flock.objects.create(user=self.user, branch=self.branch_a, flock_id='99', breed='layers', quantity=10)
         self.assertEqual(self.new_flock(self.branch_a).flock_id, '100')
@@ -122,9 +133,9 @@ class FlockNumberingTests(FlockApiMixin, TestCase):
         real = numbering.next_flock_id
         calls = []
 
-        def stale_then_real(user_id, branch_id):
+        def stale_then_real(user_id, branch_id, breed):
             calls.append(branch_id)
-            return '01' if len(calls) == 1 else real(user_id, branch_id)  # A racing writer already saved 01.
+            return '01' if len(calls) == 1 else real(user_id, branch_id, breed)
 
         with mock.patch('flocks.views.next_flock_id', side_effect=stale_then_real):
             flock = self.new_flock(self.branch_a)
@@ -160,7 +171,7 @@ class SameFlockIdAcrossBranchesTests(FlockApiMixin, TestCase):
         self.broilers_a = self.new_flock(self.branch_a, breed='broilers', quantity=50)
         self.broilers_b = self.new_flock(self.branch_b, breed='broilers', quantity=50)
         self.today = timezone.localdate()
-        assert (self.layers_a.flock_id, self.layers_b.flock_id, self.broilers_a.flock_id, self.broilers_b.flock_id) == ('01', '01', '02', '02')
+        assert (self.layers_a.flock_id, self.layers_b.flock_id, self.broilers_a.flock_id, self.broilers_b.flock_id) == ('01', '01', '01', '01')
 
     def quantities(self):
         return {flock.pk: Flock.objects.get(pk=flock.pk).quantity for flock in (self.layers_a, self.layers_b, self.broilers_a, self.broilers_b)}
@@ -272,7 +283,10 @@ class SameFlockIdAcrossBranchesTests(FlockApiMixin, TestCase):
 
         self.assertEqual(sorted(rows('Production', 'Branch', 'Flock', 'Quantity')), [('Branch A', '01', 60), ('Branch B', '01', 25)])
         self.assertEqual(rows('Mortality', 'Branch', 'Flock', 'Quantity'), [('Branch B', '01', 2)])
-        self.assertEqual(rows('Flocks', 'Branch', 'Flock ID'), [('Branch A', '01'), ('Branch A', '02'), ('Branch B', '01'), ('Branch B', '02')])
+        self.assertEqual(sorted(rows('Flocks', 'Branch', 'Flock ID', 'Breed')), [
+            ('Branch A', '01', 'Broilers'), ('Branch A', '01', 'Layers'),
+            ('Branch B', '01', 'Broilers'), ('Branch B', '01', 'Layers'),
+        ])
 
     def test_linked_records_still_open_and_show_branch_with_flock(self):
         batch = self.eggs(self.layers_b, self.branch_b)
@@ -314,6 +328,20 @@ class FlockSequenceMigrationTests(TransactionTestCase):
                                                             contact_email='m@example.com', contact_phone='09123456789')
         OldBranch, OldFlock = old.get_model('core', 'Branch'), old.get_model('flocks', 'Flock')
         branch_a, branch_b = OldBranch.objects.create(farm=farm, name='Branch A'), OldBranch.objects.create(farm=farm, name='Branch B')
+        sample_branch = OldBranch.objects.create(pk=24, farm=farm, name='Sample Layers Branch')
+        sample_layer = OldFlock.objects.create(user=owner, branch=sample_branch, breed='layers', flock_id='01', quantity=48)
+        sample_broiler = OldFlock.objects.create(
+            pk=58, user=owner, branch=sample_branch, breed='broilers', flock_id='11', quantity=50,
+            acquisition_source='purchased', purchase_date='2026-11-28', purchase_amount=2250,
+        )
+        OldFlock.objects.filter(pk=sample_broiler.pk).update(date_added='2026-11-28')
+        purchase = old.get_model('expenses', 'Expense').objects.create(
+            user=owner, branch=sample_branch, flock_purchase=sample_broiler, expense_type='flock_purchase',
+            description='Flock purchase: 11', amount=2250, date='2026-11-28',
+        )
+        mortality = old.get_model('production', 'MortalityRecord').objects.create(
+            user=owner, branch=sample_branch, flock=sample_broiler, quantity=1, reason='disease', date='2026-11-28',
+        )
         flocks = {
             'a1': OldFlock.objects.create(user=owner, branch=branch_a, flock_id='01', breed='layers', quantity=20),
             'a3': OldFlock.objects.create(user=owner, branch=branch_a, flock_id='03', breed='layers', quantity=20),
@@ -323,7 +351,7 @@ class FlockSequenceMigrationTests(TransactionTestCase):
         }
         AuditEvent = old.get_model('core', 'AuditEvent')
         AuditEvent.objects.create(owner=owner, object_type='flocks.Flock', object_id=999, action='deleted',
-                                  before={'branch_id': str(branch_b.pk), 'flock_id': '07'}, after={})
+                                  before={'branch_id': str(branch_b.pk), 'breed': 'layers', 'flock_id': '07'}, after={})
         AuditEvent.objects.create(owner=owner, object_type='flocks.Flock', object_id=998, action='deleted',
                                   before={'branch_id': '424242', 'flock_id': '50'}, after={})  # Branch no longer exists.
         old.get_model('production', 'ProductionRecord').objects.create(user=owner, branch=branch_a, flock=flocks['a1'], product_type='eggs',
@@ -334,12 +362,21 @@ class FlockSequenceMigrationTests(TransactionTestCase):
         executor.migrate(after)
         new = executor.loader.project_state(after).apps
         counters = {row.branch_id: row.last_number for row in new.get_model('flocks', 'FlockIdSequence').objects.filter(user_id=owner.pk)}
-        self.assertEqual(counters, {branch_a.pk: 3, branch_b.pk: 7, None: 5})
+        self.assertEqual(counters, {branch_a.pk: 3, branch_b.pk: 7, sample_branch.pk: 11, None: 5})
         executor = MigrationExecutor(connection)
         executor.migrate(executor.loader.graph.leaf_nodes())
 
         for key, row in flocks.items():
             self.assertEqual(Flock.objects.get(pk=row.pk).flock_id, row.flock_id, key)
+        self.assertEqual(Flock.objects.get(pk=sample_layer.pk).flock_id, '01')
+        self.assertEqual(Flock.objects.get(pk=sample_broiler.pk).flock_id, '01')
+        self.assertEqual(MortalityRecord.objects.get(pk=mortality.pk).flock_id, sample_broiler.pk)
+        from expenses.models import Expense
+        self.assertEqual(
+            Expense.objects.values_list('flock_purchase_id', 'description', 'amount').get(pk=purchase.pk),
+            (sample_broiler.pk, 'Flock purchase: 01', Decimal('2250.00')),
+        )
+        self.assertEqual(FlockIdSequence.objects.get(branch_id=sample_branch.pk, breed='broilers').last_number, 1)
         record = ProductionRecord.objects.get()
         self.assertEqual((record.flock_id, record.flock.flock_id), (flocks['a1'].pk, '01'))
         client = Client(); client.force_login(get_user_model().objects.get(pk=owner.pk))

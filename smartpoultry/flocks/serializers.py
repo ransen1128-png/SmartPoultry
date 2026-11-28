@@ -34,11 +34,12 @@ class FlockSerializer(serializers.ModelSerializer):
         with transaction.atomic():
             instance=Flock.objects.select_for_update(of=('self',)).get(pk=instance.pk)
             branch = validated_data.get('branch', instance.branch)
-            if branch != instance.branch:
-                # Flock IDs follow each branch's own sequence, so a moved flock takes the next ID in its new branch.
+            breed = validated_data.get('breed', instance.breed)
+            if branch != instance.branch or breed != instance.breed:
+                # A changed branch or breed uses its new sequence.
                 # Its primary key, and therefore every linked record, is unchanged.
                 from .numbering import next_flock_id
-                validated_data['flock_id'] = next_flock_id(instance.user_id, branch.pk if branch else None)
+                validated_data['flock_id'] = next_flock_id(instance.user_id, branch.pk if branch else None, breed)
             if 'status' in validated_data and validated_data['status']!=instance.status:instance.auto_sold=False
             try:return super().update(instance,validated_data)
             except ModelError as error:raise serializers.ValidationError(error.message_dict if hasattr(error,'message_dict') else error.messages)

@@ -488,8 +488,9 @@ def build_report_workbook(report):
 
     _data_sheet(wb, report, 'Mortality', [
         ('Date', 'date'), ('Branch', 'text'), ('Flock', 'text'), ('Quantity', 'count'), ('Reason', 'text'),
-        ('Description', 'text'), ('Notes', 'text'),
-    ], [(m.date, m.branch.name if m.branch else '', m.flock.flock_id, m.quantity, m.get_reason_display(), m.description, m.notes)
+        ('Description', 'text'), ('Notes', 'text'), ('Breed', 'text'),
+    ], [(m.date, m.branch.name if m.branch else '', m.flock.flock_id, m.quantity, m.get_reason_display(), m.description, m.notes,
+         m.flock.get_breed_display())
         for m in records['mortality']], '6D4C41')
 
     _data_sheet(wb, report, 'Flocks', [

@@ -28,9 +28,9 @@ class FlockViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = get_user_model().objects.get(pk=self.request.user.pk)
         branch = serializer.validated_data.get('branch')
-        # Each branch (and the main branch) numbers its own flocks; the primary key stays the global identifier.
+        breed = serializer.validated_data['breed']
         for attempt in range(3):
-            flock_id = next_flock_id(user.pk, branch.pk if branch else None)
+            flock_id = next_flock_id(user.pk, branch.pk if branch else None, breed)
             try:
                 with transaction.atomic():
                     flock = serializer.save(user=user, flock_id=flock_id)

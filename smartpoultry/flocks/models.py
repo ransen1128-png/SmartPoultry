@@ -19,32 +19,33 @@ def numeric_flock_id(value):
 
 
 class FlockIdSequence(models.Model):
-    """Highest Flock ID number used in one branch of one account (branch NULL = main branch).
+    """Highest Flock ID used for one breed in one branch (NULL = main branch).
 
     It only ever increases, so numbers of deleted, archived or moved flocks are not reissued.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='flock_id_sequences')
     branch = models.ForeignKey('core.Branch', on_delete=models.CASCADE, related_name='flock_id_sequences', null=True, blank=True)
+    breed = models.CharField(max_length=50)
     last_number = models.PositiveIntegerField(default=0)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user', 'branch'], condition=models.Q(branch__isnull=False), name='flock_seq_branch_uniq'),
-            models.UniqueConstraint(fields=['user'], condition=models.Q(branch__isnull=True), name='flock_seq_main_uniq'),
+            models.UniqueConstraint(fields=['user', 'branch', 'breed'], condition=models.Q(branch__isnull=False), name='flock_seq_branch_breed_uniq'),
+            models.UniqueConstraint(fields=['user', 'breed'], condition=models.Q(branch__isnull=True), name='flock_seq_main_breed_uniq'),
         ]
 
     @classmethod
-    def reserve(cls, user_id, branch_id, flock_id):
-        """Raise the branch counter to at least this Flock ID's number."""
+    def reserve(cls, user_id, branch_id, breed, flock_id):
+        """Raise the breed's counter in this branch to at least this Flock ID."""
         number = numeric_flock_id(flock_id)
         if not number or not user_id:
             return
-        rows = cls.objects.filter(user_id=user_id, branch_id=branch_id)
+        rows = cls.objects.filter(user_id=user_id, branch_id=branch_id, breed=breed)
         if rows.filter(last_number__lt=number).update(last_number=number) or rows.exists():
             return
         try:
             with transaction.atomic():
-                cls.objects.create(user_id=user_id, branch_id=branch_id, last_number=number)
+                rows.create(user_id=user_id, branch_id=branch_id, breed=breed, last_number=number)
         except IntegrityError:  # Another transaction created the counter first.
             rows.filter(last_number__lt=number).update(last_number=number)
 
@@ -122,8 +123,7 @@ class Flock(models.Model):
         self.validate_acquisition()
         with transaction.atomic():
             super().save(*args,**kwargs)
-            # Remember every numeric ID ever stored in a branch so it is never issued again there.
-            FlockIdSequence.reserve(self.user_id,self.branch_id,self.flock_id)
+            FlockIdSequence.reserve(self.user_id, self.branch_id, self.breed, self.flock_id)
             from .purchase_expenses import sync_purchase_expense
             sync_purchase_expense(self)
 
@@ -133,8 +133,7 @@ class Flock(models.Model):
 
     @property
     def display_label(self):
-        """Flock IDs are unique only within a branch, so name the branch wherever no branch column is shown."""
-        return f'{self.flock_id} ({self.branch_label})'
+        return f'{self.flock_id} ({self.branch_label}) · {self.get_breed_display()}'
 
     @property
     def in_history(self):
@@ -151,13 +150,13 @@ class Flock(models.Model):
         ordering = ['branch__name', '-date_added', '-created_at']
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'branch', 'flock_id'],
+                fields=['user', 'branch', 'breed', 'flock_id'],
                 condition=models.Q(branch__isnull=False),
-                name='flock_branch_id_uniq',
+                name='flock_branch_breed_id_uniq',
             ),
             models.UniqueConstraint(
-                fields=['user', 'flock_id'],
+                fields=['user', 'breed', 'flock_id'],
                 condition=models.Q(branch__isnull=True),
-                name='flock_unassigned_id_uniq',
+                name='flock_main_breed_id_uniq',
             ),
         ]
