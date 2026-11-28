@@ -42,7 +42,7 @@ class FarmActivityMiddleware:
     def __call__(self,request):
         actor=request.user if request.user.is_authenticated else None
         reason=''
-        business_path=request.path.startswith(('/api/inventory/','/api/flocks/','/api/revenue/','/api/expenses/','/api/production/','/production-records/','/mortality-records/','/health-records/','/farm/','/change-history/'))
+        business_path=request.path.startswith(('/api/inventory/','/api/flocks/','/api/revenue/','/api/expenses/','/api/production/','/production-records/','/mortality-records/','/farm/','/change-history/'))
         if actor and business_path and request.method in ('POST','PUT','PATCH','DELETE'):
             try:
                 data=json.loads(request.body) if request.content_type=='application/json' else request.POST

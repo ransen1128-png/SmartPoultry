@@ -1,9 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from notifications.utils import create_activity_notification
-from .models import ProductionRecord, MortalityRecord, BreedInformation, HealthRecord
-from .serializers import (ProductionRecordSerializer, MortalityRecordSerializer,
-                         BreedInformationSerializer, HealthRecordSerializer)
+from .models import BreedInformation, MortalityRecord, ProductionRecord
+from .serializers import BreedInformationSerializer, MortalityRecordSerializer, ProductionRecordSerializer
 
 
 class ProductionRecordViewSet(viewsets.ModelViewSet):
@@ -59,12 +58,3 @@ class BreedInformationViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         return [IsAuthenticated()] if self.action in ('list', 'retrieve') else [IsAdminUser()]
-
-
-class HealthRecordViewSet(viewsets.ModelViewSet):
-    """ViewSet for health records."""
-    serializer_class = HealthRecordSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return HealthRecord.objects.filter(flock__user=self.request.user)

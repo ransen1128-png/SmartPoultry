@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.input_rules import RecordDateMixin
-from .models import ProductionRecord, MortalityRecord, BreedInformation, HealthRecord
+from .models import BreedInformation, MortalityRecord, ProductionRecord
 
 
 class ProductionRecordSerializer(RecordDateMixin, serializers.ModelSerializer):
@@ -135,17 +135,3 @@ class BreedInformationSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'type', 'egg_production_per_year', 'growth_period_days', 
                   'average_weight_kg', 'feed_consumption_daily_kg', 'lifespan_years', 'characteristics']
         read_only_fields = ['id']
-
-
-class HealthRecordSerializer(RecordDateMixin, serializers.ModelSerializer):
-    def validate_flock(self, flock):
-        request = self.context.get('request')
-        if request and flock.user_id != request.user.id:
-            raise serializers.ValidationError('Select one of your own flocks.')
-        return flock
-
-    class Meta:
-        model = HealthRecord
-        fields = ['id', 'flock', 'health_status', 'disease_name', 'treatment', 'medication', 
-                  'vaccination_name', 'date', 'notes', 'created_at']
-        read_only_fields = ['id', 'created_at']
