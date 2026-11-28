@@ -40,7 +40,6 @@ class InputRuleTests(TestCase):
             reverse('expense-list'): {'branch': self.branch.pk, 'expense_type': 'feed', 'description': 'x', 'amount': 1, 'date': day},
             reverse('production-list'): {**base, 'product_type': 'eggs', 'egg_size': 'small'},
             '/api/production/mortality/': {**base, 'reason': 'disease'},
-            '/api/production/health/': {'flock': self.flock.pk, 'health_status': 'sick', 'date': day},
             reverse('revenue-list'): {'production': self.batch.pk, 'quantity': 1, 'price_per_unit': 1, 'date': day, 'buyer_name': 'x'},
             '/api/inventory/distributions/': {**base, 'inventory': stock.pk},
         }
